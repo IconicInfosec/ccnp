@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switching Fundamentals - Easy Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #667eea;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Password Section */
+        .password-section {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .password-section.active {
+            display: block;
+        }
+
+        .password-section input {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .password-section button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .password-section button:hover {
+            background: #764ba2;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 30px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Question Container */
+        .question-container {
+            background: #f9f9f9;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .question-type {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f5f7ff;
+            font-weight: 600;
+        }
+
+        .option.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+            color: #2e7d32;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #fdeaea;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-secondary:hover {
+            background: #efefef;
+            border-color: #bbb;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .score-total {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .results-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .results-section p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Answer Review */
+        .answer-review {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .review-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .review-item.correct {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #f44336;
+            background: #fdeaea;
+        }
+
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .review-your-answer {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .review-correct-answer {
+            font-size: 13px;
+            color: #2e7d32;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .review-explanation {
+            font-size: 13px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            color: #555;
+            border-left: 3px solid #667eea;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .password-section input {
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: 1;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Layer 2 Switching Fundamentals - Easy</h1>
+            <p><strong>CCNP Course - Switching & Forwarding</strong></p>
+            <p>50 Questions - Multiple Choice & True/False</p>
+        </div>
+
+        <!-- Password Section -->
+        <div class="password-section active" id="passwordSection">
+            <h2 style="color: #333; margin-bottom: 20px;">Quiz Access</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please enter the password to access the quiz</p>
+            <input type="password" id="passwordInput" placeholder="Enter Password">
+            <button onclick="checkPassword()">Start Quiz</button>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">Password: Pro2026</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content" id="quizContent">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="questionCounter">Question 1 of 0</span>
+                    <span id="scoreIndicator">Score: 0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="questionsContainer"></div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn">← Previous</button>
+                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div style="padding: 30px;">
+                <h2>Quiz Completed!</h2>
+                <div class="score-circle">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-total">out of 0</div>
+                </div>
+                <p style="font-size: 18px; margin: 20px 0;">
+                    <strong>Your Score: <span id="scorePercentage">0</span>%</strong>
+                </p>
+                <p id="performanceMessage" style="font-size: 16px; margin-bottom: 30px;"></p>
+
+                <div class="answer-review">
+                    <h3 style="margin-bottom: 20px; color: #333;">Answer Review</h3>
+                    <div id="answerReviewContent"></div>
+                </div>
+
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="btn-primary" onclick="restartQuiz()">Restart Quiz</button>
+                    <button class="btn-secondary" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Layer 2 Switching Fundamentals Quiz</strong></p>
+            <p>© 2026 CCNP Training | Switching & Forwarding Course</p>
+            <p>Master the fundamentals of Layer 2 switching, MAC addressing, and switching architectures</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LAYER 2 SWITCHING FUNDAMENTALS - 50 QUESTIONS
+        // ============================================
+        
+        const quizData = [
+            // Questions 1-10: MAC Addressing & Basics
+            {
+                id: 1,
+                question: "What is the primary purpose of the MAC address table in a switch?",
+                type: "multiple",
+                options: [
+                    "To route packets between different networks",
+                    "To keep track of which MAC addresses are associated with which switch ports",
+                    "To store IP addresses for ARP resolution",
+                    "To manage VLAN configurations"
+                ],
+                correct: 1,
+                explanation: "The MAC address table (CAM table) maintains a mapping of MAC addresses to switch ports, enabling the switch to forward frames to the correct port based on the destination MAC address."
+            },
+            {
+                id: 2,
+                question: "Layer 2 forwarding operates at which OSI layer?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Layer 2 forwarding operates at the Data Link Layer (Layer 2) of the OSI model, using MAC addresses for forwarding decisions."
+            },
+            {
+                id: 3,
+                question: "What happens when a switch receives a frame with an unknown destination MAC address?",
+                type: "multiple",
+                options: [
+                    "The frame is discarded",
+                    "The frame is flooded to all ports except the incoming port within the same VLAN",
+                    "The switch sends an ARP request",
+                    "The frame is sent only to the default gateway"
+                ],
+                correct: 1,
+                explanation: "When the destination MAC address is not in the MAC address table, the switch treats it as unknown unicast and floods the frame to all ports in the same VLAN except the ingress port."
+            },
+            {
+                id: 4,
+                question: "Which frame type is forwarded only to the associated port in the MAC address table?",
+                type: "multiple",
+                options: [
+                    "Broadcast frames",
+                    "Multicast frames",
+                    "Unicast frames",
+                    "All frame types"
+                ],
+                correct: 2,
+                explanation: "Unicast frames with a known destination MAC address are forwarded only to the specific port associated with that MAC address in the MAC address table."
+            },
+            {
+                id: 5,
+                question: "MAC addresses are used to forward frames within the same network segment. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "MAC addresses are Layer 2 addresses used for frame forwarding within the same LAN segment or VLAN, not for routing between different networks."
+            },
+            {
+                id: 6,
+                question: "What is the primary function of the ARP table in Layer 2 forwarding?",
+                type: "multiple",
+                options: [
+                    "To map IP addresses to MAC addresses",
+                    "To store routing table entries",
+                    "To manage VLAN membership",
+                    "To prevent spanning tree loops"
+                ],
+                correct: 0,
+                explanation: "The ARP table maps Layer 3 IP addresses to Layer 2 MAC addresses, allowing the switch to build correct Layer 2 headers before forwarding packets."
+            },
+            {
+                id: 7,
+                question: "Broadcast frames are flooded to all ports except the incoming port. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Broadcast frames (destination MAC = FF:FF:FF:FF:FF:FF) are flooded to all ports within the same VLAN except the port where the frame was received."
+            },
+            {
+                id: 8,
+                question: "What type of memory is used in Layer 2 switches to store the MAC address table?",
+                type: "multiple",
+                options: [
+                    "RAM (Random Access Memory)",
+                    "CAM (Content Addressable Memory)",
+                    "TCAM (Ternary Content Addressable Memory)",
+                    "ROM (Read-Only Memory)"
+                ],
+                correct: 1,
+                explanation: "Layer 2 switches use CAM (Content Addressable Memory) to store the MAC address table. CAM enables fast lookup based on MAC address content."
+            },
+            {
+                id: 9,
+                question: "How does a switch learn MAC addresses?",
+                type: "multiple",
+                options: [
+                    "By manual configuration only",
+                    "By examining the source MAC address of received frames",
+                    "By receiving ARP requests",
+                    "By querying connected devices"
+                ],
+                correct: 1,
+                explanation: "Switches dynamically learn MAC addresses by examining the source MAC address of frames received on each port and adding them to the MAC address table."
+            },
+            {
+                id: 10,
+                question: "Multicast frames are forwarded based on multicast handling mechanisms such as IGMP snooping. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Multicast frames are forwarded based on configured policies such as IGMP snooping, which allows the switch to intelligently forward multicast traffic only to ports with interested receivers."
+            },
+
+            // Questions 11-20: Switching Architectures
+            {
+                id: 11,
+                question: "Which switching architecture starts forwarding a frame after reading only the destination MAC address?",
+                type: "multiple",
+                options: [
+                    "Store-and-Forward",
+                    "Cut-through",
+                    "Fragment-Free",
+                    "Process switching"
+                ],
+                correct: 1,
+                explanation: "Cut-through switching reads only the first 6 bytes (destination MAC address) and immediately begins forwarding the frame while still receiving the rest of the frame, resulting in the lowest latency."
+            },
+            {
+                id: 12,
+                question: "Store-and-forward switching verifies the entire frame for errors before forwarding. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Store-and-forward receives the entire frame, checks it for CRC errors, and only forwards error-free frames, providing better data integrity but higher latency."
+            },
+            {
+                id: 13,
+                question: "What is the main disadvantage of cut-through switching?",
+                type: "multiple",
+                options: [
+                    "High latency",
+                    "Memory intensive",
+                    "Error propagation - corrupted frames may be forwarded",
+                    "Slow forwarding speed"
+                ],
+                correct: 2,
+                explanation: "Cut-through switching's main disadvantage is that it may propagate errors because it doesn't verify the entire frame for CRC errors before forwarding."
+            },
+            {
+                id: 14,
+                question: "Fragment-Free switching checks the first 64 bytes of a frame before forwarding. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Fragment-Free (Modified Cut-through) inspection verifies the first 64 bytes of the frame to catch collision fragments (runts) while still providing lower latency than store-and-forward."
+            },
+            {
+                id: 15,
+                question: "Which switching architecture provides the best balance between latency and error handling?",
+                type: "multiple",
+                options: [
+                    "Cut-through",
+                    "Store-and-Forward",
+                    "Fragment-Free",
+                    "Process switching"
+                ],
+                correct: 2,
+                explanation: "Fragment-Free switching offers a good balance: lower latency than store-and-forward and better error handling than cut-through by inspecting the first 64 bytes."
+            },
+            {
+                id: 16,
+                question: "Store-and-forward switching is ideal for environments that require reliable communication. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Store-and-forward is ideal for reliable communication scenarios because it drops frames with errors and supports variable frame sizes like jumbo frames."
+            },
+            {
+                id: 17,
+                question: "Cut-through switching is best suited for which type of applications?",
+                type: "multiple",
+                options: [
+                    "General data transfer",
+                    "File server backups",
+                    "Low-latency applications like VoIP or high-frequency trading",
+                    "Large file transfers"
+                ],
+                correct: 2,
+                explanation: "Cut-through switching's very low latency makes it ideal for latency-sensitive applications such as VoIP, video conferencing, and high-frequency trading."
+            },
+            {
+                id: 18,
+                question: "What is checked in store-and-forward switching to ensure frame integrity?",
+                type: "multiple",
+                options: [
+                    "IP checksum",
+                    "Source MAC address validity",
+                    "CRC (Cyclic Redundancy Check)",
+                    "VLAN tag validity"
+                ],
+                correct: 2,
+                explanation: "Store-and-forward uses CRC (Cyclic Redundancy Check) to verify frame integrity and detect errors in received frames."
+            },
+            {
+                id: 19,
+                question: "Fragment-Free switching avoids which type of frame error?",
+                type: "multiple",
+                options: [
+                    "CRC errors",
+                    "Collision fragments (runts)",
+                    "VLAN tagging errors",
+                    "MAC address conflicts"
+                ],
+                correct: 1,
+                explanation: "Fragment-Free switching checks the first 64 bytes to catch and prevent forwarding of runts or collision fragments, which are frames shorter than 64 bytes."
+            },
+            {
+                id: 20,
+                question: "Modern Catalyst switches typically support which switching architecture?",
+                type: "multiple",
+                options: [
+                    "Cut-through only",
+                    "Store-and-Forward only",
+                    "Both cut-through and store-and-forward modes",
+                    "Fragment-Free only"
+                ],
+                correct: 2,
+                explanation: "Modern Catalyst switches can operate in multiple modes and typically support both cut-through and store-and-forward switching architectures."
+            },
+
+            // Questions 21-30: VLANs and Layer 2 Features
+            {
+                id: 21,
+                question: "What does VLAN stand for?",
+                type: "multiple",
+                options: [
+                    "Virtual Layer Access Network",
+                    "Virtual Local Area Network",
+                    "Virtual Link Aggregation Network",
+                    "Virtual LAN Authentication Network"
+                ],
+                correct: 1,
+                explanation: "VLAN stands for Virtual Local Area Network. It logically segments a physical network into separate broadcast domains."
+            },
+            {
+                id: 22,
+                question: "VLANs allow multiple logical networks to exist on the same physical switch. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "VLANs enable the creation of multiple isolated broadcast domains on a single physical switch, allowing logical network segmentation."
+            },
+            {
+                id: 23,
+                question: "Which protocol is used to tag VLAN information when frames travel across trunk links?",
+                type: "multiple",
+                options: [
+                    "VLAN Trunking Protocol (VTP)",
+                    "802.1Q",
+                    "Spanning Tree Protocol (STP)",
+                    "LLDP"
+                ],
+                correct: 1,
+                explanation: "IEEE 802.1Q is the standard protocol for tagging VLAN information in Ethernet frames traveling across trunk links between switches."
+            },
+            {
+                id: 24,
+                question: "Access ports can carry traffic for multiple VLANs simultaneously. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 1,
+                explanation: "Access ports are assigned to a single VLAN and carry untagged traffic. Trunk ports carry tagged traffic for multiple VLANs."
+            },
+            {
+                id: 25,
+                question: "What is the primary purpose of Spanning Tree Protocol (STP)?",
+                type: "multiple",
+                options: [
+                    "To increase network bandwidth",
+                    "To prevent Layer 2 loops by blocking redundant paths",
+                    "To enable inter-VLAN routing",
+                    "To authenticate users on the network"
+                ],
+                correct: 1,
+                explanation: "STP prevents Layer 2 loops by dynamically blocking redundant paths in the network topology while maintaining connectivity."
+            },
+            {
+                id: 26,
+                question: "Port security allows only authorized MAC addresses to communicate on a switch port. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Port security is a Layer 2 feature that restricts network access by allowing only specified MAC addresses on a particular port."
+            },
+            {
+                id: 27,
+                question: "What is a trunk port in a switch?",
+                type: "multiple",
+                options: [
+                    "A port connected to an external ISP",
+                    "A port carrying traffic for multiple VLANs using 802.1Q tagging",
+                    "A port reserved for management traffic",
+                    "A port used for failover redundancy"
+                ],
+                correct: 1,
+                explanation: "A trunk port carries frames from multiple VLANs, tagging each frame with VLAN information using 802.1Q, allowing multiple VLANs to traverse a single link."
+            },
+            {
+                id: 28,
+                question: "VLAN segmentation helps reduce which of the following?",
+                type: "multiple",
+                options: [
+                    "Bandwidth utilization",
+                    "Number of switches needed",
+                    "Broadcast domain size",
+                    "Network latency"
+                ],
+                correct: 2,
+                explanation: "VLAN segmentation reduces the broadcast domain size by isolating broadcast traffic to only the devices within the same VLAN."
+            },
+            {
+                id: 29,
+                question: "The native VLAN on a trunk port is the VLAN for untagged frames. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "The native VLAN defines which VLAN should process untagged frames received on a trunk port, typically VLAN 1 by default."
+            },
+            {
+                id: 30,
+                question: "How many VLANs can be theoretically created in a standard Ethernet network?",
+                type: "multiple",
+                options: [
+                    "256 VLANs",
+                    "1024 VLANs",
+                    "4094 VLANs",
+                    "Unlimited VLANs"
+                ],
+                correct: 2,
+                explanation: "IEEE 802.1Q supports 4094 usable VLANs (VLAN IDs 1-4094), with VLAN 1 being the default and 4095 reserved."
+            },
+
+            // Questions 31-40: Switching Operations & CAM/TCAM
+            {
+                id: 31,
+                question: "What is CAM in the context of Layer 2 switching?",
+                type: "multiple",
+                options: [
+                    "Content Access Module",
+                    "Content Addressable Memory",
+                    "Cisco Access Manager",
+                    "Cache Address Memory"
+                ],
+                correct: 1,
+                explanation: "CAM (Content Addressable Memory) is specialized memory used in switches to store MAC address tables and enable fast lookups based on content."
+            },
+            {
+                id: 32,
+                question: "TCAM is used primarily for ACL processing and policy enforcement in multilayer switches. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "TCAM (Ternary Content Addressable Memory) enables hardware-based processing of ACLs and policy rules for fast lookup and enforcement."
+            },
+            {
+                id: 33,
+                question: "What is a MAC address flush?",
+                type: "multiple",
+                options: [
+                    "Removing all MAC addresses from the table permanently",
+                    "Clearing the MAC address table to force re-learning",
+                    "Combining MAC addresses from multiple switches",
+                    "Aging out dynamic MAC addresses"
+                ],
+                correct: 1,
+                explanation: "MAC address flush clears the MAC address table, forcing the switch to re-learn MAC addresses through frame observation."
+            },
+            {
+                id: 34,
+                question: "Dynamic MAC addresses age out from the MAC address table after a period of inactivity. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Dynamic MAC addresses have an aging timer (default 300 seconds) and are removed from the table if no frames from that MAC are received within this period."
+            },
+            {
+                id: 35,
+                question: "Static MAC addresses are manually configured and never age out. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Static MAC addresses are manually configured and remain in the MAC address table indefinitely until manually removed."
+            },
+            {
+                id: 36,
+                question: "What is the maximum number of unicast MAC addresses that can be stored in modern Catalyst switches?",
+                type: "multiple",
+                options: [
+                    "1024 addresses",
+                    "8192 addresses",
+                    "32768 addresses",
+                    "65536 addresses"
+                ],
+                correct: 2,
+                explanation: "Modern Catalyst switches typically support up to 32768 unicast MAC addresses in the MAC address table, depending on the model and configuration."
+            },
+            {
+                id: 37,
+                question: "What command is used to view the MAC address table on a Cisco switch?",
+                type: "multiple",
+                options: [
+                    "show mac table",
+                    "show switching table",
+                    "show mac address-table",
+                    "show arp table"
+                ],
+                correct: 2,
+                explanation: "The command 'show mac address-table' displays the MAC address table contents including MAC addresses, types (dynamic/static), VLANs, and ports."
+            },
+            {
+                id: 38,
+                question: "The MAC address table can be filtered by VLAN, MAC address, or interface. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Yes, the MAC address table can be filtered using optional parameters like 'vlan', 'mac-address', or 'interface' with the show command."
+            },
+            {
+                id: 39,
+                question: "What is CAM overflow?",
+                type: "multiple",
+                options: [
+                    "Too many VLANs configured",
+                    "When the MAC address table becomes full and cannot store new MAC addresses",
+                    "Excessive broadcast traffic",
+                    "Multiple switches learning the same MAC address"
+                ],
+                correct: 1,
+                explanation: "CAM overflow occurs when the MAC address table fills to capacity and cannot store new MAC addresses, potentially causing new addresses to be flooded."
+            },
+            {
+                id: 40,
+                question: "In what situation would a switch not learn a MAC address?",
+                type: "multiple",
+                options: [
+                    "When receiving unicast frames",
+                    "When receiving broadcast frames",
+                    "When a port is shut down",
+                    "All of the above"
+                ],
+                correct: 2,
+                explanation: "MAC addresses are learned from the source address of frames on ports that are in up state. Shutdown ports or blocked STP ports won't learn MAC addresses."
+            },
+
+            // Questions 41-50: Advanced Layer 2 Concepts
+            {
+                id: 41,
+                question: "What is a Switched Virtual Interface (SVI)?",
+                type: "multiple",
+                options: [
+                    "A physical port on a multilayer switch",
+                    "A logical interface configured on a VLAN for routing between VLANs",
+                    "A trunk port between two switches",
+                    "A port security exception"
+                ],
+                correct: 1,
+                explanation: "An SVI (VLAN interface) is a logical Layer 3 interface created on a multilayer switch for inter-VLAN routing and management access to VLANs."
+            },
+            {
+                id: 42,
+                question: "Layer 2 and Layer 3 forwarding can occur simultaneously in a multilayer switch. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Multilayer switches can perform both Layer 2 switching and Layer 3 routing simultaneously using separate hardware engines."
+            },
+            {
+                id: 43,
+                question: "What is the relationship between the MAC address table and ARP table?",
+                type: "multiple",
+                options: [
+                    "They are the same table",
+                    "MAC table maps MAC to ports; ARP table maps IP to MAC",
+                    "They operate at different network layers",
+                    "Both B and C"
+                ],
+                correct: 3,
+                explanation: "The MAC address table operates at Layer 2 and maps MAC addresses to ports, while the ARP table operates between Layer 2 and 3 to map IP addresses to MAC addresses."
+            },
+            {
+                id: 44,
+                question: "What is frame tagging in the context of VLANs?",
+                type: "multiple",
+                options: [
+                    "Marking frames as priority traffic",
+                    "Adding a VLAN identifier to frame headers when crossing trunk links",
+                    "Filtering frames based on content",
+                    "Encrypting frame data"
+                ],
+                correct: 1,
+                explanation: "Frame tagging (802.1Q) adds a 4-byte VLAN header to frames to identify which VLAN the frame belongs to when traversing trunk links."
+            },
+            {
+                id: 45,
+                question: "A routed port on a multilayer switch is similar to a Layer 3 interface on a router. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "A routed port is configured with 'no switchport' command and operates as a Layer 3 interface, similar to a router interface with IP addressing."
+            },
+            {
+                id: 46,
+                question: "Which feature allows a switch to intelligently forward multicast traffic only to ports with interested receivers?",
+                type: "multiple",
+                options: [
+                    "VLAN filtering",
+                    "IGMP snooping",
+                    "STP modification",
+                    "Port security"
+                ],
+                correct: 1,
+                explanation: "IGMP snooping allows switches to listen to IGMP messages and only forward multicast traffic to ports that have requested it."
+            },
+            {
+                id: 47,
+                question: "What is the difference between a native VLAN and a default VLAN?",
+                type: "multiple",
+                options: [
+                    "They are the same",
+                    "Native VLAN is for trunk ports; default VLAN is for all ports",
+                    "Native VLAN is for untagged traffic on trunks; default is VLAN 1",
+                    "No difference - just terminology"
+                ],
+                correct: 2,
+                explanation: "The native VLAN processes untagged frames on trunk ports, while VLAN 1 is the default management VLAN on all switches."
+            },
+            {
+                id: 48,
+                question: "How does a switch prevent MAC address table overflow attacks?",
+                type: "multiple",
+                options: [
+                    "By ignoring broadcast frames",
+                    "By limiting port security violations",
+                    "By using aggressive aging or port security",
+                    "By disabling VLAN tagging"
+                ],
+                correct: 2,
+                explanation: "Switches can use aggressive MAC aging timers or port security to limit the number of MAC addresses learned per port, preventing CAM table overflow."
+            },
+            {
+                id: 49,
+                question: "What is the forwarding decision process called when a switch uses both Layer 2 and Layer 3 information?",
+                type: "multiple",
+                options: [
+                    "Process switching",
+                    "Flow-based forwarding",
+                    "Cisco Express Forwarding (CEF)",
+                    "Policy-based routing"
+                ],
+                correct: 2,
+                explanation: "CEF (Cisco Express Forwarding) separates control plane routing from data plane forwarding, using FIB and adjacency tables for fast forwarding decisions."
+            },
+            {
+                id: 50,
+                question: "In Layer 2 switching, when destination MAC is unknown, the switch behavior is called?",
+                type: "multiple",
+                options: [
+                    "MAC lookup failure",
+                    "Flooding",
+                    "Broadcast suppression",
+                    "Frame dropping"
+                ],
+                correct: 1,
+                explanation: "When a destination MAC address is not found in the MAC address table, the switch floods the frame to all ports (except the incoming port) in the same VLAN to locate the destination."
+            }
+        ];
+
+        // STEP 2: Set your password
+        const CORRECT_PASSWORD = "Pro2026";
+        
+        // Quiz state variables
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let quizStarted = false;
+
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
+
+        function initializeAnswers() {
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function checkPassword() {
+            const password = document.getElementById("passwordInput").value;
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById("passwordSection").classList.remove("active");
+                document.getElementById("quizContent").classList.add("active");
+                quizStarted = true;
+                initializeAnswers();
+                displayQuestion(0);
+            } else {
+                alert("❌ Incorrect password. Please try again.");
+                document.getElementById("passwordInput").value = "";
+            }
+        }
+
+        function displayQuestion(index) {
+            if (quizData.length === 0) {
+                alert("No questions added to quiz data!");
+                return;
+            }
+
+            const question = quizData[index];
+            const container = document.getElementById("questionsContainer");
+            const inputType = question.type === "multiple" ? "radio" : "radio";
+
+            let optionsHTML = "";
+            if (question.type === "true-false") {
+                optionsHTML = `
+                    <div class="option" onclick="selectAnswer(${index}, 0)">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === 0 ? "checked" : ""}>
+                        <label>True</label>
+                    </div>
+                    <div class="option" onclick="selectAnswer(${index}, 1)">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === 1 ? "checked" : ""}>
+                        <label>False</label>
+                    </div>
+                `;
+            } else {
+                optionsHTML = question.options.map((option, i) => `
+                    <div class="option" onclick="selectAnswer(${index}, ${i})">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === i ? "checked" : ""}>
+                        <label>${option}</label>
+                    </div>
+                `).join("");
+            }
+
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Question ${index + 1}</div>
+                    <div class="question-type">${question.type === "true-false" ? "TRUE/FALSE" : "MULTIPLE CHOICE"}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">${optionsHTML}</div>
+                </div>
+            `;
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectAnswer(questionIndex, answerIndex) {
+            userAnswers[questionIndex] = answerIndex;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = Math.round((currentQuestion + 1) / quizData.length * 100);
+            
+            document.getElementById("questionCounter").textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            document.getElementById("scoreIndicator").textContent = `Answered: ${answered}/${quizData.length}`;
+            document.getElementById("progressFill").style.width = percentage + "%";
+        }
+
+        function updateButtons() {
+            document.getElementById("prevBtn").disabled = currentQuestion === 0;
+            document.getElementById("nextBtn").textContent = currentQuestion === quizData.length - 1 ? "Submit Quiz ✓" : "Next →";
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                displayQuestion(currentQuestion);
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion(currentQuestion);
+            }
+        }
+
+        function submitQuiz() {
+            const correctAnswers = calculateScore();
+            displayResults(correctAnswers);
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            quizData.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    correct++;
+                }
+            });
+            return correct;
+        }
+
+        function displayResults(correctAnswers) {
+            document.getElementById("quizContent").classList.remove("active");
+            document.getElementById("resultsSection").classList.add("active");
+
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+
+            document.getElementById("finalScore").textContent = correctAnswers;
+            document.querySelector(".score-total").textContent = `out of ${quizData.length}`;
+            document.getElementById("scorePercentage").textContent = percentage;
+
+            let message = "Quiz completed!";
+            if (percentage >= 90) {
+                message = "🌟 Excellent work! You've mastered Layer 2 Switching Fundamentals!";
+            } else if (percentage >= 80) {
+                message = "✅ Great job! You have a strong understanding of Layer 2 concepts!";
+            } else if (percentage >= 70) {
+                message = "👍 Good effort! Continue studying to strengthen your knowledge!";
+            } else if (percentage >= 60) {
+                message = "📚 Keep studying! Review the failed questions and concepts!";
+            } else {
+                message = "💪 Review the materials and try again! Layer 2 fundamentals require practice!";
+            }
+            document.getElementById("performanceMessage").textContent = message;
+
+            // Answer review
+            let reviewHTML = "";
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                reviewHTML += `
+                    <div class="review-item ${isCorrect ? "correct" : "incorrect"}">
+                        <div class="review-question">Q${index + 1}: ${question.question}</div>
+                        <div class="review-your-answer">Your Answer: <strong>${userAnswerText}</strong></div>
+                        ${!isCorrect ? `<div class="review-correct-answer">Correct Answer: <strong>${correctAnswerText}</strong></div>` : ""}
+                        <div class="review-explanation"><strong>Explanation:</strong> ${question.explanation}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("answerReviewContent").innerHTML = reviewHTML;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            initializeAnswers();
+            document.getElementById("resultsSection").classList.remove("active");
+            document.getElementById("quizContent").classList.add("active");
+            displayQuestion(0);
+        }
+
+        function downloadResults() {
+            const correctAnswers = calculateScore();
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+            let content = "Layer 2 Switching Fundamentals Quiz Results\n";
+            content += "===========================================\n\n";
+            content += `Score: ${correctAnswers}/${quizData.length} (${percentage}%)\n`;
+            content += `Date: ${new Date().toLocaleString()}\n\n`;
+            content += "Detailed Results:\n";
+            content += "================\n\n";
+
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                content += `Q${index + 1}: ${question.question}\n`;
+                content += `Your Answer: ${userAnswerText}\n`;
+                content += `Correct Answer: ${correctAnswerText}\n`;
+                content += `Status: ${isCorrect ? "✓ CORRECT" : "✗ INCORRECT"}\n`;
+                content += `Explanation: ${question.explanation}\n`;
+                content += "-----------------------------------------\n\n";
+            });
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', 'SwitchingFundamental_Easy_Results.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        window.onload = function() {
+            document.getElementById("passwordInput").focus();
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById("passwordInput");
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

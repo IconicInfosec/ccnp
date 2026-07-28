@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switching Fundamentals - Hard Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #ff6f00;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Password Section */
+        .password-section {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .password-section.active {
+            display: block;
+        }
+
+        .password-section input {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid #d32f2f;
+            border-radius: 6px;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .password-section button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .password-section button:hover {
+            background: #c62828;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 30px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d32f2f, #ff6f00);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Question Container */
+        .question-container {
+            background: #f9f9f9;
+            border-left: 5px solid #d32f2f;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+
+        .question-number {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .question-type {
+            display: inline-block;
+            background: #d32f2f;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #d32f2f;
+            background: #ffe8e8;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option.selected {
+            border-color: #d32f2f;
+            background: #ffe8e8;
+            font-weight: 600;
+        }
+
+        .option.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+            color: #2e7d32;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #fdeaea;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #d32f2f;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-secondary:hover {
+            background: #efefef;
+            border-color: #bbb;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #d32f2f, #ff6f00);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 5px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .score-total {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .results-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .results-section p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Answer Review */
+        .answer-review {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .review-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .review-item.correct {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #f44336;
+            background: #fdeaea;
+        }
+
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .review-your-answer {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .review-correct-answer {
+            font-size: 13px;
+            color: #2e7d32;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .review-explanation {
+            font-size: 13px;
+            background: rgba(211, 47, 47, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            color: #555;
+            border-left: 3px solid #d32f2f;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d32f2f;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c62828;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .password-section input {
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: 1;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Layer 2 Switching Fundamentals - Hard</h1>
+            <p><strong>CCNP Course - Advanced Switching & Forwarding</strong></p>
+            <p>50 Advanced Questions - Multiple Choice & True/False</p>
+        </div>
+
+        <!-- Password Section -->
+        <div class="password-section active" id="passwordSection">
+            <h2 style="color: #333; margin-bottom: 20px;">Quiz Access</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please enter the password to access the quiz</p>
+            <input type="password" id="passwordInput" placeholder="Enter Password">
+            <button onclick="checkPassword()">Start Quiz</button>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">Password: Pro2026</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content" id="quizContent">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="questionCounter">Question 1 of 0</span>
+                    <span id="scoreIndicator">Score: 0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="questionsContainer"></div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn">← Previous</button>
+                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div style="padding: 30px;">
+                <h2>Quiz Completed!</h2>
+                <div class="score-circle">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-total">out of 0</div>
+                </div>
+                <p style="font-size: 18px; margin: 20px 0;">
+                    <strong>Your Score: <span id="scorePercentage">0</span>%</strong>
+                </p>
+                <p id="performanceMessage" style="font-size: 16px; margin-bottom: 30px;"></p>
+
+                <div class="answer-review">
+                    <h3 style="margin-bottom: 20px; color: #333;">Answer Review</h3>
+                    <div id="answerReviewContent"></div>
+                </div>
+
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="btn-primary" onclick="restartQuiz()">Restart Quiz</button>
+                    <button class="btn-secondary" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Layer 2 Switching Fundamentals - Hard Level Quiz</strong></p>
+            <p>© 2026 CCNP Training | Advanced Switching & Forwarding Course</p>
+            <p>Expert-level assessment of Layer 2 switching, CEF, CAM/TCAM, and advanced forwarding concepts</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LAYER 2 SWITCHING FUNDAMENTALS - HARD - 50 QUESTIONS
+        // ============================================
+        
+        const quizData = [
+            // Questions 1-10: CAM/TCAM Deep Dive
+            {
+                id: 1,
+                question: "Which memory technology supports ternary matching (0, 1, and don't care states) for hardware-based ACL processing?",
+                type: "multiple",
+                options: [
+                    "CAM (Content Addressable Memory)",
+                    "TCAM (Ternary Content Addressable Memory)",
+                    "SRAM (Static Random Access Memory)",
+                    "SDRAM (Synchronous Dynamic RAM)"
+                ],
+                correct: 1,
+                explanation: "TCAM supports three match states—0, 1, and X (don't care)—making it ideal for ACL matching, QoS classification, and prefix matching in FIB lookups. [1]"
+            },
+            {
+                id: 2,
+                question: "In Cisco switches, the Switching Database Manager (SDM) is used to partition TCAM resources for different functions. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "The SDM allows TCAM resources to be partitioned for routing, ACLs, and QoS on select Cisco models to optimize hardware utilization. [1]"
+            },
+            {
+                id: 3,
+                question: "What is the primary disadvantage of CAM table overflow attacks?",
+                type: "multiple",
+                options: [
+                    "They consume excessive memory bandwidth",
+                    "They cause the MAC address table to fill, forcing unknown unicast flooding",
+                    "They corrupt the VLAN database",
+                    "They trigger automatic port shutdown"
+                ],
+                correct: 1,
+                explanation: "When CAM overflows, the switch cannot store new MAC addresses and treats them as unknown unicast, flooding frames to all ports—a potential security vulnerability."
+            },
+            {
+                id: 4,
+                question: "Which Cisco feature automatically programs access-list entries into TCAM for hardware-based processing?",
+                type: "multiple",
+                options: [
+                    "Policy Manager",
+                    "Feature Manager (FM)",
+                    "Route Processor Manager",
+                    "Network Processor Unit (NPU)"
+                ],
+                correct: 1,
+                explanation: "The Feature Manager automatically programs access-list entries into TCAM so they can be processed in hardware for fast lookup and enforcement. [1]"
+            },
+            {
+                id: 5,
+                question: "TCAM lookup time is deterministic and independent of rule complexity. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "TCAM provides deterministic sub-microsecond lookup times regardless of the number of ACL entries or rule complexity, unlike software-based lookups. [1]"
+            },
+            {
+                id: 6,
+                question: "What happens to dynamic MAC addresses with a configurable aging timer (default 300 seconds)?",
+                type: "multiple",
+                options: [
+                    "They are permanently stored in CAM",
+                    "They are removed from the MAC address table if no frames from that MAC are received within the timer",
+                    "They are automatically replicated to backup switches",
+                    "They are converted to static entries"
+                ],
+                correct: 1,
+                explanation: "Dynamic MAC addresses have an aging timer (default 300 seconds) and are removed if no frames from that MAC address are observed within the timeout period."
+            },
+            {
+                id: 7,
+                question: "In multilayer Cisco switches, TCAM is used for which of the following functions EXCEPT?",
+                type: "multiple",
+                options: [
+                    "FIB (Forwarding Information Base) lookups",
+                    "Inbound and outbound ACL processing",
+                    "QoS classification and policy enforcement",
+                    "MAC address table lookups (Layer 2 switching)"
+                ],
+                correct: 3,
+                explanation: "MAC address table lookups use CAM, not TCAM. TCAM is used for FIB, ACLs, and QoS. CAM is optimized for exact-match Layer 2 lookups. [1]"
+            },
+            {
+                id: 8,
+                question: "What is the theoretical maximum MAC addresses that can be stored before CAM overflow?",
+                type: "multiple",
+                options: [
+                    "8,192 addresses",
+                    "32,768 addresses",
+                    "65,536 addresses",
+                    "Varies by switch model—modern Catalyst supports 32-64K entries"
+                ],
+                correct: 3,
+                explanation: "CAM capacity varies by Catalyst model. Modern Catalyst 9000 series supports up to 32,768-65,536 unicast MAC addresses depending on configuration."
+            },
+            {
+                id: 9,
+                question: "The Feature Manager (FM) in Cisco switches performs which critical function?",
+                type: "multiple",
+                options: [
+                    "Manages VLAN membership across trunk ports",
+                    "Automatically programs access-list entries into TCAM for hardware acceleration",
+                    "Controls spanning tree convergence timing",
+                    "Synchronizes MAC address tables between switches"
+                ],
+                correct: 1,
+                explanation: "The Feature Manager automatically programs access-list entries into TCAM so they can be processed in hardware for fast lookup and enforcement. [1]"
+            },
+            {
+                id: 10,
+                question: "Which of the following best describes the relationship between CAM and TCAM in a Catalyst multilayer switch?",
+                type: "multiple",
+                options: [
+                    "They perform identical functions on different processor cores",
+                    "CAM handles Layer 2 exact-match lookups; TCAM handles complex policy matching for Layer 3+ functions",
+                    "TCAM is an older technology being phased out in favor of CAM",
+                    "They are interchangeable based on administrator preference"
+                ],
+                correct: 1,
+                explanation: "CAM is optimized for Layer 2 MAC table exact-match lookups, while TCAM supports ternary matching for ACLs, QoS, and routing in Layer 3+ operations. [1]"
+            },
+
+            // Questions 11-20: CEF and Forwarding Architectures
+            {
+                id: 11,
+                question: "What is the primary difference between software-based Central CEF (cCEF) and hardware-based Distributed CEF (dCEF)?",
+                type: "multiple",
+                options: [
+                    "cCEF uses TCAM while dCEF uses CAM",
+                    "cCEF relies on CPU for forwarding; dCEF uses ASIC/NPU with TCAM for hardware acceleration",
+                    "cCEF is only used on routers; dCEF only on switches",
+                    "They have identical performance characteristics"
+                ],
+                correct: 1,
+                explanation: "Software CEF uses general-purpose CPU with limited throughput (2-5 Gbps); hardware CEF uses ASIC/NPU with TCAM for deterministic sub-microsecond lookups and terabit throughput. [1]"
+            },
+            {
+                id: 12,
+                question: "Which Cisco platform primarily uses Distributed CEF (hardware-based) for line-rate forwarding?",
+                type: "multiple",
+                options: [
+                    "Cisco ISR (Integrated Services Router) series",
+                    "Cisco CSR (Cloud Services Router) only",
+                    "Catalyst 9000 series, ASR 9000, and Nexus platforms",
+                    "Legacy Catalyst 2960 series"
+                ],
+                correct: 2,
+                explanation: "ASR 9000, Catalyst 9000, and Nexus platforms use distributed hardware CEF with ASIC/NPU and TCAM for service provider and enterprise core routing. [1]"
+            },
+            {
+                id: 13,
+                question: "In the CEF operation workflow, which step occurs in the Control Plane?",
+                type: "multiple",
+                options: [
+                    "Packet arrival and FIB lookup",
+                    "L2 header rewrite and forwarding to next-hop",
+                    "RIB management, best-path selection, and FIB population",
+                    "TCAM table update with dynamic entries"
+                ],
+                correct: 2,
+                explanation: "The control plane manages routing protocols, builds the RIB, performs best-path selection using administrative distance, and populates the FIB with selected routes. [1]"
+            },
+            {
+                id: 14,
+                question: "CEF lookup time in hardware-based systems is typically deterministic and under what threshold?",
+                type: "multiple",
+                options: [
+                    "100 microseconds",
+                    "10 microseconds",
+                    "Sub-1 microsecond",
+                    "100 milliseconds"
+                ],
+                correct: 2,
+                explanation: "Hardware CEF with ASIC/TCAM achieves deterministic sub-microsecond (<1 µs) lookup times, independent of IP header complexity. [1]"
+            },
+            {
+                id: 15,
+                question: "The Forwarding Information Base (FIB) contains only the best routes selected from the RIB. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "The FIB is populated only with the single best route per destination from the RIB (unless ECMP is enabled), optimized for fast packet forwarding. [1]"
+            },
+            {
+                id: 16,
+                question: "What does 'Equal-Cost Multipath (ECMP)' allow in the context of FIB population?",
+                type: "multiple",
+                options: [
+                    "Automatic failover to backup routes",
+                    "Multiple equal-metric routes to be installed in the FIB for load balancing",
+                    "Priority-based route selection",
+                    "Weighted cost distribution"
+                ],
+                correct: 1,
+                explanation: "ECMP allows multiple equal-metric routes to be installed in the FIB, enabling per-destination or per-packet load balancing across multiple paths. [1]"
+            },
+            {
+                id: 17,
+                question: "In centralized forwarding architecture, what is the major disadvantage?",
+                type: "multiple",
+                options: [
+                    "Higher cost due to advanced hardware",
+                    "Complexity in troubleshooting distributed decisions",
+                    "The central processor becomes a bottleneck in high-traffic networks",
+                    "Requires multiple supervisor modules"
+                ],
+                correct: 2,
+                explanation: "Centralized forwarding has the central processor as a scalability bottleneck, with increased latency as packets traverse to and from it. [1]"
+            },
+            {
+                id: 18,
+                question: "Distributed Forwarding allows packet processing to occur on which level?",
+                type: "multiple",
+                options: [
+                    "Only on the main processor",
+                    "Locally at the ingress/egress line cards, bypassing the central RP",
+                    "Only on external routers",
+                    "In a sequential manner through the switch fabric"
+                ],
+                correct: 1,
+                explanation: "In distributed forwarding, each line card has its own forwarding engine with a local FIB copy, processing packets locally and bypassing the route processor. [1]"
+            },
+            {
+                id: 19,
+                question: "What is the adjacency table in CEF used for?",
+                type: "multiple",
+                options: [
+                    "Storing MAC-to-VLAN mappings",
+                    "Mapping next-hop IP addresses to MAC addresses and outgoing interfaces",
+                    "Recording static route configurations",
+                    "Tracking interface status changes"
+                ],
+                correct: 1,
+                explanation: "The adjacency table resolves next-hop IP addresses to MAC addresses and outgoing interfaces, enabling L2 header rewrite during CEF forwarding. [1]"
+            },
+            {
+                id: 20,
+                question: "Per-Destination vs. Per-Packet Load Balancing: which method maintains packet ordering for TCP traffic?",
+                type: "multiple",
+                options: [
+                    "Both equally",
+                    "Per-Packet maintains ordering",
+                    "Per-Destination maintains ordering by routing all packets from same destination over same path",
+                    "Neither maintains ordering"
+                ],
+                correct: 2,
+                explanation: "Per-Destination load balancing routes all packets from the same source-destination pair over the same path, maintaining TCP packet order and preventing out-of-order delivery. [1]"
+            },
+
+            // Questions 21-30: Switching Architectures & Advanced Concepts
+            {
+                id: 21,
+                question: "In store-and-forward switching, corrupted frames are detected using which mechanism?",
+                type: "multiple",
+                options: [
+                    "IP checksum validation",
+                    "TCP sequence number verification",
+                    "Cyclic Redundancy Check (CRC)",
+                    "Source MAC address validation"
+                ],
+                correct: 2,
+                explanation: "Store-and-forward uses CRC (Cyclic Redundancy Check) to verify frame integrity. Frames with CRC errors are dropped rather than forwarded. [2]"
+            },
+            {
+                id: 22,
+                question: "Fragment-Free (Modified Cut-through) switching prevents which type of frame anomaly?",
+                type: "multiple",
+                options: [
+                    "VLAN tagging errors",
+                    "Runts (collision fragments under 64 bytes)",
+                    "Jumbo frame overflow",
+                    "Broadcast storms"
+                ],
+                correct: 1,
+                explanation: "Fragment-Free checks the first 64 bytes (minimum Ethernet frame) to catch and prevent forwarding of runts or collision fragments. [2]"
+            },
+            {
+                id: 23,
+                question: "What is the latency advantage of cut-through switching versus store-and-forward?",
+                type: "multiple",
+                options: [
+                    "Approximately 5-10% faster",
+                    "100-1000 times faster",
+                    "Significantly lower—frames forwarded after reading only destination MAC (first 6 bytes) vs. entire frame",
+                    "No measurable difference on modern hardware"
+                ],
+                correct: 2,
+                explanation: "Cut-through forwards after reading ~6 bytes (destination MAC); store-and-forward waits for entire frame. This creates significant latency difference for large frames. [2]"
+            },
+            {
+                id: 24,
+                question: "Which switching architecture is most suitable for low-latency applications like high-frequency trading and VoIP?",
+                type: "multiple",
+                options: [
+                    "Store-and-Forward only",
+                    "Fragment-Free exclusively",
+                    "Cut-through due to minimal latency",
+                    "Process switching"
+                ],
+                correct: 2,
+                explanation: "Cut-through switching's very low latency (microseconds) makes it ideal for latency-sensitive applications like VoIP and high-frequency trading. [2]"
+            },
+            {
+                id: 25,
+                question: "In cut-through switching, what potential security vulnerability exists?",
+                type: "multiple",
+                options: [
+                    "MAC address spoofing detection fails",
+                    "Corrupted or malicious frames may propagate across the network before endpoints can discard them",
+                    "VLAN isolation is compromised",
+                    "Port security cannot be enforced"
+                ],
+                correct: 1,
+                explanation: "Cut-through's inability to verify CRC means corrupted and potentially malicious frames propagate through the network before being detected at endpoints. [2]"
+            },
+            {
+                id: 26,
+                question: "Modern Catalyst switches typically support both cut-through and store-and-forward modes. True or False?",
+                type: "true-false",
+                options: ["True", "False"],
+                correct: 0,
+                explanation: "Modern Catalyst switches can operate in multiple switching modes and typically support both cut-through and store-and-forward depending on configuration and use case. [2]"
+            },
+            {
+                id: 27,
+                question: "What is the relationship between collision domains and switches?",
+                type: "multiple",
+                options: [
+                    "Each switch port creates its own collision domain",
+                    "All switch ports share a single collision domain",
+                    "Collision domains are managed by VLAN assignment only",
+                    "Switches eliminate collision domains entirely with simplex transmission"
+                ],
+                correct: 0,
+                explanation: "Each switch port is its own collision domain, isolating CSMA/CD domains and enabling simultaneous full-duplex communication across ports. [2]"
+            },
+            {
+                id: 28,
+                question: "CSMA/CD is associated with which transmission mode?",
+                type: "multiple",
+                options: [
+                    "Full-duplex Ethernet",
+                    "Half-duplex Ethernet (shared medium)",
+                    "Gigabit Ethernet only",
+                    "VLAN trunk links"
+                ],
+                correct: 1,
+                explanation: "CSMA/CD (Carrier Sense Multiple Access with Collision Detection) is used in half-duplex Ethernet where devices share a medium and must arbitrate access. [2]"
+            },
+            {
+                id: 29,
+                question: "What is the maximum number of usable VLANs in IEEE 802.1Q standard?",
+                type: "multiple",
+                options: [
+                    "256 VLANs",
+                    "1024 VLANs",
+                    "4094 usable VLANs (IDs 1-4094)",
+                    "8192 VLANs"
+                ],
+                correct: 2,
+                explanation: "IEEE 802.1Q defines a 12-bit VLAN ID field supporting 4094 usable VLANs. VLAN 0 and 4095 are reserved. [2]"
+            },
+            {
+                id: 30,
+                question: "In 802.1Q tagging, the 'don't care (X)' bits in the Priority Code Point (PCP) field allow which function?",
+                type: "multiple",
+                options: [
+                    "Variable frame size handling",
+                    "Layer 2 QoS marking and class of service differentiation",
+                    "Inter-VLAN routing enablement",
+                    "MAC address filtering"
+                ],
+                correct: 1,
+                explanation: "The 3-bit PCP (Priority Code Point) field in 802.1Q enables Layer 2 QoS class-of-service marking between switches. [2]"
+            },
+
+            // Questions 31-40: Advanced Layer 2 Operations
+            {
+                id: 31,
+                question: "What does the 'native VLAN' on a trunk port define?",
+                type: "multiple",
+                options: [
+                    "The primary VLAN for all ports on the switch",
+                    "The VLAN that processes untagged frames received on the trunk port",
+                    "The default VLAN for management access",
+                    "The VLAN with highest priority in STP"
+                ],
+                correct: 1,
+                explanation: "The native VLAN processes untagged frames received on a trunk port, typically VLAN 1 by default, but should be changed for security. [2]"
+            },
+            {
+                id: 32,
+                question: "Which attack exploits the native VLAN on trunk ports to bypass VLAN segmentation?",
+                type: "multiple",
+                options: [
+                    "CAM table overflow attack",
+                    "VLAN hopping attack",
+                    "STP manipulation attack",
+                    "Port security bypass"
+                ],
+                correct: 1,
+                explanation: "VLAN hopping exploits the native VLAN and trunk misconfiguration to allow attackers to access traffic from other VLANs, a critical security vulnerability."
+            },
+            {
+                id: 33,
+                question: "In Layer 2, what triggers a MAC address table flush?",
+                type: "multiple",
+                options: [
+                    "VLAN creation only",
+                    "Administrative command or topology change",
+                    "Automatic after aging timer expiration",
+                    "Spanning tree recalculation"
+                ],
+                correct: 1,
+                explanation: "MAC address flush is triggered by administrator commands (clear mac address-table) or automatic topology changes, forcing MAC re-learning."
+            },
+            {
+                id: 34,
+                question: "What is the purpose of IGMP snooping in Layer 2 switching?",
+                type: "multiple",
+                options: [
+                    "To replace IGMP with a simpler protocol",
+                    "To intelligently forward multicast traffic only to ports with interested receivers",
+                    "To prevent multicast storms",
+                    "Both B and C"
+                ],
+                correct: 3,
+                explanation: "IGMP snooping allows switches to listen to IGMP messages and forward multicast only to interested ports, preventing unnecessary flooding. [2]"
+            },
+            {
+                id: 35,
+                question: "Stateful Switchover (SSO) in Cisco multilayer switches synchronizes which information between active and standby supervisors?",
+                type: "multiple",
+                options: [
+                    "MAC address tables only",
+                    "VLAN configurations only",
+                    "RIB, FIB, STP state, and other critical operational data",
+                    "ACL entries exclusively"
+                ],
+                correct: 2,
+                explanation: "SSO synchronizes critical state including RIB, FIB, STP state, and configuration data, enabling seamless failover with minimal disruption. [2]"
+            },
+            {
+                id: 36,
+                question: "In Switched Virtual Interfaces (SVIs), which layer operates on these logical VLAN interfaces?",
+                type: "multiple",
+                options: [
+                    "Layer 1 (Physical)",
+                    "Layer 2 (Data Link) only",
+                    "Layer 3 (Network) for inter-VLAN routing",
+                    "Layer 4 (Transport)"
+                ],
+                correct: 2,
+                explanation: "SVIs are Layer 3 interfaces on multilayer switches enabling inter-VLAN routing and management access to VLANs. [2]"
+            },
+            {
+                id: 37,
+                question: "What is the relationship between SDM (Switching Database Manager) templates and TCAM optimization?",
+                type: "multiple",
+                options: [
+                    "SDM has no impact on TCAM allocation",
+                    "SDM partitions TCAM resources for routing, ACLs, QoS, and other functions based on use case",
+                    "SDM only manages MAC address tables",
+                    "SDM is deprecated in modern Catalyst switches"
+                ],
+                correct: 1,
+                explanation: "SDM templates optimize hardware resource allocation (TCAM, FIB, ACL space) for specific networking needs like routing-heavy or access control-heavy environments. [2]"
+            },
+            {
+                id: 38,
+                question: "Which forwarding decision mechanism uses separate FIB and adjacency tables for deterministic performance?",
+                type: "multiple",
+                options: [
+                    "Process switching",
+                    "Fast switching",
+                    "Cisco Express Forwarding (CEF)",
+                    "Legacy switching"
+                ],
+                correct: 2,
+                explanation: "CEF uses separate control-plane and data-plane components with FIB and adjacency tables for consistent, deterministic forwarding performance. [1]"
+            },
+            {
+                id: 39,
+                question: "In a Layer 3 switch, a 'routed port' is configured with 'no switchport' and operates as which type of interface?",
+                type: "multiple",
+                options: [
+                    "A Layer 2 access port",
+                    "A Layer 3 interface similar to a router port with IP addressing",
+                    "A trunk port for inter-switch communication",
+                    "A management interface"
+                ],
+                correct: 1,
+                explanation: "Routed ports are configured with 'no switchport' and operate as Layer 3 interfaces with IP addressing, similar to router interfaces. [2]"
+            },
+            {
+                id: 40,
+                question: "What is the significance of the 'show platform tcam utilization' command in Cisco routers?",
+                type: "multiple",
+                options: [
+                    "Displays MAC address table statistics",
+                    "Shows VLAN configuration details",
+                    "Displays TCAM resource usage for FIB, ACLs, and QoS",
+                    "Lists all connected interfaces"
+                ],
+                correct: 2,
+                explanation: "This command displays TCAM utilization metrics for routing, ACLs, QoS, and other functions, helping identify resource constraints. [1]"
+            },
+
+            // Questions 41-50: Integration & Complex Scenarios
+            {
+                id: 41,
+                question: "If a Catalyst switch receives frames at maximum throughput with store-and-forward enabled, what becomes the limiting factor?",
+                type: "multiple",
+                options: [
+                    "Link speed only",
+                    "Buffer memory availability and processing time for CRC verification",
+                    "MAC address table size",
+                    "VLAN database capacity"
+                ],
+                correct: 1,
+                explanation: "Store-and-forward's buffer requirements and CRC processing create latency and memory constraints, especially under maximum throughput conditions. [2]"
+            },
+            {
+                id: 42,
+                question: "In a highly redundant network with ECMP load balancing, what does the 'variance' command control in EIGRP?",
+                type: "multiple",
+                options: [
+                    "The time between EIGRP hellos",
+                    "The acceptable metric variance ratio for unequal-cost multipath load balancing",
+                    "The number of VLANs supported",
+                    "The TCAM allocation percentage"
+                ],
+                correct: 1,
+                explanation: "The EIGRP 'variance' multiplier allows unequal-cost paths to be used for load balancing when their metrics fall within an acceptable ratio. [1]"
+            },
+            {
+                id: 43,
+                question: "When using Per-Destination CEF load balancing, which field tuple determines the path selection?",
+                type: "multiple",
+                options: [
+                    "Source IP and Destination IP only",
+                    "Source IP, Destination IP, Protocol, and Ports (if applicable)",
+                    "MAC addresses exclusively",
+                    "VLAN ID only"
+                ],
+                correct: 1,
+                explanation: "Per-Destination load balancing uses a hash of source/destination IP (and ports for protocols like TCP/UDP) to determine which path a packet takes consistently. [1]"
+            },
+            {
+                id: 44,
+                question: "In the context of Layer 2 and Layer 3 interaction, how does the ARP table bridge these layers?",
+                type: "multiple",
+                options: [
+                    "It translates VLAN IDs to IP addresses",
+                    "It maps Layer 3 IP addresses to Layer 2 MAC addresses for L2 header construction",
+                    "It manages inter-VLAN routing",
+                    "It stores routing protocol information"
+                ],
+                correct: 1,
+                explanation: "The ARP table maps Layer 3 IP addresses to Layer 2 MAC addresses, enabling correct Layer 2 header construction before forwarding. [1]"
+            },
+            {
+                id: 45,
+                question: "What vulnerability exists if an attacker can generate more unique MAC addresses than the switch CAM can store?",
+                type: "multiple",
+                options: [
+                    "VLAN ID exhaustion",
+                    "STP topology failure",
+                    "CAM table overflow, forcing unknown unicast flooding and network flooding attacks",
+                    "TCAM corruption"
+                ],
+                correct: 2,
+                explanation: "CAM overflow attacks generate many unique MAC addresses to fill the table, forcing unknown unicast flooding—a denial-of-service attack vector."
+            },
+            {
+                id: 46,
+                question: "In distributed forwarding architecture, what prevents single points of failure?",
+                type: "multiple",
+                options: [
+                    "All forwarding decisions go through the central processor",
+                    "If one line card fails, others continue processing their local packets independently",
+                    "Redundant central processors handle all decisions",
+                    "MAC tables are replicated to all interfaces"
+                ],
+                correct: 1,
+                explanation: "Distributed forwarding with line-card-local engines provides fault tolerance—failure of one line card doesn't affect other cards' forwarding. [1]"
+            },
+            {
+                id: 47,
+                question: "What is the relationship between the control plane (RIB) and data plane (FIB) separation in modern Cisco devices?",
+                type: "multiple",
+                options: [
+                    "They perform identical functions on different hardware",
+                    "Control plane calculates routes (RIB); data plane forwards packets using optimized tables (FIB)",
+                    "The FIB is only used for backup routing",
+                    "They are the same logical entity with different names"
+                ],
+                correct: 1,
+                explanation: "Control plane (RIB) does route calculations via protocols; data plane (FIB) uses optimized tables for fast packet forwarding—independent optimization. [1]"
+            },
+            {
+                id: 48,
+                question: "In a Catalyst multilayer switch supporting NSF (Nonstop Forwarding) with SSO, what continues during supervisor failover?",
+                type: "multiple",
+                options: [
+                    "Only management functions",
+                    "Packet forwarding via line cards (data plane) while control plane transitions",
+                    "Both control and data planes fail temporarily",
+                    "Only MAC table updates occur"
+                ],
+                correct: 1,
+                explanation: "NSF with SSO keeps the data plane (forwarding) operational on line cards while the control plane supervisor failover completes, minimizing traffic loss. [2]"
+            },
+            {
+                id: 49,
+                question: "What does 'line-rate forwarding' mean in the context of hardware CEF with ASIC/TCAM?",
+                type: "multiple",
+                options: [
+                    "Forwarding only the first line of each packet",
+                    "Forwarding at the maximum physical link speed with no bottleneck",
+                    "Forwarding software-defined routes only",
+                    "Forwarding based on line card availability"
+                ],
+                correct: 1,
+                explanation: "Line-rate forwarding means the system forwards at maximum physical link speed (100 Gbps+) without CPU/software bottlenecks using hardware ASIC/TCAM. [1]"
+            },
+            {
+                id: 50,
+                question: "In an enterprise with multiple Catalyst switches running CEF, what determines the convergence time when a route fails?",
+                type: "multiple",
+                options: [
+                    "The MAC address table refresh rate",
+                    "Routing protocol convergence (OSPF/EIGRP) + ECMP fast failover mechanisms",
+                    "VLAN configuration complexity",
+                    "The number of active trunk ports"
+                ],
+                correct: 1,
+                explanation: "Convergence time is determined by routing protocol timers (OSPF/EIGRP) combined with ECMP/CEF fast reroute mechanisms to quickly shift traffic to alternate paths. [1]"
+            }
+        ];
+
+        // STEP 2: Set your password
+        const CORRECT_PASSWORD = "Pro2026";
+        
+        // Quiz state variables
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let quizStarted = false;
+
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
+
+        function initializeAnswers() {
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function checkPassword() {
+            const password = document.getElementById("passwordInput").value;
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById("passwordSection").classList.remove("active");
+                document.getElementById("quizContent").classList.add("active");
+                quizStarted = true;
+                initializeAnswers();
+                displayQuestion(0);
+            } else {
+                alert("❌ Incorrect password. Please try again.");
+                document.getElementById("passwordInput").value = "";
+            }
+        }
+
+        function displayQuestion(index) {
+            if (quizData.length === 0) {
+                alert("No questions added to quiz data!");
+                return;
+            }
+
+            const question = quizData[index];
+            const container = document.getElementById("questionsContainer");
+            const inputType = question.type === "multiple" ? "radio" : "radio";
+
+            let optionsHTML = "";
+            if (question.type === "true-false") {
+                optionsHTML = `
+                    <div class="option" onclick="selectAnswer(${index}, 0)">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === 0 ? "checked" : ""}>
+                        <label>True</label>
+                    </div>
+                    <div class="option" onclick="selectAnswer(${index}, 1)">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === 1 ? "checked" : ""}>
+                        <label>False</label>
+                    </div>
+                `;
+            } else {
+                optionsHTML = question.options.map((option, i) => `
+                    <div class="option" onclick="selectAnswer(${index}, ${i})">
+                        <input type="radio" name="answer-${index}" ${userAnswers[index] === i ? "checked" : ""}>
+                        <label>${option}</label>
+                    </div>
+                `).join("");
+            }
+
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Question ${index + 1}</div>
+                    <div class="question-type">${question.type === "true-false" ? "TRUE/FALSE" : "MULTIPLE CHOICE"}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">${optionsHTML}</div>
+                </div>
+            `;
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectAnswer(questionIndex, answerIndex) {
+            userAnswers[questionIndex] = answerIndex;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = Math.round((currentQuestion + 1) / quizData.length * 100);
+            
+            document.getElementById("questionCounter").textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            document.getElementById("scoreIndicator").textContent = `Answered: ${answered}/${quizData.length}`;
+            document.getElementById("progressFill").style.width = percentage + "%";
+        }
+
+        function updateButtons() {
+            document.getElementById("prevBtn").disabled = currentQuestion === 0;
+            document.getElementById("nextBtn").textContent = currentQuestion === quizData.length - 1 ? "Submit Quiz ✓" : "Next →";
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                displayQuestion(currentQuestion);
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion(currentQuestion);
+            }
+        }
+
+        function submitQuiz() {
+            const correctAnswers = calculateScore();
+            displayResults(correctAnswers);
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            quizData.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    correct++;
+                }
+            });
+            return correct;
+        }
+
+        function displayResults(correctAnswers) {
+            document.getElementById("quizContent").classList.remove("active");
+            document.getElementById("resultsSection").classList.add("active");
+
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+
+            document.getElementById("finalScore").textContent = correctAnswers;
+            document.querySelector(".score-total").textContent = `out of ${quizData.length}`;
+            document.getElementById("scorePercentage").textContent = percentage;
+
+            let message = "Quiz completed!";
+            if (percentage >= 90) {
+                message = "🌟 Expert Level! You have mastered advanced Layer 2 Switching and CEF concepts!";
+            } else if (percentage >= 80) {
+                message = "✅ Advanced Proficiency! Strong understanding of complex switching architectures!";
+            } else if (percentage >= 70) {
+                message = "👍 Good comprehension! Continue refining your knowledge of CAM/TCAM and CEF!";
+            } else if (percentage >= 60) {
+                message = "📚 Review advanced topics! Focus on CEF, TCAM, and distributed forwarding concepts!";
+            } else {
+                message = "💪 Study the advanced materials! Concentrate on control/data plane separation and hardware optimization!";
+            }
+            document.getElementById("performanceMessage").textContent = message;
+
+            // Answer review
+            let reviewHTML = "";
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                reviewHTML += `
+                    <div class="review-item ${isCorrect ? "correct" : "incorrect"}">
+                        <div class="review-question">Q${index + 1}: ${question.question}</div>
+                        <div class="review-your-answer">Your Answer: <strong>${userAnswerText}</strong></div>
+                        ${!isCorrect ? `<div class="review-correct-answer">Correct Answer: <strong>${correctAnswerText}</strong></div>` : ""}
+                        <div class="review-explanation"><strong>Explanation:</strong> ${question.explanation}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("answerReviewContent").innerHTML = reviewHTML;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            initializeAnswers();
+            document.getElementById("resultsSection").classList.remove("active");
+            document.getElementById("quizContent").classList.add("active");
+            displayQuestion(0);
+        }
+
+        function downloadResults() {
+            const correctAnswers = calculateScore();
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+            let content = "Layer 2 Switching Fundamentals - HARD Level Quiz Results\n";
+            content += "======================================================\n\n";
+            content += `Score: ${correctAnswers}/${quizData.length} (${percentage}%)\n`;
+            content += `Date: ${new Date().toLocaleString()}\n`;
+            content += `Difficulty: HARD - Advanced Level\n\n`;
+            content += "Detailed Results:\n";
+            content += "================\n\n";
+
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                content += `Q${index + 1}: ${question.question}\n`;
+                content += `Your Answer: ${userAnswerText}\n`;
+                content += `Correct Answer: ${correctAnswerText}\n`;
+                content += `Status: ${isCorrect ? "✓ CORRECT" : "✗ INCORRECT"}\n`;
+                content += `Explanation: ${question.explanation}\n`;
+                content += "-----------------------------------------\n\n";
+            });
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', 'SwitchingFundamental_Hard_Results.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        window.onload = function() {
+            document.getElementById("passwordInput").focus();
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById("passwordInput");
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
