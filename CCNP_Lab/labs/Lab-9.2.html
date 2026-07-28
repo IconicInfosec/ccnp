@@ -1,0 +1,895 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 9.2: VLAN and ACL-Based Layer 2 Filtering</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+.container {
+max-width: 1200px;
+margin: 0 auto;
+}
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+}
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+}
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin: 40px auto 0 auto;
+border-radius: 8px;
+}
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+.modal-content button.cancel {
+background: #dc3545;
+}
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+.protected-element {
+position: relative;
+}
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+.card {
+background: rgba(255,255,255,0.96);
+border-radius: 12px;
+padding: 24px;
+margin-bottom: 20px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.section-title {
+font-size: 1.4em;
+color: #1e3c72;
+margin-bottom: 14px;
+border-left: 5px solid #667eea;
+padding-left: 12px;
+}
+.subtle {
+color: #4b5563;
+}
+.info-box, .success-box, .warning-box, .danger-box {
+border-radius: 10px;
+padding: 14px 16px;
+margin: 12px 0;
+border-left: 5px solid;
+}
+.info-box { background: #eef4ff; border-color: #3b82f6; }
+.success-box { background: #ecfdf3; border-color: #22c55e; }
+.warning-box { background: #fffbeb; border-color: #f59e0b; }
+.danger-box { background: #fef2f2; border-color: #ef4444; }
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+gap: 16px;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 12px;
+overflow: hidden;
+border-radius: 10px;
+}
+th, td {
+border: 1px solid #d1d5db;
+padding: 12px;
+text-align: left;
+vertical-align: top;
+}
+th {
+background: #1e3c72;
+color: white;
+}
+tr:nth-child(even) td {
+background: #f9fafb;
+}
+pre {
+background: #0f172a;
+color: #e2e8f0;
+padding: 16px;
+border-radius: 10px;
+overflow-x: auto;
+margin: 12px 0;
+font-size: 0.92em;
+}
+code {
+font-family: Consolas, 'Courier New', monospace;
+}
+.checklist {
+list-style: none;
+margin-top: 10px;
+}
+.checklist li {
+margin: 8px 0;
+padding-left: 26px;
+position: relative;
+}
+.checklist li::before {
+content: "☐";
+position: absolute;
+left: 0;
+color: #1e3c72;
+font-weight: bold;
+}
+.topology-wrap {
+background: #ffffff;
+border-radius: 12px;
+padding: 18px;
+border: 1px solid #e5e7eb;
+}
+.topology-wrap img {
+width: 100%;
+height: auto;
+border-radius: 10px;
+border: 1px solid #d1d5db;
+}
+</style>
+</head>
+<body>
+
+<div id="passwordModal" class="password-modal">
+  <div class="modal-content">
+    <h2>🔐 Access Denied</h2>
+    <p>This page is password protected</p>
+    <p>Enter your master password to view/edit content</p>
+    <input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+    <button onclick="verifyPassword()">🔓 Unlock</button>
+    <button class="cancel" onclick="lockPage()">🔒 Lock</button>
+    <div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+  </div>
+</div>
+
+<div class="container">
+  <header class="protected-element" id="protectedHeader">
+    <h1>Lab 9.2: VLAN and ACL-Based Layer 2 Filtering</h1>
+    <p>Port ACLs, VLAN ACLs, and Layer 2 Traffic Filtering</p>
+    <p style="margin-top:10px; font-size:0.95em;">CCNP Enterprise | Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI)</p>
+    <div class="protection-indicator">🔒 Protected</div>
+  </header>
+
+  <section class="card protected-element" id="protectedBody">
+    <h2 class="section-title">Lab Overview</h2>
+    <p class="subtle">
+      This lab demonstrates how to control traffic at the switch access layer and VLAN level using Port ACLs (PACLs),
+      VLAN ACLs (VACLs), and routed ACLs (RACLs). Students will learn how to filter traffic entering a switch port,
+      restrict traffic within a VLAN, and compare the policy scope of each ACL type.
+    </p>
+
+    <div class="info-box">
+      <strong>Lab Goal:</strong> Implement Layer 2 and VLAN-based filtering to stop unauthorized access, restrict
+      specific protocols, and apply policy control directly on switching infrastructure. PACLs filter inbound traffic
+      on a switch port, while VACLs filter traffic within a VLAN context.
+    </div>
+
+    <div class="grid">
+      <div class="success-box">
+        <strong>Skills Covered</strong><br>
+        MAC ACL<br>
+        IP ACL<br>
+        PACL<br>
+        VACL<br>
+        RACL
+      </div>
+      <div class="info-box">
+        <strong>Estimated Time</strong><br>
+        75–105 minutes
+      </div>
+      <div class="warning-box">
+        <strong>Difficulty</strong><br>
+        Intermediate to Advanced
+      </div>
+      <div class="danger-box">
+        <strong>Important Note</strong><br>
+        PACLs apply inbound only and cannot filter Layer 2 control protocols such as CDP, VTP, DTP, PAgP, UDLD, and STP.
+      </div>
+    </div>
+  </section>
+
+  <section class="card protected-element" id="topology">
+    <h2 class="section-title">Network Topology</h2>
+    <p class="subtle">Use the provided topology image for this lab.</p>
+
+    <div class="topology-wrap">
+      <img src="https://f005.backblazeb2.com/file/CCNPLabPic/Lab-9.2.jpg" alt="Lab 9.2 VLAN and ACL-Based Layer 2 Filtering Topology">
+    </div>
+
+    <div class="info-box" style="margin-top:14px;">
+      <strong>Interface Mapping:</strong><br>
+      SW1 G0/1 ↔ SW2 G0/1<br>
+      SW2 G0/2 ↔ SW3 G0/2<br>
+      SW1 G1/0 ↔ PC1<br>
+      SW1 G1/1 ↔ PC2<br>
+      SW3 G1/1 ↔ Server<br>
+      SW3 G1/2 ↔ Rogue PC<br>
+      SW3 G1/3 ↔ Router
+    </div>
+  </section>
+
+  <section class="card protected-element" id="objectives">
+    <h2 class="section-title">Lab Objectives</h2>
+    <ul class="checklist">
+      <li>Configure VLANs and trunk links across the switching topology</li>
+      <li>Apply MAC ACL or IP ACL as a Port ACL (PACL) on access ports</li>
+      <li>Verify that PACLs only filter inbound traffic on the switch port</li>
+      <li>Create a VLAN access map and apply a VACL to VLAN 20</li>
+      <li>Compare PACL, VACL, and RACL behavior in a realistic enterprise design</li>
+      <li>Test permitted and denied traffic from PC1, PC2, Server, Rogue PC, and Router</li>
+      <li>Validate filtering results using Cisco verification commands</li>
+    </ul>
+  </section>
+
+  <section class="card protected-element" id="config">
+    <h2 class="section-title">Step-by-Step Configuration</h2>
+
+    <div class="warning-box">
+      <strong>Lab Design Assumptions:</strong><br>
+      VLAN 10 = Management<br>
+      VLAN 20 = Users<br>
+      VLAN 30 = Servers / Restricted<br>
+      SW1 connects to SW2 on G0/1<br>
+      SW2 connects to SW3 on G0/2
+    </div>
+
+    <h3>Part 1: Create VLANs and Configure Trunks</h3>
+    <pre><code>! On SW1, SW2, and SW3
+conf t
+vlan 10
+ name MGMT
+vlan 20
+ name USERS
+vlan 30
+ name SERVERS
+exit</code></pre>
+
+    <pre><code>! SW1 trunk to SW2
+interface g0/1
+ description Trunk to SW2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+exit</code></pre>
+
+    <pre><code>! SW2 trunk links
+interface g0/1
+ description Trunk to SW1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+exit
+
+interface g0/2
+ description Trunk to SW3
+ switchport mode trunk
+ switchport trunk allowed vlan 20,30
+exit</code></pre>
+
+    <pre><code>! SW3 trunk to SW2
+interface g0/2
+ description Trunk to SW2
+ switchport mode trunk
+ switchport trunk allowed vlan 20,30
+exit
+end</code></pre>
+
+    <h3>Part 2: Configure Access Ports</h3>
+    <pre><code>! SW1 access ports
+conf t
+interface g1/0
+ description PC1
+ switchport mode access
+ switchport access vlan 20
+exit
+
+interface g1/1
+ description PC2
+ switchport mode access
+ switchport access vlan 20
+exit
+end</code></pre>
+
+    <pre><code>! SW3 access ports
+conf t
+interface g1/1
+ description Server
+ switchport mode access
+ switchport access vlan 30
+exit
+
+interface g1/2
+ description Rogue PC
+ switchport mode access
+ switchport access vlan 20
+exit
+
+interface g1/3
+ description Router
+exit
+end</code></pre>
+
+    <h3>Part 3: Configure PACL</h3>
+    <pre><code>! Example PACL to block Telnet and ICMP, but allow all other IP traffic at SW1
+conf t
+ip access-list extended PACL_USERS
+ deny tcp any any eq 23
+ deny icmp any any
+ permit ip any any
+exit
+
+! Apply inbound on user-facing access ports
+interface g1/0
+ ip access-group PACL_USERS in
+exit
+
+interface g1/1
+ ip access-group PACL_USERS in
+exit
+end</code></pre>
+
+    <div class="info-box">
+      <strong>Optional MAC ACL PACL Example:</strong><br>
+      If you want MAC-based filtering instead of IP-based filtering, use <code>mac access-list extended</code> and apply it with <code>mac access-group ... in</code>.
+    </div>
+
+    <pre><code>! Example MAC ACL on an access port in SW1
+conf t
+mac access-list extended MAC_ACL_USERS
+ permit host 00:1A:2B:3C:4D:5E any
+ deny any
+exit
+
+interface g1/0
+ mac access-group MAC_ACL_USERS in
+exit
+end</code></pre>
+
+    <h3>Part 4: Configure VACL</h3>
+    <pre><code>! Create ACLs used by the VACL in SW3
+conf t
+ip access-list extended ICMP
+ deny icmp any any
+ permit ip any any
+exit
+
+ip access-list extended TELNET
+ deny tcp any any eq 23
+ permit ip any any
+exit
+
+ip access-list extended OTHER
+ permit ip any any
+exit
+
+! Create the VLAN access-map
+vlan access-map VACL_20 10
+ match ip address ICMP
+ action drop
+exit
+
+vlan access-map VACL_20 20
+ match ip address TELNET
+ action drop log
+exit
+
+vlan access-map VACL_20 30
+ match ip address OTHER
+ action forward
+exit
+
+! Apply VACL to VLAN 20
+vlan filter VACL_20 vlan-list 20
+end</code></pre>
+
+    <h3>Part 5: Optional RACL on Router Interface</h3>
+    <pre><code>! Example routed ACL for the router interface
+conf t
+ip access-list extended RACL_OUT
+ deny tcp any any eq 23
+ permit ip any any
+exit
+
+interface g1/3
+ description Router Interface
+ ip access-group RACL_OUT in
+exit
+end</code></pre>
+
+    <div class="warning-box">
+      <strong>Important:</strong> VACLs filter traffic within the VLAN context and can apply to traffic entering or leaving the VLAN processing path. RACLs are used on routed/SVI interfaces, not on Layer 2 switchports.
+    </div>
+  </section>
+
+  <section class="card protected-element" id="verify">
+    <h2 class="section-title">Verification Checklist</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th>Command</th>
+          <th>Expected Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>VLANs created</td>
+          <td><code>show vlan brief</code></td>
+          <td>VLAN 10, 20, and 30 appear</td>
+        </tr>
+        <tr>
+          <td>Trunks operational</td>
+          <td><code>show interfaces trunk</code></td>
+          <td>G0/1 and G0/2 show trunking and allowed VLANs</td>
+        </tr>
+        <tr>
+          <td>PACL applied</td>
+          <td><code>show running-config interface g1/0</code></td>
+          <td><code>ip access-group PACL_USERS in</code> is present</td>
+        </tr>
+        <tr>
+          <td>PACL counters</td>
+          <td><code>show access-lists PACL_USERS</code></td>
+          <td>Hit counts increase when blocked traffic is sent</td>
+        </tr>
+        <tr>
+          <td>MAC ACL check</td>
+          <td><code>show mac access-list</code></td>
+          <td>Permitted MAC entry appears if using MAC ACL</td>
+        </tr>
+        <tr>
+          <td>VACL created</td>
+          <td><code>show vlan access-map</code></td>
+          <td>VACL_20 sequences displayed</td>
+        </tr>
+        <tr>
+          <td>VACL applied</td>
+          <td><code>show vlan filter</code></td>
+          <td>VACL_20 is bound to VLAN 20</td>
+        </tr>
+        <tr>
+          <td>RACL applied</td>
+          <td><code>show running-config interface g1/3</code></td>
+          <td>RACL_OUT appears on router interface</td>
+        </tr>
+        <tr>
+          <td>Traffic test</td>
+          <td>Ping / Telnet / ICMP tests</td>
+          <td>Denied traffic is blocked, permitted traffic succeeds</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card protected-element" id="troubleshooting">
+    <h2 class="section-title">Troubleshooting Guide</h2>
+    <div class="grid">
+      <div class="info-box">
+        <strong>Problem:</strong> ACL does not block traffic<br>
+        <strong>Cause:</strong> ACL applied to wrong interface, wrong direction, or wrong VLAN scope<br>
+        <strong>Fix:</strong> Verify PACL is applied inbound on the correct access port
+      </div>
+      <div class="info-box">
+        <strong>Problem:</strong> VACL not taking effect<br>
+        <strong>Cause:</strong> VLAN filter missing or access-map sequence order incorrect<br>
+        <strong>Fix:</strong> Confirm <code>vlan filter VACL_20 vlan-list 20</code> and check rule order
+      </div>
+      <div class="info-box">
+        <strong>Problem:</strong> Traffic still passes unexpectedly<br>
+        <strong>Cause:</strong> ACL statement order is wrong or the matching traffic is not what you expected<br>
+        <strong>Fix:</strong> Review ACL logic and test counters with <code>show access-lists</code>
+      </div>
+      <div class="info-box">
+        <strong>Problem:</strong> L2 control traffic still appears on port<br>
+        <strong>Cause:</strong> PACLs cannot filter STP, CDP, DTP, VTP, PAgP, or UDLD<br>
+        <strong>Fix:</strong> Use the appropriate Layer 2 protection feature for control-plane security
+      </div>
+      <div class="info-box">
+        <strong>Problem:</strong> Router ACL does not affect switchport traffic<br>
+        <strong>Cause:</strong> RACLs work on routed interfaces/SVIs, not Layer 2 switchports<br>
+        <strong>Fix:</strong> Apply the ACL on the routed interface or SVI
+      </div>
+    </div>
+
+    <div class="danger-box" style="margin-top:16px;">
+      <strong>Best Practice:</strong> Use PACL for ingress control on access ports, VACL for VLAN-wide policy enforcement,
+      and RACL for routed traffic between networks. This layered approach provides stronger segmentation and control.
+    </div>
+  </section>
+
+  <section class="card protected-element" id="summary">
+    <h2 class="section-title">Short Student Summary</h2>
+    <div class="success-box">
+      This lab teaches three filtering methods: <strong>PACL</strong> for inbound switch-port protection,
+      <strong>VACL</strong> for VLAN-wide traffic control, and <strong>RACL</strong> for routed interfaces.
+      Students learn how each method works and when to use it in an enterprise network.
+    </div>
+  </section>
+
+  <footer class="protected-element" id="protectedFooter">
+    <h3>🔐 Iconic InfoSec Training</h3>
+    <p>Professional Cybersecurity & Networking Education</p>
+    <div class="footer-divider"></div>
+    <p>CCNP Enterprise Certification Program</p>
+    <p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+    <p class="company-name">By ZayarMaungMaung</p>
+    <div class="footer-divider"></div>
+    <p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+    <p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+    <p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+    <div class="protection-indicator">🔒 Protected</div>
+  </footer>
+</div>
+
+<script>
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+window.addEventListener('load', function() {
+checkSession();
+initializeProtection();
+setupSecurityMonitoring();
+});
+
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+}
+}
+
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+enableEditMode();
+}
+
+function lockPage() {
+isUnlocked = false;
+editMode = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+disableEditMode();
+setTimeout(() => {
+document.getElementById('passwordInput').focus();
+}, 100);
+}
+
+function initializeProtection() {
+protectElement('protectedHeader');
+protectElement('protectedBody');
+protectElement('protectedFooter');
+}
+
+function enableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'true');
+});
+editMode = true;
+}
+
+function disableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'false');
+});
+editMode = false;
+}
+
+function protectElement(elementId) {
+const element = document.getElementById(elementId);
+if (element) {
+element.addEventListener('keydown', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 This content is protected. Please unlock with password first.');
+showPasswordModal();
+return false;
+}
+});
+element.addEventListener('paste', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+element.addEventListener('drop', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+}
+}
+
+function setupSecurityMonitoring() {
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+}
+}, 500);
+}
+
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+return false;
+});
+document.addEventListener('selectstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('dragstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('keydown', function(e) {
+if (e.keyCode === 123) {
+e.preventDefault();
+return false;
+}
+if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+e.preventDefault();
+return false;
+}
+if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+e.preventDefault();
+return false;
+}
+if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+e.preventDefault();
+return false;
+}
+if (e.ctrlKey && e.keyCode === 85) {
+e.preventDefault();
+return false;
+}
+if (e.ctrlKey && e.keyCode === 83) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 Cannot save - Content is password protected');
+return false;
+}
+}
+});
+document.addEventListener('copy', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('cut', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('mousedown', function(e) {
+if (e.button === 2) {
+e.preventDefault();
+return false;
+}
+});
+document.addEventListener('dblclick', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+if (self !== top) {
+top.location = self.location;
+}
+document.addEventListener('dragover', function(e) {
+e.preventDefault();
+return false;
+});
+document.addEventListener('drop', function(e) {
+e.preventDefault();
+return false;
+});
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    

@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 8.2: VRRP Configuration & Master/Backup Failover - CCNP 350-401 & 300-410</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .info-box, .success-box, .warning-box {
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-left: 5px solid;
+            border-radius: 5px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            color: #1565c0;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+        
+        .command {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .topology-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: block;
+        }
+        
+        .topology-container {
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 3px solid #667eea;
+        }
+        
+        footer h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+        
+        footer .footer-divider {
+            width: 60px;
+            height: 2px;
+            background: #667eea;
+            margin: 15px auto;
+        }
+        
+        /* Password Protection */
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .password-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            border: 3px solid #667eea;
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #667eea;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            background: white;
+            color: #333;
+        }
+        
+        .modal-content button {
+            padding: 12px 30px;
+            margin: 10px 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .modal-content button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .modal-content button.cancel {
+            background: #dc3545;
+        }
+        
+        .modal-content button.cancel:hover {
+            background: #c82333;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .protected-element {
+            position: relative;
+        }
+        
+        .protection-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Modal -->
+    <div id="passwordModal" class="password-modal show">
+        <div class="modal-content">
+            <h2>🔐 Access Denied</h2>
+            <p>This Lab is Password Protected</p>
+            <p>Enter Master Password to View Content</p>
+            <input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+            <button onclick="verifyPassword()">🔓 Unlock Lab</button>
+            <button class="cancel" onclick="lockPage()">🔒 Cancel</button>
+            <div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+        </div>
+    </div>
+
+    <!-- Lab Content -->
+    <div id="labContent" style="display: none;">
+        <div class="container protected-element">
+            
+            <!-- HEADER -->
+            <header>
+                <h1>🔧 Lab 8.2: VRRP Configuration & Master/Backup Failover</h1>
+                <p>Cisco CCNP 350-401 (ENCOR) & CCNP 300-410 (ENARSI) Enterprise Networking </p>
+                <p style="margin-top: 15px; font-size: 0.95em;">Duration: 60-75 minutes | Difficulty: Intermediate | Version: 1.0</p>
+                <div class="protection-indicator">🔒 Protected</div>
+            </header>
+            
+            <div class="content">
+                
+                <!-- SECTION 1: OVERVIEW -->
+                <div class="section">
+                    <h2>📋 Lab Overview & Objectives</h2>
+                    
+                    <div class="info-box">
+                        <strong>Lab Objective:</strong> Master VRRP (Virtual Router Redundancy Protocol) configuration, master/backup router election, priority-based failover, and multi-vendor gateway redundancy for enterprise networks. VRRP is an open-standard protocol (RFC 5798) enabling multi-vendor support .
+                    </div>
+                    
+                    <h3>🎯 Learning Outcomes</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> Configure VRRP on two routers with master/backup roles </li>
+                        <li><input type="checkbox"> Understand VRRP as an open-standard protocol (RFC 5798) </li>
+                        <li><input type="checkbox"> Configure VRRP timers (advertisement interval and hold time)</li>
+                        <li><input type="checkbox"> Implement object tracking with VRRP for dynamic failover </li>
+                        <li><input type="checkbox"> Verify VRRP status and master router election</li>
+                        <li><input type="checkbox"> Test failover and recovery scenarios</li>
+                        <li><input type="checkbox"> Configure MD5 and SHA authentication </li>
+                        <li><input type="checkbox"> Compare VRRP with HSRP and GLBP protocols </li>
+                    </ul>
+                    
+                    <h3>Key VRRP Components </h3>
+                    <table>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                            <th>Lab Value</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Virtual IP (VIP)</strong></td>
+                            <td>Shared IP address from local subnet used as default gateway </td>
+                            <td>192.168.1.1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Virtual MAC</strong></td>
+                            <td>VRRP MAC format: 00:00:5E:00:01:xx </td>
+                            <td>0000.5E00.0101</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Priority</strong></td>
+                            <td>Master election (0-255, default 100) - Higher wins </td>
+                            <td>110 (Master), 100 (Backup)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advertisement Interval</strong></td>
+                            <td>Master sends keepalives every 1 second (VRRPv2) or 100ms (VRRPv3) </td>
+                            <td>1 second</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Master Dead Timer</strong></td>
+                            <td>Failover detection timer (default 3 seconds VRRPv2) </td>
+                            <td>3 seconds</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 2: TOPOLOGY -->
+                <div class="section">
+                    <h2>🌐 Network Topology</h2>
+                    
+                    <div class="topology-container">
+                        <h3 style="margin-bottom: 15px;">VRRP Lab Network Diagram</h3>
+                        <img src="https://f005.backblazeb2.com/file/CCNPLabPic/FHRD.jpg" alt="VRRP Network Topology" class="topology-image" onerror="handleImageError()">
+                        <p style="margin-top: 15px; font-style: italic; color: #666;">Network topology showing Router A (Master) and Router B (Backup) with VRRP configuration for multi-vendor redundancy </p>
+                    </div>
+                    
+                    <div class="success-box">
+                        ✅ Two routers configured with VRRP Group 1. Router A (Master, priority 110) forwards traffic. Router B (Backup, priority 100) monitors and takes over if Router A fails. Both share VIP 192.168.1.1 and VMAC 0000.5E00.0101 .
+                    </div>
+                </div>
+                
+                <!-- SECTION 3: VRRP OVERVIEW -->
+                <div class="section">
+                    <h2>📚 VRRP - Open Standard Protocol </h2>
+                    
+                    <div class="info-box">
+                        <strong>VRRP Key Advantages :</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Open Standard (RFC 5798) - Multi-vendor support </li>
+                            <li>✅ Fast convergence (~300ms with VRRPv3) </li>
+                            <li>✅ IPv4 and IPv6 support (VRRPv3) </li>
+                            <li>✅ Better timer precision than HSRPv1 </li>
+                            <li>✅ Industry-standard for enterprise deployments </li>
+                        </ul>
+                    </div>
+                    
+                    <h3>VRRP Version Comparison </h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>VRRPv2</th>
+                            <th>VRRPv3</th>
+                        </tr>
+                        <tr>
+                            <td>IP Version Support</td>
+                            <td>IPv4 only</td>
+                            <td>IPv4 and IPv6 </td>
+                        </tr>
+                        <tr>
+                            <td>Group Range</td>
+                            <td>0-255</td>
+                            <td>0-4095 </td>
+                        </tr>
+                        <tr>
+                            <td>Advertisement Interval</td>
+                            <td>1 second default</td>
+                            <td>100ms default </td>
+                        </tr>
+                        <tr>
+                            <td>Convergence Time</td>
+                            <td>~3 seconds</td>
+                            <td>~300 milliseconds </td>
+                        </tr>
+                        <tr>
+                            <td>Authentication</td>
+                            <td>MD5 only</td>
+                            <td>MD5, SHA-1, SHA-256 </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 4: CONFIGURATION STEPS -->
+                <div class="section">
+                    <h2>⚙️ Step-by-Step Configuration Guide</h2>
+                    
+                    <h3>STEP 1: Prerequisites & Lab Setup </h3>
+                    <div class="info-box">
+                        <strong>Equipment Required:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>2 x Cisco Routers (or multi-vendor if VRRP-compatible) </li>
+                            <li>2 x Network Interfaces (Gi0/1)</li>
+                            <li>1 x Layer 2 Switch</li>
+                            <li>3+ PCs/VMs for client testing</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>STEP 2: Router A Configuration (Master) </h3>
+                    <div class="command">enable
+configure terminal
+!
+hostname Router-A
+!
+interface GigabitEthernet0/1
+ description VRRP Master Interface
+ ip address 192.168.1.2 255.255.255.0
+ !
+ ! Configure VRRP Group 1 (VRRPv2)
+ vrrp 1 ip 192.168.1.1
+ vrrp 1 priority 110
+ vrrp 1 timers advertise 1
+ vrrp 1 preempt
+ vrrp 1 authentication md5 key-string VRRPKey123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 3: Router B Configuration (Backup) </h3>
+                    <div class="command">enable
+configure terminal
+!
+hostname Router-B
+!
+interface GigabitEthernet0/1
+ description VRRP Backup Interface
+ ip address 192.168.1.3 255.255.255.0
+ !
+ ! Configure VRRP Group 1 (VRRPv2)
+ vrrp 1 ip 192.168.1.1
+ vrrp 1 priority 100
+ vrrp 1 timers advertise 1
+ vrrp 1 preempt
+ vrrp 1 authentication md5 key-string VRRPKey123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 4: VRRPv3 Configuration (Advanced) </h3>
+                    <div class="command">! Router A (IPv4)
+enable
+configure terminal
+interface GigabitEthernet0/1
+ ip address 192.168.1.2 255.255.255.0
+ !
+ vrrp 1 address-family ipv4
+  address 192.168.1.1 primary
+  priority 110
+  timers advertise msec 100
+  preempt delay minimum 0
+  authentication md5 key-string VRRPv3Key123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 5: VRRPv3 - IPv6 Configuration </h3>
+                    <div class="command">! Router A (IPv6)
+enable
+configure terminal
+interface GigabitEthernet0/1
+ ipv6 address 2001:DB8::2/64
+ !
+ vrrp 1 address-family ipv6
+  address 2001:DB8::1 primary
+  priority 110
+  timers advertise msec 100
+  authentication md5 key-string VRRPv3Key123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 6: Configure Object Tracking </h3>
+                    <div class="command">! Router A - Track WAN interface
+configure terminal
+!
+track 1 interface Serial0/0 line-protocol
+!
+interface GigabitEthernet0/1
+ vrrp 1 track 1 decrement 20
+ ! If Serial0/0 down: 110 - 20 = 90 (Router B becomes master)
+!
+end
+write memory</div>
+
+                    <h3>STEP 7: Configure IP SLA with VRRP </h3>
+                    <div class="command">! Router A - Monitor remote gateway
+configure terminal
+!
+ip sla 1
+ icmp-echo 10.0.0.1
+ frequency 10
+ timeout 1000
+!
+ip sla schedule 1 life forever start-time now
+!
+track 2 ip sla 1 reachability
+!
+interface GigabitEthernet0/1
+ vrrp 1 track 2 decrement 25
+!
+end
+write memory</div>
+                </div>
+                
+                <!-- SECTION 5: VERIFICATION -->
+                <div class="section">
+                    <h2>✅ Verification Procedures</h2>
+                    
+                    <h3>Check 1: VRRP Master Status on Router A </h3>
+                    <div class="command">Router-A# show vrrp
+
+Interface  Group Version  Priority Time  Own    State   Master
+Gi0/1      1     v2       110      1     Yes    Master 192.168.1.2
+
+Router-A# show vrrp detail
+
+Gi0/1 - Group 1
+  State is Master
+  Virtual IP address is 192.168.1.1
+  Virtual MAC address is 0000.5e00.0101
+  Advertisement interval is 1 sec
+  Preemption enabled
+  Priority is 110
+  Master Router is 192.168.1.2 (local)
+  Master Advertisement interval is 1 sec
+  Master Down interval is 3.609 sec
+  Authentication MD5, key chain "not set"</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: State is Master | Priority: 110 | Role: Master 
+                    </div>
+
+                    <h3>Check 2: VRRP Backup Status on Router B </h3>
+                    <div class="command">Router-B# show vrrp
+
+Interface  Group Version  Priority Time  Own    State    Master
+Gi0/1      1     v2       100      1     No     Backup   192.168.1.2
+
+Router-B# show vrrp detail
+
+Gi0/1 - Group 1
+  State is Backup
+  Virtual IP address is 192.168.1.1
+  Virtual MAC address is 0000.5e00.0101
+  Advertisement interval is 1 sec
+  Preemption enabled
+  Priority is 100
+  Master Router is 192.168.1.2, priority 110
+  Master Advertisement interval is 1 sec
+  Master Down interval is 3.609 sec
+  Authentication MD5, key chain "not set"</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: State is Backup | Master: 192.168.1.2 (Router A) 
+                    </div>
+
+                    <h3>Check 3: Client Connectivity Test</h3>
+                    <div class="command">C:\> ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=255
+
+Ping statistics: Sent=4, Received=4, Lost=0 (0% loss)</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: Successful ping to VIP with 0% packet loss 
+                    </div>
+
+                    <h3>Check 4: Monitor Tracked Objects </h3>
+                    <div class="command">Router-A# show track
+
+Track 1
+  interface GigabitEthernet0/1 line-protocol
+  Reachability is Up
+
+Track 2
+  ip sla 1 reachability
+  Reachability is Up</div>
+                </div>
+                
+                <!-- SECTION 6: FAILOVER TESTING -->
+                <div class="section">
+                    <h2>🔄 Failover Testing Scenarios</h2>
+                    
+                    <h3>Scenario 1: Master Router Failure</h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Simulate master router failure by disabling Gi0/1 on Router A
+                    </div>
+                    <div class="command">Router-A# configure terminal
+Router-A(config)# interface GigabitEthernet0/1
+Router-A(config-if)# shutdown</div>
+
+                    <div class="success-box">
+                        <strong>Expected Result (Wait 3-4 seconds):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Router B transitions to Master automatically </li>
+                            <li>✅ Client ping continues without interruption</li>
+                            <li>✅ Failover time: ~3 seconds (VRRPv2) or ~300ms (VRRPv3) </li>
+                        </ul>
+                    </div>
+
+                    <h3>Scenario 2: Recovery with Preemption </h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Re-enable Gi0/1 on Router A to test preemption
+                    </div>
+                    <div class="command">Router-A# configure terminal
+Router-A(config)# interface GigabitEthernet0/1
+Router-A(config-if)# no shutdown</div>
+
+                    <div class="success-box">
+                        <strong>Expected Result (Wait 30 seconds):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Router A reclaims Master role (priority 110 > 100) </li>
+                            <li>✅ Preemption enabled by default in VRRP </li>
+                            <li>✅ Router B returns to Backup state </li>
+                        </ul>
+                    </div>
+
+                    <h3>Scenario 3: Tracked Object Failure </h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Simulate WAN link failure to test tracking
+                    </div>
+                    <div class="command">Router-A# configure terminal
+Router-A(config)# interface Serial0/0
+Router-A(config-if)# shutdown
+!
+Router-A# show track 1
+Track 1
+  Reachability is Down
+!
+Router-A# show vrrp
+State is Backup
+Priority 90 (110 - 20 decrement)</div>
+
+                    <div class="success-box">
+                        <strong>Expected Result:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Track object detects failure </li>
+                            <li>✅ Router A priority decrements (110 - 20 = 90) </li>
+                            <li>✅ Router B (100) becomes Master automatically </li>
+                            <li>✅ Dynamic failover without manual intervention </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- SECTION 7: TROUBLESHOOTING -->
+                <div class="section">
+                    <h2>🐛 Troubleshooting Guide</h2>
+                    
+                    <h3>Issue 1: Both Routers Show Backup State</h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> Neither router becomes Master
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions :</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Verify interfaces are UP/UP on both routers </li>
+                            <li>Check VRRP group numbers match on both routers </li>
+                            <li>Verify authentication keys match exactly </li>
+                            <li>Check IPv4 address configuration </li>
+                        </ul>
+                    </div>
+
+                    <h3>Issue 2: Master Election Fails</h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> Master changes rapidly (flapping)
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Check for interface instability </li>
+                            <li>Verify priorities are different </li>
+                            <li>Increase advertisement interval if necessary </li>
+                        </ul>
+                    </div>
+
+                    <h3>Issue 3: Authentication Failures</h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> "Authentication failed" messages 
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Verify MD5/SHA keys match exactly </li>
+                            <li>Check for typos in key configuration </li>
+                            <li>Ensure same authentication method on both routers </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- SECTION 8: VRRP VS HSRP -->
+                <div class="section">
+                    <h2>📊 VRRP vs HSRP vs GLBP Comparison </h2>
+                    
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>VRRP </th>
+                            <th>HSRP </th>
+                            <th>GLBP </th>
+                        </tr>
+                        <tr>
+                            <td>Standard</td>
+                            <td>RFC 5798 (Open) </td>
+                            <td>Cisco Proprietary </td>
+                            <td>Cisco Proprietary </td>
+                        </tr>
+                        <tr>
+                            <td>Convergence</td>
+                            <td>~300ms (VRRPv3) </td>
+                            <td>~3 seconds </td>
+                            <td>~3 seconds </td>
+                        </tr>
+                        <tr>
+                            <td>Load Balancing</td>
+                            <td>❌ No </td>
+                            <td>❌ No </td>
+                            <td>✅ Yes </td>
+                        </tr>
+                        <tr>
+                            <td>Multi-vendor</td>
+                            <td>✅ Yes </td>
+                            <td>❌ Cisco only </td>
+                            <td>❌ Cisco only </td>
+                        </tr>
+                        <tr>
+                            <td>Active Routers</td>
+                            <td>1 Master, 1+ Backup </td>
+                            <td>1 Active, 1+ Standby </td>
+                            <td>1 AVG + up to 4 AVFs </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 9: REFERENCE COMMANDS -->
+                <div class="section">
+                    <h2>📚 Essential VRRP Commands</h2>
+                    <table>
+                        <tr>
+                            <th>Command</th>
+                            <th>Purpose</th>
+                        </tr>
+                        <tr>
+                            <td><code>show vrrp</code></td>
+                            <td>Display VRRP status summary </td>
+                        </tr>
+                        <tr>
+                            <td><code>show vrrp detail</code></td>
+                            <td>Show detailed VRRP information </td>
+                        </tr>
+                        <tr>
+                            <td><code>show vrrp interface</code></td>
+                            <td>View VRRP per interface </td>
+                        </tr>
+                        <tr>
+                            <td><code>show vrrp statistics</code></td>
+                            <td>Display VRRP statistics </td>
+                        </tr>
+                        <tr>
+                            <td><code>show track</code></td>
+                            <td>View tracked object status </td>
+                        </tr>
+                        <tr>
+                            <td><code>debug vrrp</code></td>
+                            <td>Real-time VRRP debugging </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 10: COMPLETION CHECKLIST -->
+                <div class="section">
+                    <h2>📋 Lab Completion Checklist</h2>
+                    
+                    <h3>Pre-Lab Verification</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> Both routers accessible via SSH/Telnet</li>
+                        <li><input type="checkbox"> Interfaces configured with correct IPs </li>
+                        <li><input type="checkbox"> Layer 2 connectivity verified </li>
+                    </ul>
+                    
+                    <h3>Configuration Deployment </h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> VRRP Group 1 configured on both routers </li>
+                        <li><input type="checkbox"> Priorities set correctly (Router A: 110, Router B: 100) </li>
+                        <li><input type="checkbox"> Preemption enabled (default in VRRP) </li>
+                        <li><input type="checkbox"> Advertisement interval configured (1 sec VRRPv2) </li>
+                        <li><input type="checkbox"> MD5 or SHA authentication configured </li>
+                        <li><input type="checkbox"> Track objects configured </li>
+                    </ul>
+                    
+                    <h3>Post-Lab Validation </h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> show vrrp confirms Master/Backup roles </li>
+                        <li><input type="checkbox"> Client devices ping VIP successfully</li>
+                        <li><input type="checkbox"> Failover tested: Interface down → automatic failover </li>
+                        <li><input type="checkbox"> Recovery tested: Interface up → preemption </li>
+                        <li><input type="checkbox"> Track objects working correctly </li>
+                        <li><input type="checkbox"> Multi-vendor compatibility verified (if applicable) </li>
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <!-- FOOTER -->
+            <footer>
+                <h3>🔐 Iconic InfoSec Training</h3>
+                <p>Professional Cybersecurity & Networking Education</p>
+                <div class="footer-divider"></div>
+                <p>CCNP Enterprise Certification Program</p>
+                <p>Cisco CCNP 350-401 (ENCOR) & CCNP 300-410 (ENARSI) Hands-On Laboratory Training </p>
+                <p style="font-weight: bold; color: #667eea; margin-top: 15px;">By ZayarMaungMaung</p>
+                <div class="footer-divider"></div>
+                <p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+                <p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+                <p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+                <p style="margin-top: 10px; color: #667eea; font-weight: bold;">🔒 Protected | Lab 8.2: VRRP Configuration </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Security Script -->
+    <script>
+        const MASTER_PASSWORD = "CCNP@2026";
+        let isUnlocked = false;
+        const SESSION_KEY = "auth_session_token";
+        const SESSION_TIMEOUT = 30 * 60 * 1000;
+        let sessionTimer = null;
+
+        function handleImageError() {
+            console.log("Image loading - This is normal if network is slow");
+        }
+
+        function verifyPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (inputPassword === MASTER_PASSWORD) {
+                isUnlocked = true;
+                sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+                sessionStorage.setItem('session_time', Date.now().toString());
+                errorMsg.style.display = 'none';
+                unlockContent();
+                resetSessionTimer();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function unlockContent() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('labContent').style.display = 'block';
+            document.querySelectorAll('.protected-element').forEach(element => {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            });
+        }
+
+        function lockPage() {
+            isUnlocked = false;
+            sessionStorage.removeItem(SESSION_KEY);
+            sessionStorage.removeItem('session_time');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('passwordModal').classList.add('show');
+            document.getElementById('labContent').style.display = 'none';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function resetSessionTimer() {
+            clearTimeout(sessionTimer);
+            sessionTimer = setTimeout(function() {
+                lockPage();
+                alert("⏱️ Session expired - Please re-enter password");
+            }, SESSION_TIMEOUT);
+        }
+
+        function checkSession() {
+            const sessionToken = sessionStorage.getItem(SESSION_KEY);
+            const sessionTime = sessionStorage.getItem('session_time');
+            const currentTime = Date.now();
+
+            if (sessionToken === MASTER_PASSWORD && currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+                isUnlocked = true;
+                unlockContent();
+                resetSessionTimer();
+            }
+        }
+
+        window.addEventListener('load', function() {
+            checkSession();
+            document.getElementById('passwordInput').focus();
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) e.preventDefault();
+            if (e.ctrlKey && e.keyCode === 85) e.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

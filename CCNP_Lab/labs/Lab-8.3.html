@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 8.3: GLBP Load Balancing & Traffic Distribution - CCNP 350-401 & 300-410</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .info-box, .success-box, .warning-box {
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-left: 5px solid;
+            border-radius: 5px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            color: #1565c0;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+        
+        .command {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .topology-image {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: block;
+        }
+        
+        .topology-container {
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 3px solid #667eea;
+        }
+        
+        footer h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+        
+        footer .footer-divider {
+            width: 60px;
+            height: 2px;
+            background: #667eea;
+            margin: 15px auto;
+        }
+        
+        /* Password Protection */
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .password-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            border: 3px solid #667eea;
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #667eea;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            background: white;
+            color: #333;
+        }
+        
+        .modal-content button {
+            padding: 12px 30px;
+            margin: 10px 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .modal-content button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .modal-content button.cancel {
+            background: #dc3545;
+        }
+        
+        .modal-content button.cancel:hover {
+            background: #c82333;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .protected-element {
+            position: relative;
+        }
+        
+        .protection-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Modal -->
+    <div id="passwordModal" class="password-modal show">
+        <div class="modal-content">
+            <h2>🔐 Access Denied</h2>
+            <p>This Lab is Password Protected</p>
+            <p>Enter Master Password to View Content</p>
+            <input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+            <button onclick="verifyPassword()">🔓 Unlock Lab</button>
+            <button class="cancel" onclick="lockPage()">🔒 Cancel</button>
+            <div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+        </div>
+    </div>
+
+    <!-- Lab Content -->
+    <div id="labContent" style="display: none;">
+        <div class="container protected-element">
+            
+            <!-- HEADER -->
+            <header>
+                <h1>🔧 Lab 8.3: GLBP Load Balancing & Traffic Distribution</h1>
+                <p>Cisco CCNP 350-401 (ENCOR) & CCNP 300-410 (ENARSI) Enterprise Networking </p>
+                <p style="margin-top: 15px; font-size: 0.95em;">Duration: 75-90 minutes | Difficulty: Advanced | Version: 1.0</p>
+                <div class="protection-indicator">🔒 Protected</div>
+            </header>
+            
+            <div class="content">
+                
+                <!-- SECTION 1: OVERVIEW -->
+                <div class="section">
+                    <h2>📋 Lab Overview & Objectives</h2>
+                    
+                    <div class="info-box">
+                        <strong>Lab Objective:</strong> Master GLBP (Gateway Load Balancing Protocol) configuration, Active Virtual Gateway (AVG) and Active Virtual Forwarder (AVF) roles, multiple load balancing methods, and traffic distribution across multiple routers for optimized network performance and redundancy .
+                    </div>
+                    
+                    <h3>🎯 Learning Outcomes</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> Configure GLBP on multiple routers with AVG and AVF roles </li>
+                        <li><input type="checkbox"> Understand GLBP load balancing methods (round-robin, weighted, host-dependent) </li>
+                        <li><input type="checkbox"> Implement round-robin load balancing </li>
+                        <li><input type="checkbox"> Configure weighted load balancing based on router capacity </li>
+                        <li><input type="checkbox"> Set up host-dependent load balancing for session persistence </li>
+                        <li><input type="checkbox"> Configure object tracking with GLBP for dynamic failover </li>
+                        <li><input type="checkbox"> Verify GLBP status and traffic distribution </li>
+                        <li><input type="checkbox"> Troubleshoot GLBP redundancy and failover scenarios </li>
+                    </ul>
+                    
+                    <h3>Key GLBP Components </h3>
+                    <table>
+                        <tr>
+                            <th>Component</th>
+                            <th>Description</th>
+                            <th>Lab Value</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Virtual IP (VIP)</strong></td>
+                            <td>Shared gateway IP for all clients </td>
+                            <td>192.168.1.1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Active Virtual Gateway (AVG)</strong></td>
+                            <td>Manages GLBP group, assigns VMACs to AVFs </td>
+                            <td>Router A (Priority 110)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Active Virtual Forwarders (AVFs)</strong></td>
+                            <td>Multiple routers forward traffic simultaneously </td>
+                            <td>Router B, Router C (up to 4) </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Virtual MAC Addresses</strong></td>
+                            <td>Format: 0007.B4xx:yy:zz (xx=group, yy=AVF#) </td>
+                            <td>0007.B401.0100 to 0007.B401.0400</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Load Balancing</strong></td>
+                            <td>Round-robin, weighted, or host-dependent </td>
+                            <td>Round-robin (default) </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 2: TOPOLOGY -->
+                <div class="section">
+                    <h2>🌐 Network Topology</h2>
+                    
+                    <div class="topology-container">
+                        <h3 style="margin-bottom: 15px;">GLBP Load Balancing Lab Network Diagram</h3>
+                        <img src="https://f005.backblazeb2.com/file/CCNPLabPic/GLBP.jpg" alt="GLBP Load Balancing Topology" class="topology-image" onerror="handleImageError()">
+                        <p style="margin-top: 15px; font-style: italic; color: #666;">Network topology showing Router A (AVG), Router B & C (AVFs) with GLBP configuration for traffic load balancing across multiple routers </p>
+                    </div>
+                    
+                    <div class="success-box">
+                        ✅ Three routers configured with GLBP Group 1. Router A acts as AVG (priority 110). Routers B and C act as AVFs, forwarding traffic using different virtual MAC addresses. Traffic is distributed across all active forwarders for optimized bandwidth utilization .
+                    </div>
+                </div>
+                
+                <!-- SECTION 3: GLBP OVERVIEW -->
+                <div class="section">
+                    <h2>📚 GLBP - Gateway Load Balancing </h2>
+                    
+                    <div class="info-box">
+                        <strong>GLBP Key Advantages :</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Cisco proprietary protocol with load balancing capability </li>
+                            <li>✅ Multiple active routers forward traffic simultaneously (up to 4 AVFs) </li>
+                            <li>✅ Redundancy + performance optimization in one protocol </li>
+                            <li>✅ Flexible load balancing methods (round-robin, weighted, host-dependent) </li>
+                            <li>✅ Automatic failover and weight-based traffic distribution </li>
+                        </ul>
+                    </div>
+                    
+                    <h3>GLBP Load Balancing Methods </h3>
+                    <table>
+                        <tr>
+                            <th>Method</th>
+                            <th>Description</th>
+                            <th>Use Case</th>
+                            <th>Pros</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Round-Robin </strong></td>
+                            <td>Sequential MAC assignment to ARP requests </td>
+                            <td>Equal-capacity routers </td>
+                            <td>Simple, automatic distribution </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weighted </strong></td>
+                            <td>MAC assignment based on router weight values </td>
+                            <td>Different router capacities </td>
+                            <td>Proportional to capacity </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Host-Dependent </strong></td>
+                            <td>Same MAC always assigned to same host </td>
+                            <td>Session persistence (VoIP, banking) </td>
+                            <td>No mid-call rerouting </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 4: CONFIGURATION STEPS -->
+                <div class="section">
+                    <h2>⚙️ Step-by-Step Configuration Guide</h2>
+                    
+                    <h3>STEP 1: Prerequisites & Lab Setup </h3>
+                    <div class="info-box">
+                        <strong>Equipment Required:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>3+ Cisco Routers (for AVG + multiple AVFs) </li>
+                            <li>Multiple Network Interfaces (Gi0/1)</li>
+                            <li>1 x Layer 2 Switch</li>
+                            <li>Multiple PCs/VMs for client testing (to verify load distribution)</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>STEP 2: Router A Configuration (AVG - Active Virtual Gateway) </h3>
+                    <div class="command">enable
+configure terminal
+!
+hostname Router-A
+!
+interface GigabitEthernet0/1
+ description GLBP AVG Interface
+ ip address 192.168.1.2 255.255.255.0
+ !
+ ! Configure GLBP Group 1 - AVG
+ glbp 1 ip 192.168.1.1
+ glbp 1 priority 110
+ glbp 1 preempt
+ glbp 1 load-balancing round-robin
+ glbp 1 timers advertise 3
+ glbp 1 authentication md5 key-string GLBPKey123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 3: Router B Configuration (AVF 1 - Active Virtual Forwarder) </h3>
+                    <div class="command">enable
+configure terminal
+!
+hostname Router-B
+!
+interface GigabitEthernet0/1
+ description GLBP AVF1 Interface
+ ip address 192.168.1.3 255.255.255.0
+ !
+ ! Configure GLBP Group 1 - AVF
+ glbp 1 ip 192.168.1.1
+ glbp 1 priority 100
+ glbp 1 weighting 100
+ glbp 1 load-balancing round-robin
+ glbp 1 timers advertise 3
+ glbp 1 authentication md5 key-string GLBPKey123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 4: Router C Configuration (AVF 2 - Active Virtual Forwarder) </h3>
+                    <div class="command">enable
+configure terminal
+!
+hostname Router-C
+!
+interface GigabitEthernet0/1
+ description GLBP AVF2 Interface
+ ip address 192.168.1.4 255.255.255.0
+ !
+ ! Configure GLBP Group 1 - AVF
+ glbp 1 ip 192.168.1.1
+ glbp 1 priority 90
+ glbp 1 weighting 100
+ glbp 1 load-balancing round-robin
+ glbp 1 timers advertise 3
+ glbp 1 authentication md5 key-string GLBPKey123
+ !
+ no shutdown
+!
+end
+write memory</div>
+
+                    <h3>STEP 5: Configure Weighted Load Balancing </h3>
+                    <div class="command">! Router A (70% traffic)
+configure terminal
+interface GigabitEthernet0/1
+ glbp 1 weighting 70 lower-threshold 40 upper-threshold 100
+!
+! Router B (20% traffic)
+configure terminal
+interface GigabitEthernet0/1
+ glbp 1 weighting 20 lower-threshold 40 upper-threshold 100
+!
+! Router C (10% traffic)
+configure terminal
+interface GigabitEthernet0/1
+ glbp 1 weighting 10 lower-threshold 40 upper-threshold 100
+!
+end
+write memory</div>
+
+                    <h3>STEP 6: Configure Host-Dependent Load Balancing (Session Persistence) </h3>
+                    <div class="command">! All Routers - For VoIP/Session-based traffic
+configure terminal
+!
+interface GigabitEthernet0/1
+ glbp 1 load-balancing host-dependent
+!
+end
+write memory</div>
+
+                    <h3>STEP 7: Configure Object Tracking with GLBP </h3>
+                    <div class="command">! Router A - Track WAN interface
+configure terminal
+!
+track 1 interface Serial0/0 line-protocol
+!
+interface GigabitEthernet0/1
+ glbp 1 weighting 100 lower-threshold 50 upper-threshold 100
+ glbp 1 track 1 decrement 30
+ ! If Serial0/0 down: 100 - 30 = 70 (reduced traffic)
+!
+end
+write memory</div>
+                </div>
+                
+                <!-- SECTION 5: VERIFICATION -->
+                <div class="section">
+                    <h2>✅ Verification Procedures</h2>
+                    
+                    <h3>Check 1: GLBP Status on Router A (AVG) </h3>
+                    <div class="command">Router-A# show glbp
+
+Interface  Group  Version  State   Priority  Weight  Man Weight
+Gi0/1      1      v1       Active  110       100     100
+
+Router-A# show glbp detail
+
+Gi0/1 - Group 1
+  State is Active (AVG)
+  Virtual IP address is 192.168.1.1
+  Hello time 3 sec, hold time 10 sec
+  Preemption enabled
+  Priority 110
+  Load balancing: round-robin
+  Clients: 192.168.1.5, 192.168.1.6, 192.168.1.7
+  Virtual MAC address is 0007.b401.0100
+  Forwarder 1 is Router-B (192.168.1.3)
+    Virtual MAC address is 0007.b401.0101
+  Forwarder 2 is Router-C (192.168.1.4)
+    Virtual MAC address is 0007.b401.0102</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: State is Active (AVG) | Priority: 110 | Multiple AVFs present 
+                    </div>
+
+                    <h3>Check 2: GLBP Status on Router B (AVF 1) </h3>
+                    <div class="command">Router-B# show glbp
+
+Interface  Group  Version  State    Priority  Weight  Man Weight
+Gi0/1      1      v1       Forwarder 100       100     100
+
+Router-B# show glbp brief
+
+Interface   Group  Pri  P  State   Active Standby Virtual IP
+Gi0/1       1      100     Forwarder       -       192.168.1.1</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: State is Forwarder (AVF) | Weight: 100 
+                    </div>
+
+                    <h3>Check 3: View GLBP Virtual MAC Addresses </h3>
+                    <div class="command">Router-A# show glbp 1 detail
+
+Virtual MAC Address (GLBP Group 1):
+AVG Virtual MAC: 0007.b401.0100
+AVF 1 Virtual MAC: 0007.b401.0101 (Router-B)
+AVF 2 Virtual MAC: 0007.b401.0102 (Router-C)</div>
+
+                    <h3>Check 4: Verify Load Balancing Distribution </h3>
+                    <div class="command">Router-A# show glbp 1
+
+Interface  Group  Version  State   Priority  Weight
+Gi0/1      1      v1       Active  110       100
+
+Round-Robin Load Balancing Active
+  Client 192.168.1.5 -> MAC 0007.b401.0101 (Router-B)
+  Client 192.168.1.6 -> MAC 0007.b401.0102 (Router-C)
+  Client 192.168.1.7 -> MAC 0007.b401.0101 (Router-B)
+  Client 192.168.1.8 -> MAC 0007.b401.0102 (Router-C)</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: Clients distributed equally across AVFs in round-robin fashion 
+                    </div>
+
+                    <h3>Check 5: Client Connectivity Test</h3>
+                    <div class="command">C:\> ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+Reply from 192.168.1.1: bytes=32 time=2ms TTL=255
+Reply from 192.168.1.1: bytes=32 time=2ms TTL=255
+
+Ping statistics: Sent=4, Received=4, Lost=0 (0% loss)
+ARP table shows: 192.168.1.1 -> 0007.b401.0101 (Router-B)</div>
+
+                    <div class="success-box">
+                        ✅ EXPECTED: Successful connectivity with alternating AVF MAC addresses 
+                    </div>
+                </div>
+                
+                <!-- SECTION 6: FAILOVER TESTING -->
+                <div class="section">
+                    <h2>🔄 Failover Testing Scenarios</h2>
+                    
+                    <h3>Scenario 1: AVF Failure (Router B Down)</h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Simulate AVF1 failure by disabling Gi0/1 on Router B
+                    </div>
+                    <div class="command">Router-B# configure terminal
+Router-B(config)# interface GigabitEthernet0/1
+Router-B(config-if)# shutdown</div>
+
+                    <div class="success-box">
+                        <strong>Expected Result (Wait 10 seconds):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Router B drops from AVF role </li>
+                            <li>✅ Router A reassigns traffic to remaining AVF (Router C)</li>
+                            <li>✅ Clients connected to Router B are redirected to Router C </li>
+                            <li>✅ No traffic loss observed on client side </li>
+                        </ul>
+                    </div>
+
+                    <h3>Scenario 2: AVG Failure (Router A Down)</h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Simulate AVG failure by disabling Gi0/1 on Router A
+                    </div>
+                    <div class="command">Router-A# configure terminal
+Router-A(config)# interface GigabitEthernet0/1
+Router-A(config-if)# shutdown</div>
+
+                    <div class="success-box">
+                        <strong>Expected Result (Wait 10 seconds):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Router A loses AVG role </li>
+                            <li>✅ New AVG elected from remaining routers (Router B or C with highest priority) </li>
+                            <li>✅ New AVG reassigns VMAC addresses to AVFs </li>
+                            <li>✅ Traffic continues to flow through remaining AVFs </li>
+                        </ul>
+                    </div>
+
+                    <h3>Scenario 3: Weighted Load Balancing in Action </h3>
+                    <div class="warning-box">
+                        <strong>Test:</strong> Verify traffic distribution follows weights (70%, 20%, 10%) 
+                    </div>
+                    <div class="command">! Monitor from 20 ARP requests to Router A:
+Router-A# show glbp 1 | include Forwarder
+
+Forwarder 1 (Router-B): 14 ARP responses (70%) 
+Forwarder 2 (Router-C): 4 ARP responses (20%) 
+Forwarder 3 (Router-D): 2 ARP responses (10%) </div>
+
+                    <div class="success-box">
+                        <strong>Expected Result:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>✅ Traffic distribution matches configured weights </li>
+                            <li>✅ Higher-capacity routers receive more clients </li>
+                            <li>✅ Bandwidth optimized based on router capabilities </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- SECTION 7: TROUBLESHOOTING -->
+                <div class="section">
+                    <h2>🐛 Troubleshooting Guide</h2>
+                    
+                    <h3>Issue 1: No AVFs Elected (All Routers Show "Secondary") </h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> No forwarders active, only AVG visible 
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Verify weighting is not 0: <code>show glbp 1 detail | include weight</code> </li>
+                            <li>Check interfaces are UP/UP on all routers </li>
+                            <li>Ensure authentication keys match on all routers </li>
+                            <li>Verify GLBP group numbers match (should all be 1) </li>
+                        </ul>
+                    </div>
+
+                    <h3>Issue 2: Uneven Load Distribution </h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> Traffic not distributed according to weights or round-robin 
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Check load-balancing method configured: <code>show glbp 1 | include load-balancing</code> </li>
+                            <li>Verify weighting values are correct and different </li>
+                            <li>Increase number of clients to see distribution (need at least 2x AVFs) </li>
+                            <li>Clear ARP cache if testing: <code>clear arp-cache</code> </li>
+                        </ul>
+                    </div>
+
+                    <h3>Issue 3: AVG Election Fails </h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> Multiple routers claim to be AVG 
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Verify priority values are different on each router </li>
+                            <li>Check authentication matches exactly (case-sensitive) </li>
+                            <li>Ensure highest priority router is configured correctly </li>
+                            <li>Clear GLBP cache: <code>clear glbp 1 state</code> </li>
+                        </ul>
+                    </div>
+
+                    <h3>Issue 4: Weight Thresholds Not Working </h3>
+                    <div class="warning-box">
+                        <strong>Symptoms:</strong> Router remains AVF even when lower-threshold reached 
+                    </div>
+                    <div class="info-box">
+                        <strong>Solutions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Verify lower-threshold is set correctly </li>
+                            <li>Confirm track object is properly associated </li>
+                            <li>Check current weight vs thresholds: <code>show glbp 1 detail | include weight</code> </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- SECTION 8: LOAD BALANCING COMPARISON -->
+                <div class="section">
+                    <h2>📊 GLBP Load Balancing Methods Comparison </h2>
+                    
+                    <table>
+                        <tr>
+                            <th>Method</th>
+                            <th>Distribution</th>
+                            <th>Best For</th>
+                            <th>Configuration</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Round-Robin (Default) </strong></td>
+                            <td>Sequential ARP: Client1→AVF1, Client2→AVF2 </td>
+                            <td>Equal-capacity routers </td>
+                            <td>glbp 1 load-balancing round-robin </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weighted </strong></td>
+                            <td>Based on weight values (0-255) </td>
+                            <td>Different router capacities </td>
+                            <td>glbp 1 weighting 70/20/10 </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Host-Dependent </strong></td>
+                            <td>Hash-based on source IP (consistent) </td>
+                            <td>VoIP, banking, session persistence </td>
+                            <td>glbp 1 load-balancing host-dependent </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 9: REFERENCE COMMANDS -->
+                <div class="section">
+                    <h2>📚 Essential GLBP Commands</h2>
+                    <table>
+                        <tr>
+                            <th>Command</th>
+                            <th>Purpose</th>
+                        </tr>
+                        <tr>
+                            <td><code>show glbp</code></td>
+                            <td>Display GLBP status summary </td>
+                        </tr>
+                        <tr>
+                            <td><code>show glbp brief</code></td>
+                            <td>Show concise GLBP information </td>
+                        </tr>
+                        <tr>
+                            <td><code>show glbp 1 detail</code></td>
+                            <td>Display detailed group information </td>
+                        </tr>
+                        <tr>
+                            <td><code>show glbp interface Gi0/1</code></td>
+                            <td>View GLBP on specific interface </td>
+                        </tr>
+                        <tr>
+                            <td><code>show track</code></td>
+                            <td>View tracked object status </td>
+                        </tr>
+                        <tr>
+                            <td><code>debug glbp events</code></td>
+                            <td>Real-time GLBP debugging </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- SECTION 10: COMPLETION CHECKLIST -->
+                <div class="section">
+                    <h2>📋 Lab Completion Checklist</h2>
+                    
+                    <h3>Pre-Lab Verification</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> All routers accessible via SSH/Telnet</li>
+                        <li><input type="checkbox"> Interfaces configured with correct IPs </li>
+                        <li><input type="checkbox"> Layer 2 connectivity verified between all routers </li>
+                    </ul>
+                    
+                    <h3>Configuration Deployment </h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> GLBP Group 1 configured on all routers </li>
+                        <li><input type="checkbox"> AVG elected on Router A (priority 110) </li>
+                        <li><input type="checkbox"> AVFs elected on Routers B & C (weights configured) </li>
+                        <li><input type="checkbox"> Load balancing method configured (round-robin/weighted) </li>
+                        <li><input type="checkbox"> MD5 authentication configured on all routers </li>
+                        <li><input type="checkbox"> Object tracking configured (if required) </li>
+                    </ul>
+                    
+                    <h3>Post-Lab Validation </h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox"> show glbp confirms AVG and AVF roles </li>
+                        <li><input type="checkbox"> Virtual MAC addresses properly assigned (0007.B401.01xx) </li>
+                        <li><input type="checkbox"> Client devices ping VIP successfully</li>
+                        <li><input type="checkbox"> ARP requests receive different VMACs (load balancing) </li>
+                        <li><input type="checkbox"> Failover tested: AVF down → automatic recovery </li>
+                        <li><input type="checkbox"> Weight distribution verified (if using weighted LB) </li>
+                        <li><input type="checkbox"> Track objects working correctly (if configured) </li>
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <!-- FOOTER -->
+            <footer>
+                <h3>🔐 Iconic InfoSec Training</h3>
+                <p>Professional Cybersecurity & Networking Education</p>
+                <div class="footer-divider"></div>
+                <p>CCNP Enterprise Certification Program</p>
+                <p>Cisco CCNP 350-401 (ENCOR) & CCNP 300-410 (ENARSI) Hands-On Laboratory Training </p>
+                <p style="font-weight: bold; color: #667eea; margin-top: 15px;">By ZayarMaungMaung</p>
+                <div class="footer-divider"></div>
+                <p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+                <p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+                <p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+                <p style="margin-top: 10px; color: #667eea; font-weight: bold;">🔒 Protected | Lab 8.3: GLBP Load Balancing </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Security Script -->
+    <script>
+        const MASTER_PASSWORD = "CCNP@2026";
+        let isUnlocked = false;
+        const SESSION_KEY = "auth_session_token";
+        const SESSION_TIMEOUT = 30 * 60 * 1000;
+        let sessionTimer = null;
+
+        function handleImageError() {
+            console.log("Image loading - This is normal if network is slow");
+        }
+
+        function verifyPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (inputPassword === MASTER_PASSWORD) {
+                isUnlocked = true;
+                sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+                sessionStorage.setItem('session_time', Date.now().toString());
+                errorMsg.style.display = 'none';
+                unlockContent();
+                resetSessionTimer();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function unlockContent() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('labContent').style.display = 'block';
+            document.querySelectorAll('.protected-element').forEach(element => {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            });
+        }
+
+        function lockPage() {
+            isUnlocked = false;
+            sessionStorage.removeItem(SESSION_KEY);
+            sessionStorage.removeItem('session_time');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('passwordModal').classList.add('show');
+            document.getElementById('labContent').style.display = 'none';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function resetSessionTimer() {
+            clearTimeout(sessionTimer);
+            sessionTimer = setTimeout(function() {
+                lockPage();
+                alert("⏱️ Session expired - Please re-enter password");
+            }, SESSION_TIMEOUT);
+        }
+
+        function checkSession() {
+            const sessionToken = sessionStorage.getItem(SESSION_KEY);
+            const sessionTime = sessionStorage.getItem('session_time');
+            const currentTime = Date.now();
+
+            if (sessionToken === MASTER_PASSWORD && currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+                isUnlocked = true;
+                unlockContent();
+                resetSessionTimer();
+            }
+        }
+
+        window.addEventListener('load', function() {
+            checkSession();
+            document.getElementById('passwordInput').focus();
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) e.preventDefault();
+            if (e.ctrlKey && e.keyCode === 85) e.preventDefault();
+        });
+    </script>
+
+</body>
+</html>
