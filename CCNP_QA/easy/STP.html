@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz Template - Framework Only</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #667eea;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Password Section */
+        .password-section {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .password-section.active {
+            display: block;
+        }
+
+        .password-section input {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .password-section button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .password-section button:hover {
+            background: #764ba2;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 30px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Question Container */
+        .question-container {
+            background: #f9f9f9;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .question-type {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f5f7ff;
+            font-weight: 600;
+        }
+
+        .option.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+            color: #2e7d32;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #fdeaea;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-secondary:hover {
+            background: #efefef;
+            border-color: #bbb;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .score-total {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .results-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .results-section p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Answer Review */
+        .answer-review {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .review-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .review-item.correct {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #f44336;
+            background: #fdeaea;
+        }
+
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .review-your-answer {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .review-correct-answer {
+            font-size: 13px;
+            color: #2e7d32;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .review-explanation {
+            font-size: 13px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            color: #555;
+            border-left: 3px solid #667eea;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .password-section input {
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: 1;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Spanning Tree Protocol (STP)</h1>
+            <p><strong>CCNP Compound Course</strong></p>
+            <p>50 Questions - Multiple Choice & True/False</p>
+        </div>
+
+        <!-- Password Section -->
+        <div class="password-section active" id="passwordSection">
+            <h2 style="color: #333; margin-bottom: 20px;">Quiz Access</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please enter the password to access the quiz</p>
+            <input type="password" id="passwordInput" placeholder="Enter Password">
+            <button onclick="checkPassword()">Start Quiz</button>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">Password : Pro2026</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content" id="quizContent">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="questionCounter">Question 1 of 50</span>
+                    <span id="scoreIndicator">Score: 0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="questionsContainer"></div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn">← Previous</button>
+                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div style="padding: 30px;">
+                <h2>Quiz Completed!</h2>
+                <div class="score-circle">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-total">out of 50</div>
+                </div>
+                <p style="font-size: 18px; margin: 20px 0;">
+                    <strong>Your Score: <span id="scorePercentage">0</span>%</strong>
+                </p>
+                <p id="performanceMessage" style="font-size: 16px; margin-bottom: 30px;"></p>
+
+                <div class="answer-review">
+                    <h3 style="margin-bottom: 20px; color: #333;">Answer Review</h3>
+                    <div id="answerReviewContent"></div>
+                </div>
+
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="btn-primary" onclick="restartQuiz()">Restart Quiz</button>
+                    <button class="btn-secondary" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Spanning Tree Protocol (STP) Quiz</strong></p>
+            <p>© 2026 IconicInfoSec | Quiz Framework Template</p>
+            <p>CCNP Training Material</p>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                id: 1,
+                question: "What is the primary purpose of Spanning Tree Protocol (STP)?",
+                type: "multiple",
+                options: [
+                    "To prevent Layer 2 loops in Ethernet networks",
+                    "To provide routing between VLANs",
+                    "To encrypt network traffic",
+                    "To assign IP addresses dynamically"
+                ],
+                correct: 0,
+                explanation: "STP is designed to prevent Layer 2 loops in Ethernet networks by selectively blocking redundant paths while preserving network redundancy."
+            },
+            {
+                id: 2,
+                question: "STP is enabled by default on Cisco switches.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "On Cisco switches, STP is enabled by default. However, the default STP mode can vary by platform, software version, and switch family."
+            },
+            {
+                id: 3,
+                question: "What multicast MAC address is used for STP BPDUs on Cisco switches?",
+                type: "multiple",
+                options: [
+                    "01:80:C2:00:00:00",
+                    "01:00:5E:00:00:01",
+                    "FF:FF:FF:FF:FF:FF",
+                    "01:80:C3:00:00:00"
+                ],
+                correct: 0,
+                explanation: "Cisco switches use the reserved multicast MAC address 01:80:C2:00:00:00 for STP BPDUs."
+            },
+            {
+                id: 4,
+                question: "What is the default bridge priority value in STP?",
+                type: "multiple",
+                options: [
+                    "32768",
+                    "4096",
+                    "0",
+                    "65535"
+                ],
+                correct: 0,
+                explanation: "The default bridge priority is 32768. A lower priority value is preferred during root bridge election."
+            },
+            {
+                id: 5,
+                question: "The Root Bridge is elected based on the highest Bridge ID.",
+                type: "true-false",
+                options: [],
+                correct: 1,
+                explanation: "False. The Root Bridge is elected based on the LOWEST Bridge ID, not the highest."
+            },
+            {
+                id: 6,
+                question: "How many bytes is the Bridge ID in STP?",
+                type: "multiple",
+                options: [
+                    "8 bytes (64 bits)",
+                    "4 bytes (32 bits)",
+                    "6 bytes (48 bits)",
+                    "2 bytes (16 bits)"
+                ],
+                correct: 0,
+                explanation: "The Bridge ID is an 8-byte (64-bit) value composed of a 2-byte priority field and a 6-byte MAC address."
+            },
+            {
+                id: 7,
+                question: "What is the default Hello Time interval for BPDUs sent by the root bridge?",
+                type: "multiple",
+                options: [
+                    "2 seconds",
+                    "5 seconds",
+                    "10 seconds",
+                    "15 seconds"
+                ],
+                correct: 0,
+                explanation: "The default Hello Time is 2 seconds, which is the interval between BPDU transmissions."
+            },
+            {
+                id: 8,
+                question: "What is the default Max Age timer value in STP?",
+                type: "multiple",
+                options: [
+                    "20 seconds",
+                    "15 seconds",
+                    "30 seconds",
+                    "10 seconds"
+                ],
+                correct: 0,
+                explanation: "The default Max Age is 20 seconds, which is the maximum time a BPDU remains valid before being discarded."
+            },
+            {
+                id: 9,
+                question: "The Forward Delay timer determines how long a port stays in Listening and Learning states.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. The Forward Delay is 15 seconds by default and determines the time spent in listening and learning states before transitioning to forwarding or blocking."
+            },
+            {
+                id: 10,
+                question: "What is the default path cost for a 1 Gbps link in STP?",
+                type: "multiple",
+                options: [
+                    "4",
+                    "2",
+                    "19",
+                    "100"
+                ],
+                correct: 0,
+                explanation: "The default path cost for a 1 Gbps link is 4 according to IEEE 802.1D standard."
+            },
+            {
+                id: 11,
+                question: "What is the path cost for a 10 Mbps link?",
+                type: "multiple",
+                options: [
+                    "100",
+                    "19",
+                    "4",
+                    "2"
+                ],
+                correct: 0,
+                explanation: "The default path cost for a 10 Mbps link is 100."
+            },
+            {
+                id: 12,
+                question: "In STP, lower path costs are preferred for selecting the best path to the Root Bridge.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. Lower path costs are assigned to faster links, making them more desirable for forwarding traffic."
+            },
+            {
+                id: 13,
+                question: "What are the five port states in Classic 802.1D STP?",
+                type: "multiple",
+                options: [
+                    "Disabled, Blocking, Listening, Learning, Forwarding",
+                    "Disabled, Discarding, Learning, Forwarding",
+                    "Blocking, Learning, Forwarding",
+                    "Listening, Learning, Forwarding, Disabled"
+                ],
+                correct: 0,
+                explanation: "Classic 802.1D STP has five port states: Disabled, Blocking, Listening, Learning, and Forwarding."
+            },
+            {
+                id: 14,
+                question: "Which STP port state forwards frames and learns MAC addresses?",
+                type: "multiple",
+                options: [
+                    "Forwarding",
+                    "Learning",
+                    "Listening",
+                    "Blocking"
+                ],
+                correct: 0,
+                explanation: "The Forwarding state is fully operational - it forwards frames and learns MAC addresses."
+            },
+            {
+                id: 15,
+                question: "In the Blocking state, a port learns MAC addresses.",
+                type: "true-false",
+                options: [],
+                correct: 1,
+                explanation: "False. In the Blocking state, the port does not forward frames or learn MAC addresses. It only listens for BPDUs to detect topology changes."
+            },
+            {
+                id: 16,
+                question: "What is the typical convergence time for Classic 802.1D STP?",
+                type: "multiple",
+                options: [
+                    "Up to 50 seconds",
+                    "2 seconds",
+                    "6 seconds",
+                    "30 seconds"
+                ],
+                correct: 0,
+                explanation: "Classic 802.1D STP has a convergence time of up to 50 seconds."
+            },
+            {
+                id: 17,
+                question: "RSTP (802.1w) provides faster convergence than Classic STP (802.1D).",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. RSTP is designed to provide much faster convergence, typically around 6 seconds, compared to up to 50 seconds for 802.1D STP."
+            },
+            {
+                id: 18,
+                question: "How many port states does RSTP have?",
+                type: "multiple",
+                options: [
+                    "3 states: Discarding, Learning, Forwarding",
+                    "5 states: Disabled, Blocking, Listening, Learning, Forwarding",
+                    "2 states: Blocking, Forwarding",
+                    "4 states: Blocking, Learning, Forwarding, Disabled"
+                ],
+                correct: 0,
+                explanation: "RSTP has three port states: Discarding (equivalent to blocking), Learning, and Forwarding."
+            },
+            {
+                id: 19,
+                question: "What command sets the STP mode to Rapid PVST+?",
+                type: "multiple",
+                options: [
+                    "spanning-tree mode rapid-pvst",
+                    "spanning-tree mode rstp",
+                    "spanning-tree rapid-pvst",
+                    "spanning-tree mode pvst+"
+                ],
+                correct: 0,
+                explanation: "The command 'spanning-tree mode rapid-pvst' configures the switch to use Rapid PVST+ mode."
+            },
+            {
+                id: 20,
+                question: "PVST+ runs a separate STP instance for each VLAN.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. PVST+ (Per-VLAN Spanning Tree Plus) runs a separate STP instance for each VLAN, allowing different Root Bridges per VLAN."
+            },
+            {
+                id: 21,
+                question: "Which port role in RSTP provides a backup path to the Root Bridge?",
+                type: "multiple",
+                options: [
+                    "Alternate Port",
+                    "Backup Port",
+                    "Root Port",
+                    "Designated Port"
+                ],
+                correct: 0,
+                explanation: "An Alternate Port is a backup path to the Root Bridge, ready to become the Root Port if the active Root Port fails."
+            },
+            {
+                id: 22,
+                question: "What is the Root Port?",
+                type: "multiple",
+                options: [
+                    "The port with the best path to the Root Bridge",
+                    "The port that blocks redundant traffic",
+                    "The port on the Root Bridge",
+                    "The port with the highest priority"
+                ],
+                correct: 0,
+                explanation: "The Root Port (RP) is the port with the best path to the Root Bridge for a specific VLAN."
+            },
+            {
+                id: 23,
+                question: "A Backup Port in RSTP provides redundancy for a Designated Port on the same segment.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. A Backup Port is a redundant port on the same switch, providing a backup for a Designated Port on the same segment."
+            },
+            {
+                id: 24,
+                question: "Which command displays STP information for VLAN 10?",
+                type: "multiple",
+                options: [
+                    "show spanning-tree vlan 10",
+                    "show stp vlan 10",
+                    "display spanning-tree vlan 10",
+                    "show vlan 10 spanning-tree"
+                ],
+                correct: 0,
+                explanation: "The command 'show spanning-tree vlan 10' displays STP information for VLAN 10."
+            },
+            {
+                id: 25,
+                question: "What does TCN stand for in STP?",
+                type: "multiple",
+                options: [
+                    "Topology Change Notification",
+                    "Transmission Control Notification",
+                    "Tree Change Network",
+                    "Topology Control Network"
+                ],
+                correct: 0,
+                explanation: "TCN stands for Topology Change Notification, which is sent when switches detect changes in the network topology."
+            },
+            {
+                id: 26,
+                question: "Configuration BPDUs are used to establish and maintain the spanning tree topology.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. Configuration BPDUs are used to establish and maintain the initial spanning tree topology, including root bridge election and port role determination."
+            },
+            {
+                id: 27,
+                question: "What happens when a switch detects a link failure?",
+                type: "multiple",
+                options: [
+                    "It sends a TCN BPDU toward the Root Bridge",
+                    "It immediately shuts down all ports",
+                    "It broadcasts to all switches",
+                    "It waits for the Max Age timer"
+                ],
+                correct: 0,
+                explanation: "When a link failure is detected, the switch sends a TCN (Topology Change Notification) BPDU upstream toward the Root Bridge."
+            },
+            {
+                id: 28,
+                question: "In STP, what is the purpose of the Bridge ID?",
+                type: "multiple",
+                options: [
+                    "To uniquely identify each switch and elect the Root Bridge",
+                    "To assign IP addresses to switches",
+                    "To encrypt BPDU messages",
+                    "To set port priorities"
+                ],
+                correct: 0,
+                explanation: "The Bridge ID uniquely identifies each switch and is used to elect the Root Bridge. It consists of priority and MAC address."
+            },
+            {
+                id: 29,
+                question: "MST (Multiple Spanning Tree) groups multiple VLANs into one or more MST instances.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. IEEE 802.1s MST groups multiple VLANs into one or more MST instances, with a single RSTP-based spanning tree running for each instance."
+            },
+            {
+                id: 30,
+                question: "What is an advantage of using MST over PVST+?",
+                type: "multiple",
+                options: [
+                    "Lower CPU and memory usage",
+                    "Faster convergence",
+                    "Simpler configuration",
+                    "Better security"
+                ],
+                correct: 0,
+                explanation: "MST provides lower CPU and memory usage compared with per-VLAN spanning-tree instances because it groups VLANs together."
+            },
+            {
+                id: 31,
+                question: "PortFast allows a port to bypass the Listening and Learning states.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. PortFast allows ports to transition immediately to the Forwarding state, bypassing Listening and Learning states."
+            },
+            {
+                id: 32,
+                question: "PortFast should be enabled on which type of ports?",
+                type: "multiple",
+                options: [
+                    "Access ports connected to end devices",
+                    "Trunk ports between switches",
+                    "All ports by default",
+                    "Root ports only"
+                ],
+                correct: 0,
+                explanation: "PortFast is intended for access ports connected to end devices such as PCs, printers, and servers, not for trunk or switch-to-switch connections."
+            },
+            {
+                id: 33,
+                question: "What command enables PortFast on a specific interface?",
+                type: "multiple",
+                options: [
+                    "spanning-tree portfast",
+                    "portfast enable",
+                    "stp portfast",
+                    "enable portfast"
+                ],
+                correct: 0,
+                explanation: "The command 'spanning-tree portfast' enables PortFast on a specific access port."
+            },
+            {
+                id: 34,
+                question: "If a BPDU is received on a PortFast-enabled port, PortFast is removed from that port.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. If a BPDU is received on a PortFast-enabled port, PortFast is automatically disabled to prevent loops."
+            },
+            {
+                id: 35,
+                question: "What is the command to set bridge priority to 4096 for VLAN 1?",
+                type: "multiple",
+                options: [
+                    "spanning-tree vlan 1 priority 4096",
+                    "spanning-tree priority 4096",
+                    "set spanning-tree vlan 1 priority 4096",
+                    "bridge priority 4096 vlan 1"
+                ],
+                correct: 0,
+                explanation: "The command 'spanning-tree vlan 1 priority 4096' sets the bridge priority to influence root bridge election."
+            },
+            {
+                id: 36,
+                question: "Bridge priority values must be in increments of what?",
+                type: "multiple",
+                options: [
+                    "4096",
+                    "1024",
+                    "2048",
+                    "8192"
+                ],
+                correct: 0,
+                explanation: "Bridge priority values must be between 0 and 61,440, in increments of 4,096."
+            },
+            {
+                id: 37,
+                question: "The 'spanning-tree vlan 10 root primary' command sets the priority to 24576.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. The 'primary' keyword sets the priority to 24,576, making it likely to become the Root Bridge."
+            },
+            {
+                id: 38,
+                question: "What priority does the 'root secondary' command set?",
+                type: "multiple",
+                options: [
+                    "28672",
+                    "24576",
+                    "32768",
+                    "4096"
+                ],
+                correct: 0,
+                explanation: "The 'root secondary' command sets the priority to 28,672, making it the backup root bridge."
+            },
+            {
+                id: 39,
+                question: "Port priority is used to influence port selection within the spanning-tree topology.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. STP port priority helps determine which port is preferred when STP must resolve a tie in path selection."
+            },
+            {
+                id: 40,
+                question: "What is the default port priority value?",
+                type: "multiple",
+                options: [
+                    "128",
+                    "64",
+                    "192",
+                    "256"
+                ],
+                correct: 0,
+                explanation: "The default port priority value is 128. Lower priority values are preferred."
+            },
+            {
+                id: 41,
+                question: "BackboneFast improves convergence for indirect failures.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. BackboneFast is a Cisco feature that improves convergence when an indirect failure occurs, such as loss of the Root Bridge."
+            },
+            {
+                id: 42,
+                question: "What command enables BackboneFast?",
+                type: "multiple",
+                options: [
+                    "spanning-tree backbonefast",
+                    "enable backbonefast",
+                    "stp backbonefast enable",
+                    "backbonefast on"
+                ],
+                correct: 0,
+                explanation: "The command 'spanning-tree backbonefast' enables the BackboneFast feature."
+            },
+            {
+                id: 43,
+                question: "UplinkFast is used in which layer of the network?",
+                type: "multiple",
+                options: [
+                    "Access layer",
+                    "Core layer",
+                    "Distribution layer",
+                    "All layers"
+                ],
+                correct: 0,
+                explanation: "UplinkFast is mainly used in the access layer with redundant uplinks to distribution or core switches."
+            },
+            {
+                id: 44,
+                question: "UplinkFast automatically raises the switch bridge priority to 49152.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. UplinkFast automatically raises the bridge priority to 49152 to prevent the switch from becoming the Root Bridge."
+            },
+            {
+                id: 45,
+                question: "What is the command to modify STP path cost on an interface?",
+                type: "multiple",
+                options: [
+                    "spanning-tree cost <value>",
+                    "set spanning-tree cost <value>",
+                    "stp cost <value>",
+                    "cost <value>"
+                ],
+                correct: 0,
+                explanation: "The command 'spanning-tree cost <value>' is used to modify the STP path cost on an interface."
+            },
+            {
+                id: 46,
+                question: "Path cost is inversely proportional to link bandwidth.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. Path cost is inversely proportional to link bandwidth - faster links have lower costs."
+            },
+            {
+                id: 47,
+                question: "What is the path cost for a 10 Gbps link?",
+                type: "multiple",
+                options: [
+                    "2",
+                    "4",
+                    "19",
+                    "1"
+                ],
+                correct: 0,
+                explanation: "The default path cost for a 10 Gbps link is 2."
+            },
+            {
+                id: 48,
+                question: "In RSTP, all switches send BPDUs.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. In RSTP, all switches send BPDUs, unlike Classic STP where only the root bridge generates BPDUs."
+            },
+            {
+                id: 49,
+                question: "Which command shows the STP root bridge and cost?",
+                type: "multiple",
+                options: [
+                    "show spanning-tree root",
+                    "show stp root",
+                    "display spanning-tree root",
+                    "show root bridge"
+                ],
+                correct: 0,
+                explanation: "The command 'show spanning-tree root' displays the STP root bridge and cost information."
+            },
+            {
+                id: 50,
+                question: "Rapid PVST+ combines the benefits of RSTP and PVST+.",
+                type: "true-false",
+                options: [],
+                correct: 0,
+                explanation: "True. Rapid PVST+ is a Cisco proprietary enhancement that combines fast convergence of RSTP with per-VLAN flexibility of PVST+."
+            }
+        ];
+
+        const CORRECT_PASSWORD = "Pro2026";
+        
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let quizStarted = false;
+
+        function initializeAnswers() {
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function checkPassword() {
+            const password = document.getElementById("passwordInput").value;
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById("passwordSection").classList.remove("active");
+                document.getElementById("quizContent").classList.add("active");
+                quizStarted = true;
+                initializeAnswers();
+                displayQuestion(0);
+            } else {
+                alert("❌ Incorrect password. Please try again.");
+                document.getElementById("passwordInput").value = "";
+            }
+        }
+
+        function displayQuestion(index) {
+            if (quizData.length === 0) {
+                alert("No questions added to quiz data!");
+                return;
+            }
+
+            const question = quizData[index];
+            const container = document.getElementById("questionsContainer");
+            const inputType = question.type === "multiple" ? "radio" : "checkbox";
+
+            let optionsHTML = "";
+            if (question.type === "true-false") {
+                optionsHTML = `
+                    <div class="option" onclick="selectAnswer(${index}, 0)">
+                        <input type="${inputType}" name="answer-${index}" ${userAnswers[index] === 0 ? "checked" : ""}>
+                        <label>True</label>
+                    </div>
+                    <div class="option" onclick="selectAnswer(${index}, 1)">
+                        <input type="${inputType}" name="answer-${index}" ${userAnswers[index] === 1 ? "checked" : ""}>
+                        <label>False</label>
+                    </div>
+                `;
+            } else {
+                optionsHTML = question.options.map((option, i) => `
+                    <div class="option" onclick="selectAnswer(${index}, ${i})">
+                        <input type="${inputType}" name="answer-${index}" ${userAnswers[index] === i ? "checked" : ""}>
+                        <label>${option}</label>
+                    </div>
+                `).join("");
+            }
+
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Question ${index + 1}</div>
+                    <div class="question-type">${question.type === "true-false" ? "TRUE/FALSE" : "MULTIPLE CHOICE"}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">${optionsHTML}</div>
+                </div>
+            `;
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectAnswer(questionIndex, answerIndex) {
+            userAnswers[questionIndex] = answerIndex;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = Math.round((currentQuestion + 1) / quizData.length * 100);
+            
+            document.getElementById("questionCounter").textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            document.getElementById("scoreIndicator").textContent = `Answered: ${answered}/${quizData.length}`;
+            document.getElementById("progressFill").style.width = percentage + "%";
+        }
+
+        function updateButtons() {
+            document.getElementById("prevBtn").disabled = currentQuestion === 0;
+            document.getElementById("nextBtn").textContent = currentQuestion === quizData.length - 1 ? "Submit Quiz ✓" : "Next →";
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                displayQuestion(currentQuestion);
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion(currentQuestion);
+            }
+        }
+
+        function submitQuiz() {
+            const correctAnswers = calculateScore();
+            displayResults(correctAnswers);
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            quizData.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    correct++;
+                }
+            });
+            return correct;
+        }
+
+        function displayResults(correctAnswers) {
+            document.getElementById("quizContent").classList.remove("active");
+            document.getElementById("resultsSection").classList.add("active");
+
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+
+            document.getElementById("finalScore").textContent = correctAnswers;
+            document.querySelector(".score-total").textContent = `out of ${quizData.length}`;
+            document.getElementById("scorePercentage").textContent = percentage;
+
+            let message = "Quiz completed!";
+            if (percentage >= 90) {
+                message = "🌟 Excellent work!";
+            } else if (percentage >= 80) {
+                message = "✅ Great job!";
+            } else if (percentage >= 70) {
+                message = "👍 Good effort!";
+            } else if (percentage >= 60) {
+                message = "📚 Keep studying!";
+            } else {
+                message = "💪 Continue learning!";
+            }
+            document.getElementById("performanceMessage").textContent = message;
+
+            let reviewHTML = "";
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                reviewHTML += `
+                    <div class="review-item ${isCorrect ? "correct" : "incorrect"}">
+                        <div class="review-question">Q${index + 1}: ${question.question}</div>
+                        <div class="review-your-answer">Your Answer: <strong>${userAnswerText}</strong></div>
+                        ${!isCorrect ? `<div class="review-correct-answer">Correct Answer: <strong>${correctAnswerText}</strong></div>` : ""}
+                        <div class="review-explanation"><strong>Explanation:</strong> ${question.explanation}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("answerReviewContent").innerHTML = reviewHTML;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            initializeAnswers();
+            document.getElementById("resultsSection").classList.remove("active");
+            document.getElementById("quizContent").classList.add("active");
+            displayQuestion(0);
+        }
+
+        function downloadResults() {
+            const correctAnswers = calculateScore();
+            const percentage = quizData.length > 0 ? Math.round((correctAnswers / quizData.length) * 100) : 0;
+            let content = "Quiz Results\n";
+            content += "============\n\n";
+            content += `Score: ${correctAnswers}/${quizData.length} (${percentage}%)\n\n`;
+            content += "Detailed Results:\n";
+            content += "================\n\n";
+
+            quizData.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                const userAnswerText = question.type === "true-false" 
+                    ? (userAnswers[index] === 0 ? "True" : "False")
+                    : question.options[userAnswers[index]];
+                const correctAnswerText = question.type === "true-false"
+                    ? (question.correct === 0 ? "True" : "False")
+                    : question.options[question.correct];
+
+                content += `Q${index + 1}: ${question.question}\n`;
+                content += `Your Answer: ${userAnswerText}\n`;
+                content += `Correct Answer: ${correctAnswerText}\n`;
+                content += `Status: ${isCorrect ? "✓ CORRECT" : "✗ INCORRECT"}\n`;
+                content += `Explanation: ${question.explanation}\n`;
+                content += "-----------------------------------------\n\n";
+            });
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', 'STP_Quiz_Results.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        window.onload = function() {
+            document.getElementById("passwordInput").focus();
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById("passwordInput");
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
