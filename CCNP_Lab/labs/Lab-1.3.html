@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 2.2: Spine-Leaf Topology Configuration | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+/* Main Content */
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+/* Tables */
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+/* Component Badges */
+.component-badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.spine-badge { background: #e8f4f8; color: #0066cc; }
+.leaf-badge { background: #e8f8e8; color: #00aa00; }
+.advantage-badge { background: #fff8e8; color: #ff9900; }
+.critical-badge { background: #ffe8e8; color: #cc0000; }
+
+/* Callout Styles */
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+/* Code Box */
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+}
+
+/* Exercise Boxes */
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.exercise-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+/* Footer */
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+/* Password Protection Modal */
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🌐 Lab 2.2: Spine-Leaf Topology Configuration</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Data Center Architecture</p>
+<p style="font-size: 0.9em; opacity: 0.85;">Scalable Non-Blocking Fabric Design | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Objectives -->
+<h2>📋 Lab Objectives</h2>
+<ul>
+<li>Understand Spine-Leaf architecture design principles </li>
+<li>Identify spine layer and leaf layer components and roles </li>
+<li>Design and configure a scalable spine-leaf topology </li>
+<li>Calculate bandwidth capacity using Cisco formulas </li>
+<li>Analyze east-west and north-south traffic flows </li>
+<li>Implement and test leaf-spine interconnections</li>
+<li>Document performance metrics and optimization strategies</li>
+</ul>
+
+<!-- Scenario Overview -->
+<h2>🎯 Scenario Overview</h2>
+<p>Your organization is designing a new data center infrastructure to support :</p>
+<ul>
+<li><strong>High-Performance Computing:</strong> Significant east-west traffic workloads</li>
+<li><strong>Cloud Services:</strong> Variable bandwidth requirements for virtualization</li>
+<li><strong>Growth Planning:</strong> Current 100+ servers scaling to 500+ servers</li>
+<li><strong>Latency Requirements:</strong> Sub-millisecond response times for applications</li>
+<li><strong>Scalability:</strong> Future expansion without topology redesign</li>
+</ul>
+<div class="callout callout-success">
+<strong>💡 Key Concept:</strong> Spine-Leaf architecture is the modern standard for data center networks, providing non-blocking fabrics with multiple high-speed paths, enabling efficient server-to-server (east-west) communication .
+</div>
+
+<!-- Architecture Components -->
+<h2>🏗️ Spine-Leaf Architecture Overview</h2>
+<h3>Architecture Components </h3>
+
+<h4><span class="component-badge spine-badge">🔗 Spine Layer</span></h4>
+<p><strong>Description:</strong> High-speed backbone switches or routers forming the core of the fabric </p>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Interconnected in full-mesh topology</li>
+<li>Each spine connects to every leaf switch</li>
+<li>Provides high-bandwidth transport</li>
+<li>Does not connect to end devices directly</li>
+</ul>
+
+<h4><span class="component-badge leaf-badge">🍂 Leaf Layer</span></h4>
+<p><strong>Description:</strong> Switches connecting directly to endpoints (servers, storage, virtualization hosts) </p>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Each connects to every spine switch</li>
+<li>Forms the access layer of the fabric</li>
+<li>Provides redundant paths upward</li>
+<li>Enables server connectivity</li>
+</ul>
+
+<!-- Advantages -->
+<h2>✨ Advantages of Spine-Leaf Architecture </h2>
+<table>
+<thead>
+<tr>
+<th>Advantage</th>
+<th>Description</th>
+<th>Business Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="component-badge advantage-badge">Non-Blocking</span></td>
+<td>Multiple high-speed paths reduce bottlenecks and provide maximum throughput between any two endpoints</td>
+<td>Maximum server-to-server performance</td>
+</tr>
+<tr>
+<td><span class="component-badge advantage-badge">Low Latency</span></td>
+<td>Direct connections between leaf and spine switches provide efficient communication with minimal delay</td>
+<td>Sub-millisecond response times</td>
+</tr>
+<tr>
+<td><span class="component-badge advantage-badge">Linear Scalability</span></td>
+<td>New leaf switches can be added without affecting overall network performance or requiring topology redesign </td>
+<td>Growth without architecture changes</td>
+</tr>
+<tr>
+<td><span class="component-badge advantage-badge">East-West Optimized</span></td>
+<td>Specifically designed for server-to-server communication rather than client-server (north-south) traffic </td>
+<td>Data center efficiency</td>
+</tr>
+<tr>
+<td><span class="component-badge advantage-badge">Simplified Ops</span></td>
+<td>Predictable, symmetric design makes network easier to manage and troubleshoot </td>
+<td>Reduced operational complexity</td>
+</tr>
+<tr>
+<td><span class="component-badge advantage-badge">High Redundancy</span></td>
+<td>Multiple independent paths provide natural fault tolerance and improved security through network segmentation </td>
+<td>Business continuity assurance</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Design Considerations -->
+<h2>⚠️ Design Considerations</h2>
+<div class="callout callout-warning">
+<strong>Primary Design Concern:</strong> The leading concern for Spine-Leaf architecture is the number of cables and network equipment required to scale the bandwidth. A full-mesh topology between spine and leaf layers requires significant cabling and port density .
+</div>
+
+<h3>Bandwidth Scaling Formula </h3>
+<div class="code-box">
+Switch BW Capacity = (Inter-slot Switching Capacity × Number of I/O Slots) + [(Number of SE Modules × Inter-slot Switching Capacity) / 2]
+
+Full Duplex Switch BW Capacity = (Switch BW Capacity) × 2 
+</div>
+
+<!-- Cisco Switches -->
+<h2>🔌 Cisco Data Center Switches for Spine-Leaf </h2>
+<table>
+<thead>
+<tr>
+<th>Switch Series</th>
+<th>Description</th>
+<th>Port Density</th>
+<th>Interface Types</th>
+<th>Best Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nexus 9500</strong></td>
+<td>Modular switches with comprehensive line card support </td>
+<td>Scalable 1-400 Gbps</td>
+<td>1G, 10G, 25G, 40G, 50G, 100G, 200G, 400G Ethernet </td>
+<td>Spine layer for large-scale deployments</td>
+</tr>
+<tr>
+<td><strong>Nexus 9000</strong></td>
+<td>Operates in Cisco ACI or Cisco NX-OS mode </td>
+<td>48-128 ports</td>
+<td>10G, 25G, 40G, 100G Ethernet</td>
+<td>Spine or leaf layer with ACI fabric capabilities</td>
+</tr>
+<tr>
+<td><strong>Nexus 7000</strong></td>
+<td>Designed for top-of-rack deployments </td>
+<td>24-128 ports</td>
+<td>10G, 40G, 100G Ethernet</td>
+<td>Leaf layer connecting servers and storage</td>
+</tr>
+<tr>
+<td><strong>Nexus 3550</strong></td>
+<td>Ultra-low latency platform with programmable capabilities</td>
+<td>16-32 ports 400G</td>
+<td>400G Ethernet</td>
+<td>High-speed leaf or spine layer</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Lab Equipment -->
+<h2>🛠️ Lab Equipment Setup</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Quantity</th>
+<th>Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spine Switches</td>
+<td>2-4</td>
+<td>Cisco Nexus 9500 or 9000 Series</td>
+<td>Core fabric layer</td>
+</tr>
+<tr>
+<td>Leaf Switches</td>
+<td>4-8</td>
+<td>Cisco Nexus 9000 or 7000 Series</td>
+<td>Access layer for servers</td>
+</tr>
+<tr>
+<td>Server/Endpoint Connections</td>
+<td>16-64 ports</td>
+<td>Virtual machines or physical servers</td>
+<td>Generate traffic for testing</td>
+</tr>
+<tr>
+<td>100G Ethernet Cables</td>
+<td>20-40</td>
+<td>DAC or optical connections</td>
+<td>Spine-Leaf interconnections</td>
+</tr>
+<tr>
+<td>10G/25G Ethernet Cables</td>
+<td>20-40</td>
+<td>DAC or optical connections</td>
+<td>Server-to-Leaf connections</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Topology Details -->
+<h2>📐 Minimal Lab Topology (Recommended for Learning)</h2>
+<div class="callout callout-info">
+<strong>Topology Details :</strong><br>
+• 2 Spine switches providing redundant paths <br>
+• 4 Leaf switches each connecting to both spine switches <br>
+• Each leaf can support 12-16 server connections<br>
+• Total potential: 48-64 connected servers<br>
+• All leaf-to-spine connections are 100Gbps<br>
+• All server-to-leaf connections are 10Gbps or 25Gbps
+</div>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Spine-Leaf Configuration Steps</h2>
+
+<h3><span class="exercise-number">1</span>Phase 1: Physical Setup - Cable Interconnections in Full-Mesh</h3>
+<div class="exercise-box">
+<p>For a 2-Spine, 4-Leaf topology :</p>
+<ul>
+<li>Connect Spine-1 to all 4 Leaf switches (Ports 1-4)</li>
+<li>Connect Spine-2 to all 4 Leaf switches (Ports 5-8)</li>
+<li>Connect servers to Leaf switches (Ports 1-12 per leaf)</li>
+<li>Verify all cables are properly seated and visible</li>
+<li>Label cables for easy troubleshooting</li>
+</ul>
+<p><strong>Connection Pattern:</strong></p>
+<div class="code-box">
+Spine-1 Eth1 ↔ Leaf-1 Eth49</br>
+Spine-1 Eth2 ↔ Leaf-2 Eth49</br>
+Spine-1 Eth3 ↔ Leaf-3 Eth49</br>
+Spine-1 Eth4 ↔ Leaf-4 Eth49</br>
+(Repeat pattern for Spine-2 on Ethernet 50 of each Leaf)
+</div>
+</div>
+
+<h3><span class="exercise-number">2</span>Phase 2: Device Configuration - Spine Switches</h3>
+<div class="exercise-box">
+<p>Configure basic Spine switch parameters:</p>
+<div class="code-box">
+! Access Spine-1 Console
+configure terminal</br>
+hostname Spine-1</br>
+interface Ethernet 1/1-4</br>
+description Leaf-facing ports</br>
+no shutdown</br>
+exit</br>
+exit</br>
+
+! Repeat for Spine-2 with similar configuration
+</div>
+</div>
+
+<h3><span class="exercise-number">3</span>Phase 2: Device Configuration - Leaf Switches</h3>
+<div class="exercise-box">
+<p>Configure basic Leaf switch parameters:</p>
+<div class="code-box">
+! Access Leaf-1 Console
+configure terminal</br>
+hostname Leaf-1</br>
+interface Ethernet 1/49-50</br>
+description Spine-facing ports</br>
+no shutdown</br>
+exit</br>
+interface Ethernet 1/1-12</br>
+description Server-facing ports</br>
+no shutdown</br>
+exit</br>
+exit</br>
+
+! Repeat for Leaf-2, Leaf-3, and Leaf-4
+</div>
+</div>
+
+<h3><span class="exercise-number">4</span>Phase 3: Connectivity Verification</h3>
+<div class="exercise-box">
+<p>Verify all connections are active :</p>
+<div class="code-box">
+Spine-1# show interface brief</br>
+Spine-1# show interface Ethernet 1/1-4 status</br>
+Spine-1# show interface Ethernet 1/1-4 transceiver</br>
+</div>
+<p><strong>Expected Output:</strong></p>
+<ul>
+<li>All spine-to-leaf ports should show "up, up" status</li>
+<li>Transceiver information should display correctly</li>
+<li>Errors and drops should be 0</li>
+</ul>
+</div>
+
+<h3><span class="exercise-number">5</span>Phase 4: Bandwidth Calculation </h3>
+<div class="exercise-box">
+<p>Using Cisco formulas for bandwidth calculation :</p>
+<p><strong>Example Calculation for Nexus 9500 Spine:</strong></p>
+<div class="code-box">
+Inter-slot Switching Capacity = 38.4 Tbps
+Number of I/O Slots = 2
+
+Switch BW Capacity = (38.4 Tbps × 2) + [(0 × 38.4 Tbps) / 2] = 76.8 Tbps
+
+Full Duplex Capacity = 76.8 Tbps × 2 = 153.6 Tbps 
+</div>
+<p><strong>Lab Calculation Task:</strong></p>
+<ul>
+<li>Calculate total bandwidth available from your configured spine switches</li>
+<li>Calculate per-leaf available bandwidth</li>
+<li>Calculate server-to-server east-west bandwidth capacity</li>
+<li>Document oversubscription ratios</li>
+</ul>
+</div>
+
+<h3><span class="exercise-number">6</span>Phase 5: Traffic Testing </h3>
+<div class="exercise-box">
+<p>Deploy traffic generation tools to test topology:</p>
+<ul>
+<li><strong>East-West Traffic:</strong> Server-to-server communication across leaf switches </li>
+<li><strong>North-South Traffic:</strong> Server-to-external network through spine layer</li>
+<li><strong>Measurements:</strong> Latency, throughput, packet loss, and convergence time</li>
+</ul>
+<div class="code-box">
+! Monitor traffic on spine ports
+Spine-1# show interface Ethernet 1/1 stats</br>
+Spine-1# show interface Ethernet 1/1 counters</br>
+</div>
+</div>
+
+<!-- Lab Deliverables -->
+<h2>📦 Lab Deliverables & Verification</h2>
+
+<h3>Required Deliverables</h3>
+<ul>
+<li><strong>Deliverable 1 - Spine-Leaf Topology Diagram :</strong> Detailed topology diagram showing all components and connections, spine and leaf switch placement and roles, all server connections and address assignments, cable types and interface assignments, traffic flow patterns (east-west and north-south), redundancy paths and failover mechanisms</li>
+<li><strong>Deliverable 2 - Bandwidth Capacity Analysis :</strong> Complete bandwidth calculations for topology, switch-level bandwidth calculations using Cisco formulas, per-spine and per-leaf bandwidth availability, east-west traffic capacity between leaf pairs, oversubscription ratio analysis, scalability projections for future expansion</li>
+<li><strong>Deliverable 3 - Configuration Documentation :</strong> Complete configuration scripts for all devices, spine switch configurations, leaf switch configurations, interface configurations and naming conventions, redundancy and failover configurations, QoS and traffic prioritization settings</li>
+<li><strong>Deliverable 4 - Performance Testing Results :</strong> Comprehensive traffic testing and performance analysis, east-west latency measurements, north-south throughput results, packet loss and error rates, convergence time measurements, comparison to design specifications</li>
+<li><strong>Deliverable 5 - Scaling and Expansion Plan :</strong> Documentation of growth strategies, how to add additional leaf switches, bandwidth scaling calculations for expansion, hardware requirements for 500+ server deployment, timeline and resource planning, cost analysis for scaled deployment</li>
+</ul>
+
+<h3>✅ Lab Completion Checklist </h3>
+<ul>
+<li>☐ Understood spine-leaf architecture design principles </li>
+<li>☐ Identified spine and leaf layer roles and components </li>
+<li>☐ Configured full-mesh spine-to-leaf interconnections </li>
+<li>☐ Verified all spine-leaf connections are active and operational</li>
+<li>☐ Calculated bandwidth capacity using Cisco formulas </li>
+<li>☐ Analyzed east-west traffic flows </li>
+<li>☐ Generated and tested traffic patterns</li>
+<li>☐ Documented performance metrics and results</li>
+<li>☐ Created scaling and expansion strategy</li>
+<li>☐ Completed all five deliverables professionally</li>
+</ul>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 2.2 when you can design a complete spine-leaf topology, calculate bandwidth capacity, configure all devices, verify connectivity, and understand how the architecture optimizes for east-west data center traffic flows .
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Data Center Architecture Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+// Disable dangerous keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+
+const shortcuts = {
+123: 'F12',
+85: 'Ctrl+U'
+};
+
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable right-click
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable printing without auth
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+// DevTools detection
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+// Monitor window focus
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

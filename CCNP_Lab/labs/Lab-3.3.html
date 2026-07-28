@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 3.3: MAC Table Management & SDM Configuration | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+.badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.cam-badge { background: #e8f4f8; color: #0066cc; }
+.sdm-badge { background: #e8f8e8; color: #00aa00; }
+.security-badge { background: #fff8e8; color: #ff9900; }
+.warning-badge { background: #ffe8e8; color: #cc0000; }
+
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+line-height: 1.8;
+}
+
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.step-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>💾 Lab 3.3: MAC Table Management & SDM Configuration</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Switching</p>
+<p style="font-size: 0.9em; opacity: 0.85;">CAM Memory Optimization & SDM Template Selection | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Overview -->
+<h2>📋 Lab Overview</h2>
+<p>This laboratory exercise focuses on optimizing MAC address table (CAM) management and configuring Switching Database Management (SDM) templates for efficient memory resource allocation. You will learn to manage MAC address aging timers, configure static MAC entries for critical devices, and select appropriate SDM templates for your network requirements.</p>
+
+<!-- Lab Objectives -->
+<h2>🎯 Lab Objectives</h2>
+<ul>
+<li>Understand and manage CAM (Content Addressable Memory) table operations</li>
+<li>Configure MAC address aging timers for optimal network performance</li>
+<li>Create and maintain static MAC entries for critical devices</li>
+<li>Monitor and clear dynamic MAC address table entries</li>
+<li>Understand SDM template architecture and memory allocation</li>
+<li>Select and configure appropriate SDM templates based on network requirements</li>
+<li>Optimize TCAM resource allocation for ACLs, QoS, and routing</li>
+<li>Verify SDM template effectiveness and memory utilization</li>
+</ul>
+
+<!-- Real-World Scenario -->
+<h2>🏢 Real-World Scenario</h2>
+<p>ABC Corporation operates a network with critical servers requiring persistent MAC address table entries. The network must support multiple VLANs, extensive ACLs, and QoS policies. You will optimize CAM table management to prevent MAC address exhaustion, configure appropriate SDM templates to maximize TCAM utilization for ACLs, and monitor memory resources to ensure network stability and performance.</p>
+
+<!-- Equipment Requirements -->
+<h2>📦 Equipment & Prerequisites</h2>
+
+<h3>Hardware Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Equipment</th>
+<th>Quantity</th>
+<th>Model/Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multilayer Catalyst Switch</td>
+<td>1</td>
+<td>Catalyst 3560, 3650, or higher</td>
+<td>Primary switching platform</td>
+</tr>
+<tr>
+<td>Ethernet Cables</td>
+<td>6+</td>
+<td>Cat5e or Cat6 patch cables</td>
+<td>Device connectivity</td>
+</tr>
+<tr>
+<td>End User Devices</td>
+<td>6+</td>
+<td>PC, Servers, or Virtual Machines</td>
+<td>Test traffic generation</td>
+</tr>
+<tr>
+<td>Console Cable</td>
+<td>1</td>
+<td>RJ-45 to RS-232 or USB</td>
+<td>CLI access to switch</td>
+</tr>
+<tr>
+<td>Terminal Emulation Software</td>
+<td>1</td>
+<td>PuTTY, SecureCRT, or Cisco NETLAB</td>
+<td>Console session management</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Software & Knowledge Requirements</h3>
+<ul>
+<li>Cisco IOS or IOS-XE version 15.0 or later</li>
+<li>Understanding of Layer 2 switching and MAC address learning</li>
+<li>Basic knowledge of TCAM and CAM memory architecture</li>
+<li>Familiarity with ACLs and QoS concepts</li>
+<li>Proficiency with Cisco CLI command structure</li>
+</ul>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Configuration Guide</h2>
+
+<!-- MAC Table Management -->
+<div class="exercise-box">
+<h3><span class="step-number">1</span>MAC Table Management & Optimization</h3>
+
+<p><strong>Step 1.1: Verify Current CAM Table</strong></p>
+<div class="code-box">
+CoreSwitch> enable<br>
+CoreSwitch# show mac address-table<br>
+<br>
+Mac Address Table<br>
+-------------------------------------------<br>
+Vlan Mac Address Type Ports<br>
+---- ----------- -------- -----<br>
+10 0011.2233.4401 DYNAMIC Gi0/1<br>
+10 0011.2233.4402 DYNAMIC Gi0/2<br>
+20 0055.6677.8801 DYNAMIC Gi0/3<br>
+30 00aa.bbcc.dd01 DYNAMIC Gi0/4
+</div>
+
+<p><strong>Step 1.2: Check CAM Table Count and Utilization</strong></p>
+<div class="code-box">
+CoreSwitch# show mac address-table count<br>
+<br>
+Mac Address Table<br>
+-------------------------------------------<br>
+Total MAC addresses in system: 4<br>
+Total in dynamic entries: 4<br>
+Total in static entries: 0<br>
+Maximum CAM entries: 8192<br>
+Utilization: 0.04%
+</div>
+
+<p><strong>Step 1.3: Configure CAM Aging Timer</strong></p>
+<p>Change MAC address table aging time from default 300 seconds to 360 seconds</p>
+<div class="code-box">
+CoreSwitch# configure terminal<br>
+CoreSwitch(config)# mac address-table aging-time 360<br>
+CoreSwitch(config)# exit
+</div>
+
+<p><strong>Step 1.4: Verify Aging Timer Configuration</strong></p>
+<div class="code-box">
+CoreSwitch# show mac address-table aging-time<br>
+Global aging time set to: 360 seconds
+</div>
+
+<p><strong>Step 1.5: Create Static MAC Entry for Critical Server</strong></p>
+<p>Add static MAC entry that never ages for a critical server in VLAN 10</p>
+<div class="code-box">
+CoreSwitch(config)# mac address-table static 0011.2233.4455 vlan 10 interface GigabitEthernet 0/1<br>
+CoreSwitch(config)# mac address-table static 00aa.bbcc.ddee vlan 30 interface GigabitEthernet 0/4<br>
+CoreSwitch(config)# exit
+</div>
+
+<p><strong>Step 1.6: Verify Static MAC Entries</strong></p>
+<div class="code-box">
+CoreSwitch# show mac address-table static<br>
+<br>
+Mac Address Table (static)<br>
+-------------------------------------------<br>
+Vlan Mac Address Type Ports<br>
+---- ----------- -------- -----<br>
+10 0011.2233.4455 STATIC Gi0/1<br>
+30 00aa.bbcc.ddee STATIC Gi0/4
+</div>
+
+<div class="callout callout-success">
+<strong>✓ Success:</strong> Static MAC entries created and will never age from the CAM table.
+</div>
+
+<p><strong>Step 1.7: Clear Dynamic MAC Entries (for testing)</strong></p>
+<div class="code-box">
+CoreSwitch# clear mac address-table dynamic all<br>
+<br>
+ℹ️ Additional clear commands:<br>
+clear mac address-table dynamic address 0011.2233.4401<br>
+clear mac address-table dynamic interface Gi0/1<br>
+clear mac address-table dynamic vlan 10
+</div>
+
+<div class="callout callout-warning">
+<strong>⚠️ Warning:</strong> Clearing MAC entries will cause temporary connectivity disruption as devices relearn. Use only during testing or maintenance windows.
+</div>
+</div>
+
+<!-- SDM Template Configuration -->
+<div class="exercise-box">
+<h3><span class="step-number">2</span>SDM Template Selection & Configuration</h3>
+
+<p><strong>Step 2.1: View Current SDM Template</strong></p>
+<p>Check the currently active SDM template and resource allocation</p>
+<div class="code-box">
+CoreSwitch# show sdm prefer<br>
+<br>
+The current template is "default" template.<br>
+The selected template optimizes the resources in<br>
+the switch to support this level of feature<br>
+compatibility.<br>
+<br>
+Number of VLANs: 4094<br>
+Number of Access Control Lists: 384<br>
+Number of Access Control Entries: 2560<br>
+Number of Unicast MAC addresses: 1024<br>
+Number of Multicast MAC addresses: 512<br>
+Number of IPv4 Routes: 64<br>
+Number of IPv6 Routes: 0
+</div>
+
+<p><strong>Step 2.2: List Available SDM Templates</strong></p>
+<div class="code-box">
+CoreSwitch# show sdm prefer ?<br>
+<br>
+access Optimize for Access Control Lists<br>
+default Default template for balanced switching<br>
+dual-ipv4-ipv6 Dual IPv4/IPv6 support<br>
+qos Optimize for QoS features<br>
+routing Optimize for Layer 3 routing<br>
+vlan Optimize for VLAN configurations
+</div>
+
+<p><strong>Step 2.3: Switch to Access Template (ACL Optimization)</strong></p>
+<p>Configure Access template for network with extensive ACLs</p>
+<div class="code-box">
+CoreSwitch# configure terminal<br>
+CoreSwitch(config)# sdm prefer access<br>
+<br>
+Changes to the SDM template require the system to restart.<br>
+CoreSwitch(config)# exit
+</div>
+
+<div class="callout callout-warning">
+<strong>⚠️ Important:</strong> SDM template changes require switch reload to take effect. Plan this during maintenance windows.
+</div>
+
+<p><strong>Step 2.4: Verify New SDM Template Resources</strong></p>
+<div class="code-box">
+CoreSwitch# show sdm prefer access<br>
+<br>
+The current template is "access" template.<br>
+Optimized for Access Control Lists with focus on TCAM space.<br>
+<br>
+Number of VLANs: 1024<br>
+Number of Access Control Lists: 1024<br>
+Number of Access Control Entries: 8192<br>
+Number of Unicast MAC addresses: 512<br>
+Number of Multicast MAC addresses: 256<br>
+Number of IPv4 Routes: 32<br>
+Number of IPv6 Routes: 0
+</div>
+
+<div class="callout callout-info">
+<strong>💡 Template Comparison:</strong><br>
+Default vs Access Template:<br>
+• ACL Entries: 2560 → 8192 (320% increase)<br>
+• Access Control Lists: 384 → 1024 (267% increase)<br>
+• MAC Addresses: 1024 → 512 (50% reduction)<br>
+• IPv4 Routes: 64 → 32 (50% reduction)
+</div>
+
+<p><strong>Step 2.5: Reload Switch to Apply Template Change</strong></p>
+<div class="code-box">
+CoreSwitch# reload<br>
+<br>
+System configuration has been modified. Save? [yes/no]: yes<br>
+Building configuration...<br>
+[OK]<br>
+<br>
+Proceed with reload? [confirm]
+</div>
+
+<div class="callout callout-success">
+<strong>✓ Success:</strong> SDM template changed and switch reloaded successfully.
+</div>
+
+<p><strong>Step 2.6: Verify Template Activation After Reload</strong></p>
+<div class="code-box">
+CoreSwitch# show sdm prefer<br>
+<br>
+The current template is "access" template.<br>
+The selected template optimizes the resources in<br>
+the switch to support this level of feature<br>
+compatibility.<br>
+<br>
+Number of VLANs: 1024<br>
+Number of Access Control Lists: 1024<br>
+Number of Access Control Entries: 8192<br>
+Number of Unicast MAC addresses: 512
+</div>
+</div>
+
+<!-- Verification & Testing -->
+<h2>✅ Configuration Verification & Testing</h2>
+
+<h3>MAC Table Verification</h3>
+<p><strong>Command: show mac address-table dynamic</strong></p>
+<div class="code-box">
+CoreSwitch# show mac address-table dynamic<br>
+<br>
+Mac Address Table (dynamic)<br>
+-------------------------------------------<br>
+Vlan Mac Address Type Ports<br>
+---- ----------- -------- -----<br>
+10 0011.2233.4401 DYNAMIC Gi0/1<br>
+10 0011.2233.4402 DYNAMIC Gi0/2<br>
+20 0055.6677.8801 DYNAMIC Gi0/3<br>
+30 00aa.bbcc.dd01 DYNAMIC Gi0/4
+</div>
+
+<p><strong>Command: show mac address-table vlan 10</strong></p>
+<div class="code-box">
+CoreSwitch# show mac address-table vlan 10<br>
+<br>
+Mac Address Table for VLAN(s): 10<br>
+-------------------------------------------<br>
+Vlan Mac Address Type Ports<br>
+---- ----------- -------- -----<br>
+10 0011.2233.4401 DYNAMIC Gi0/1<br>
+10 0011.2233.4455 STATIC Gi0/1
+</div>
+
+<h3>SDM Template Utilization Verification</h3>
+<p><strong>Command: show platform hardware throughput asic stats</strong></p>
+<div class="code-box">
+CoreSwitch# show platform hardware throughput asic stats<br>
+<br>
+ASIC Statistics for Throughput Engine:<br>
+─────────────────────────────────────<br>
+TCAM Memory Utilization: 45%<br>
+ACL Entries Used: 342 of 1024 (33%)<br>
+QoS Rules Configured: 8<br>
+Routing Table Entries: 256
+</div>
+
+<!-- Completion Checklist -->
+<h2>📋 Lab Completion Checklist</h2>
+
+<h3>MAC Table Management Checklist</h3>
+<ul>
+<li>☐ Current CAM table contents verified</li>
+<li>☐ MAC address table count and utilization checked</li>
+<li>☐ Aging timer modified from 300 to 360 seconds</li>
+<li>☐ Static MAC entries created for critical devices (2+ entries)</li>
+<li>☐ Static entries verified with show mac address-table static</li>
+<li>☐ Dynamic MAC clear operations tested</li>
+<li>☐ MAC address learning process verified after clearing</li>
+<li>☐ CAM table aging behavior confirmed</li>
+</ul>
+
+<h3>SDM Template Configuration Checklist</h3>
+<ul>
+<li>☐ Default SDM template documented with resource allocation</li>
+<li>☐ Available SDM templates reviewed and understood</li>
+<li>☐ Access template selected for ACL optimization</li>
+<li>☐ Template change command executed successfully</li>
+<li>☐ Switch reload completed without errors</li>
+<li>☐ New template verified as active after reload</li>
+<li>☐ TCAM resource allocation verified (8192 ACL entries available)</li>
+<li>☐ Before/after resource comparison documented</li>
+</ul>
+
+<!-- Key Takeaways -->
+<h2>💡 Key Takeaways & Learning Outcomes</h2>
+<ul>
+<li>CAM (Content Addressable Memory) stores MAC address tables for Layer 2 exact-match lookups at high speed</li>
+<li>MAC address aging (default 300 seconds) ensures stale entries are removed, but can be adjusted for specific network conditions</li>
+<li>Static MAC entries never age and are useful for critical servers and appliances requiring persistent forwarding paths</li>
+<li>SDM (Switching Database Management) templates optimize TCAM allocation for specific network functions</li>
+<li>TCAM (Ternary Content Addressable Memory) stores ACLs, QoS policies, and routing information</li>
+<li>SDM template changes require switch reload to take effect - plan carefully in production networks</li>
+<li>Different templates provide different trade-offs: Access optimizes for ACLs, Routing for Layer 3, VLAN for broadcast domains</li>
+<li>TCAM exhaustion can prevent new ACLs or routes from being installed - proper template selection is critical</li>
+</ul>
+
+<!-- Best Practices -->
+<h2>🏆 Best Practices & Security Recommendations</h2>
+
+<h3>CAM Management Best Practices</h3>
+<ul>
+<li>Monitor CAM table utilization regularly to prevent overflow</li>
+<li>Adjust aging timers based on network stability and device mobility patterns</li>
+<li>Use static MAC entries for critical servers and network appliances</li>
+<li>Implement port security to limit MAC addresses per port, preventing CAM exhaustion</li>
+<li>Regularly clear dynamic entries for testing but avoid excessive clearing in production</li>
+</ul>
+
+<h3>SDM Template Best Practices</h3>
+<ul>
+<li>Right-size SDM templates for your network requirements to avoid TCAM exhaustion</li>
+<li>Monitor TCAM utilization and plan template changes before hitting capacity limits</li>
+<li>Test SDM template changes in lab before production deployment</li>
+<li>Schedule template changes during maintenance windows requiring switch reload</li>
+<li>Consolidate and optimize ACLs to reduce TCAM entry consumption</li>
+</ul>
+
+<!-- Troubleshooting Guide -->
+<h2>🔧 Troubleshooting Guide</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CAM table fills to capacity</td>
+<td>Excessive MAC learning or spoofing</td>
+<td>Clear entries, enable port security, adjust aging timer</td>
+</tr>
+<tr>
+<td>Static MAC not appearing in table</td>
+<td>Incorrect VLAN or interface specification</td>
+<td>Verify VLAN exists, check interface name, re-enter command</td>
+</tr>
+<tr>
+<td>TCAM exhaustion error</td>
+<td>Current template insufficient for ACLs</td>
+<td>Switch to Access template, reload switch</td>
+</tr>
+<tr>
+<td>Switch won't reload after template change</td>
+<td>Configuration not saved before reload</td>
+<td>Save running-config, then perform reload</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 3.3 when you can manage CAM table aging, create static MAC entries, select appropriate SDM templates, and optimize TCAM resource allocation for your network requirements.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Layer 2 Switching Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

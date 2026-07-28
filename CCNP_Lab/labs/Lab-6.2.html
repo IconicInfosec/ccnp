@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MST Load Sharing Lab - Iconic InfoSec Training</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+}
+
+.content-wrapper {
+background: white;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.lab-title {
+color: #1e3c72;
+font-size: 2em;
+margin-bottom: 10px;
+}
+
+.lab-description {
+color: #667eea;
+font-size: 1em;
+font-weight: bold;
+margin-bottom: 15px;
+}
+
+.lab-metadata {
+background: #f8f9fa;
+padding: 15px;
+border-left: 4px solid #667eea;
+margin: 20px 0;
+border-radius: 4px;
+}
+
+.section-title {
+color: #1e3c72;
+font-size: 1.5em;
+margin-top: 25px;
+margin-bottom: 15px;
+border-bottom: 2px solid #667eea;
+padding-bottom: 10px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+}
+
+table th {
+background: #667eea;
+color: white;
+padding: 12px;
+text-align: left;
+}
+
+table td {
+padding: 12px;
+border-bottom: 1px solid #ddd;
+}
+
+table tr:hover {
+background-color: #f5f5f5;
+}
+
+.code-block {
+background: #1e3c72;
+color: #00ff00;
+padding: 15px;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+margin: 15px 0;
+overflow-x: auto;
+white-space: pre-wrap;
+word-wrap: break-word;
+font-size: 0.9em;
+line-height: 1.4;
+}
+
+.alert {
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.alert-danger {
+background-color: #f8d7da;
+border-left: 4px solid #dc3545;
+color: #721c24;
+}
+
+.alert-success {
+background-color: #d4edda;
+border-left: 4px solid #28a745;
+color: #155724;
+}
+
+.alert-info {
+background-color: #d1ecf1;
+border-left: 4px solid #17a2b8;
+color: #0c5460;
+}
+
+.alert-warning {
+background-color: #fff3cd;
+border-left: 4px solid #ffc107;
+color: #856404;
+}
+
+.checklist {
+list-style: none;
+padding: 0;
+}
+
+.checklist li {
+padding: 10px;
+margin: 5px 0;
+background: #f8f9fa;
+border-radius: 4px;
+}
+
+.topology-diagram {
+background: #f5f5f5;
+padding: 20px;
+border: 2px solid #667eea;
+border-radius: 5px;
+margin: 20px 0;
+font-family: 'Courier New', monospace;
+white-space: pre;
+overflow-x: auto;
+line-height: 1.3;
+}
+
+.command-step {
+background: #f8f9fa;
+padding: 15px;
+margin: 15px 0;
+border-left: 4px solid #28a745;
+border-radius: 4px;
+}
+
+.command-step strong {
+color: #1e3c72;
+display: block;
+margin-bottom: 10px;
+}
+
+.config-label {
+color: #667eea;
+font-weight: bold;
+margin-top: 10px;
+display: block;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+/* Password Protection Modal */
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Denied</h2>
+<p>This page is password protected</p>
+<p>Enter your master password to view/edit content</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🌐 LAB 6.2: Multiple MSTI Load Balancing</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Training</p>
+<p style="margin-top: 10px; font-size: 0.9em;">Multiple Spanning Tree Instances - Enterprise Load Balancing & Asymmetric Topology Design</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content Container -->
+<div id="protectedBody" class="protected-element">
+
+<!-- Lab Content Wrapper -->
+<div class="content-wrapper">
+
+<!-- Lab Title Section -->
+<div class="lab-title">🎯 LAB OVERVIEW - Multiple MSTI Load Balancing</div>
+<div class="lab-description">Enterprise Load Balancing using Asymmetric Root Bridge Selection Across Multiple MSTI Instances</div>
+
+<!-- Lab Metadata -->
+<div class="lab-metadata">
+<strong>🎯 Lab Duration:</strong> 90-120 minutes | <strong>📊 Difficulty Level:</strong> Advanced | <strong>🔧 Equipment Required:</strong> 4 Cisco Switches (Extended Topology)<br>
+<strong>✅ CCNP Exam Alignment:</strong> 350-401 (ENCOR) & 300-410 (ENARSI) - MST Load Balancing<br>
+<strong>📚 Lab Version:</strong> 1.0 | <strong>⚡ Real-World Performance:</strong> 70-80% CPU Reduction | 80% Memory Reduction | ~80% Faster Convergence
+</div>
+
+<!-- Learning Objectives -->
+<div class="section-title">📚 Learning Objectives</div>
+<ul class="checklist">
+<li>☐ Create multiple MSTI instances and map VLANs to specific instances</li>
+<li>☐ Configure asymmetric root bridge selection across MSTIs for load balancing</li>
+<li>☐ Demonstrate traffic steering using different root bridges per instance</li>
+<li>☐ Verify load balancing topology with show commands</li>
+<li>☐ Measure performance improvements over single STP instance</li>
+<li>☐ Troubleshoot MSTI configuration issues and convergence problems</li>
+<li>☐ Compare resource utilization across different STP modes</li>
+</ul>
+
+<!-- Lab Scenario -->
+<div class="section-title">🏢 Lab Scenario</div>
+<p>Your enterprise has 20 VLANs distributed across 4 switches. To optimize bandwidth utilization and reduce CPU overhead, you need to create an MST region with multiple instances, each with different root bridges. This asymmetric topology enables traffic for different VLAN groups to follow different paths, maximizing redundant link usage.</p>
+
+<div class="alert alert-info">
+<strong>ℹ️ Real-World Application:</strong> By implementing 4 MSTI instances instead of 20 PVST+ instances, you reduce CPU load by 70-80% while enabling intelligent traffic distribution across available paths.
+</div>
+
+<!-- Network Topology Diagram -->
+<div class="section-title">🔗 Network Topology Diagram</div>
+
+<div class="topology-container">
+                        <p style="margin-bottom: 15px; color: #666;"><strong>LAB 5.2: ACCESS LAYER REDUNDANCY - PORT PRIORITY CONFIGURATION</strong></p>
+                        <img src="https://f005.backblazeb2.com/file/CCNPLabPic/MSTLoad.jpg" alt="Network Topology" class="topology-image">
+                        <div class="topology-legend">
+MSTI 0 (IST):      All unassigned VLANs - Root: Core-SW-1 <br>
+MSTI 1:            VLANs 10-30 - Root: Core-SW-1 (Load Path 1) <br>
+MSTI 2:            VLANs 40-60 - Root: Core-SW-2 (Load Path 2)<br>
+MSTI 3:            VLANs 70-90 - Root: Core-SW-3 (Load Path 3)<br> </div>
+
+<!-- Equipment Setup -->
+<div class="section-title">⚙️ Equipment Setup & Requirements</div>
+
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Hostname</th>
+<th>Role</th>
+<th>Key Interfaces</th>
+<th>MST Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switch 1</td>
+<td>Core-SW-1</td>
+<td>IST Root + MSTI 1 Root</td>
+<td>Gi0/0-1</td>
+<td>4096 (IST), 8192 (MSTI 1)</td>
+</tr>
+<tr>
+<td>Switch 2</td>
+<td>Core-SW-2</td>
+<td>MSTI 2 Root</td>
+<td>Gi0/0-1,G1/1</td>
+<td>8192 (MSTI 2)</td>
+</tr>
+<tr>
+<td>Switch 3</td>
+<td>Core-SW-3</td>
+<td>MSTI 3 Root</td>
+<td>Gi0/1,G1/2</td>
+<td>8192 (MSTI 3)</td>
+</tr>
+<tr>
+<td>Switch 4</td>
+<td>Dis-SW-1</td>
+<td>Access/Distribution</td>
+<td>Gi1/1-2</td>
+<td>Default Priority (32768)</td>
+</tr>
+</tbody>
+</table>
+
+<!-- VLAN/Subnet Table -->
+<div class="section-title">🌐 VLAN Assignment & Instance Mapping</div>
+
+<table>
+<thead>
+<tr>
+<th>MST Instance</th>
+<th>Name/Purpose</th>
+<th>VLAN Range</th>
+<th>Primary Root</th>
+<th>Secondary Root</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instance 0 (IST)</td>
+<td>Management VLANs</td>
+<td>1, 100, 200</td>
+<td>Core-SW-1 (Pri: 4096)</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>MSTI 1</td>
+<td>Finance Production</td>
+<td>10, 20, 30</td>
+<td>Core-SW-1 (Pri: 8192)</td>
+<td>Core-SW-2 (Sec)</td>
+</tr>
+<tr>
+<td>MSTI 2</td>
+<td>Engineering Production</td>
+<td>40, 50, 60</td>
+<td>Core-SW-2 (Pri: 8192)</td>
+<td>Core-SW-3 (Sec)</td>
+</tr>
+<tr>
+<td>MSTI 3</td>
+<td>Development/Marketing</td>
+<td>70, 80, 90</td>
+<td>Core-SW-3 (Pri: 8192)</td>
+<td>Core-SW-1 (Sec)</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Pre-Lab Requirements -->
+<div class="section-title">⚠️ Pre-Lab Requirements</div>
+
+<div class="alert alert-warning">
+<strong>⚠️ Important Prerequisites:</strong>
+<ul style="margin-top: 10px;">
+<li>• Reset all switches: <code>write erase</code> then <code>reload</code></li>
+<li>• Verify LAB 6.1 (basic MST) configuration is working before proceeding</li>
+<li>• Ensure all trunk links are properly configured</li>
+<li>• All switches must have compatible IOS versions with MST support</li>
+<li>• Physical connections must match the topology diagram</li>
+</ul>
+</div>
+
+<!-- Configuration Section -->
+<div class="section-title">🔧 Step-by-Step Configuration Guide</div>
+
+<!-- Phase 1 -->
+<div class="section-title" style="font-size: 1.3em; margin-top: 30px;">Phase 1: Baseline & VLAN Setup</div>
+
+<div class="command-step">
+<strong>Step 1: Initialize Switches & Create VLANs</strong>
+<span class="config-label">Execute on ALL switches:</span>
+<div class="code-block">! Reset switch to baseline
+Core-SW-1# write erase
+Core-SW-1# reload
+
+! Proceed after switch boots
+! On all switches:
+Switch# configure terminal
+Switch(config)# hostname SW-X
+
+! Create all required VLANs
+Switch(config)# vlan 10
+Switch(config-vlan)# name Finance-VLAN10
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 20
+Switch(config-vlan)# name Finance-VLAN20
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 30
+Switch(config-vlan)# name Finance-VLAN30
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 40
+Switch(config-vlan)# name Engineering-VLAN40
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 50
+Switch(config-vlan)# name Engineering-VLAN50
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 60
+Switch(config-vlan)# name Engineering-VLAN60
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 70
+Switch(config-vlan)# name Dev-Marketing-VLAN70
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 80
+Switch(config-vlan)# name Dev-Marketing-VLAN80
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 90
+Switch(config-vlan)# name Dev-Marketing-VLAN90
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 100
+Switch(config-vlan)# name Management-VLAN100
+Switch(config-vlan)# exit
+
+Switch(config)# vlan 200
+Switch(config-vlan)# name Monitoring-VLAN200
+Switch(config-vlan)# exit
+
+Switch(config)# end
+Switch# wr mem</div>
+<div class="alert alert-success">✓ Verification Command: <code>show vlan brief</code></div>
+</div>
+
+<div class="command-step">
+<strong>Step 2: Configure Trunk Links</strong>
+<span class="config-label">Execute on ALL switches:</span>
+<div class="code-block">! Configure trunk links on all interfaces
+Switch# configure terminal
+
+! Configure core trunk links (Gi0/1-3)
+Switch(config)# interface range gi0/1-3
+Switch(config-if-range)# description Core-Trunk-Link
+Switch(config-if-range)# switchport mode trunk
+Switch(config-if-range)# switchport trunk allowed vlan 1,10-100,200
+Switch(config-if-range)# switchport trunk native vlan 1
+Switch(config-if-range)# no shutdown
+Switch(config-if-range)# exit
+
+! Configure backup trunk links (Gi0/48-50)
+Switch(config)# interface range gi0/48-50
+Switch(config-if-range)# description Access-Trunk-Link
+Switch(config-if-range)# switchport mode trunk
+Switch(config-if-range)# switchport trunk allowed vlan 1,10-100,200
+Switch(config-if-range)# switchport trunk native vlan 1
+Switch(config-if-range)# no shutdown
+Switch(config-if-range)# exit
+
+Switch(config)# end
+Switch# wr mem</div>
+<div class="alert alert-success">✓ Verification Command: <code>show interface trunk</code></div>
+</div>
+
+<!-- Phase 2 -->
+<div class="section-title" style="font-size: 1.3em; margin-top: 30px;">Phase 2: Enable MST Mode & Configure Region</div>
+
+<div class="command-step">
+<strong>Step 3: Enable MST Mode on All Switches</strong>
+<span class="config-label">Execute on ALL switches:</span>
+<div class="code-block">! Enable MST spanning tree mode
+Switch# configure terminal
+Switch(config)# spanning-tree mode mst
+Switch(config)# end
+Switch# wr mem</div>
+<div class="alert alert-success">✓ MST mode enabled. Ready for region configuration.</div>
+</div>
+
+<div class="command-step">
+<strong>Step 4: Configure MST Region Attributes (IDENTICAL on all switches)</strong>
+<span class="config-label">Execute on ALL switches - Configuration MUST be IDENTICAL:</span>
+<div class="code-block">! CRITICAL: Region name and revision MUST match on all switches
+Switch# configure terminal
+Switch(config)# spanning-tree mst configuration
+
+! Set region parameters
+Switch(config-mst)# name ENTERPRISE-MST
+Switch(config-mst)# revision 2
+
+! Map VLANs to instances
+Switch(config-mst)# instance 0 vlan 1,100,200
+Switch(config-mst)# instance 1 vlan 10,20,30
+Switch(config-mst)# instance 2 vlan 40,50,60
+Switch(config-mst)# instance 3 vlan 70,80,90
+
+! Exit MST configuration mode
+Switch(config-mst)# exit
+Switch(config)# end
+Switch# wr mem
+
+! Verify configuration
+Switch# show spanning-tree mst configuration</div>
+
+<div class="alert alert-success">
+<strong>✅ Expected Output:</strong><br>
+<code>Name [ENTERPRISE-MST]<br>
+Revision [2]<br>
+Instance VlanMapping<br>
+0        1,100,200<br>
+1        10,20,30<br>
+2        40,50,60<br>
+3        70,80,90</code>
+</div>
+</div>
+
+<!-- Phase 3 -->
+<div class="section-title" style="font-size: 1.3em; margin-top: 30px;">Phase 3: Configure Asymmetric Root Bridges per MSTI</div>
+
+<div class="command-step">
+<strong>Step 5: Configure Core-SW-1 as IST & MSTI 1 Root</strong>
+<span class="config-label">Execute ONLY on Core-SW-1:</span>
+<div class="code-block">Core-SW-1# configure terminal
+
+! Configure Core-SW-1 as primary root for IST (Instance 0)
+Core-SW-1(config)# spanning-tree mst 0 root primary
+! Priority automatically set to 4096
+
+! Configure Core-SW-1 as primary root for MSTI 1
+Core-SW-1(config)# spanning-tree mst 1 root primary
+! Priority automatically set to 8192
+
+Core-SW-1(config)# end
+Core-SW-1# wr mem</div>
+
+<div class="alert alert-success">
+<strong>✅ Expected Result:</strong><br>
+Core-SW-1 is now root for IST (Instance 0) and MSTI 1. Priority: 4096 (IST), 8192 (MSTI 1).
+</div>
+</div>
+
+<div class="command-step">
+<strong>Step 6: Configure Core-SW-2 as MSTI 2 Root</strong>
+<span class="config-label">Execute ONLY on Core-SW-2:</span>
+<div class="code-block">Core-SW-2# configure terminal
+
+! Configure Core-SW-2 as primary root for MSTI 2
+Core-SW-2(config)# spanning-tree mst 2 root primary
+! Priority automatically set to 8192
+
+Core-SW-2(config)# end
+Core-SW-2# wr mem</div>
+
+<div class="alert alert-info">
+<strong>ℹ️ Load Balancing Benefit:</strong><br>
+VLANs 40-60 traffic follows path through Core-SW-2<br>
+VLANs 10-30 traffic follows path through Core-SW-1<br>
+This distributes load across multiple paths
+</div>
+</div>
+
+<div class="command-step">
+<strong>Step 7: Configure Core-SW-3 as MSTI 3 Root</strong>
+<span class="config-label">Execute ONLY on Core-SW-3:</span>
+<div class="code-block">Core-SW-3# configure terminal
+
+! Configure Core-SW-3 as primary root for MSTI 3
+Core-SW-3(config)# spanning-tree mst 3 root primary
+! Priority automatically set to 8192
+
+Core-SW-3(config)# end
+Core-SW-3# wr mem</div>
+
+<div class="alert alert-success">
+<strong>✅ Expected Result:</strong><br>
+Core-SW-3 is now root for MSTI 3. Priority: 8192.
+</div>
+</div>
+
+<div class="command-step">
+<strong>Step 8: Set Secondary Root Bridges for Redundancy</strong>
+<span class="config-label">Execute on respective switches:</span>
+<div class="code-block">! On Core-SW-1 (backup for MSTI 2 & 3):
+Core-SW-1# configure terminal
+Core-SW-1(config)# spanning-tree mst 2 root secondary
+Core-SW-1(config)# spanning-tree mst 3 root secondary
+Core-SW-1(config)# end
+Core-SW-1# wr mem
+
+! On Core-SW-2 (backup for MSTI 1 & 3):
+Core-SW-2# configure terminal
+Core-SW-2(config)# spanning-tree mst 1 root secondary
+Core-SW-2(config)# spanning-tree mst 3 root secondary
+Core-SW-2(config)# end
+Core-SW-2# wr mem
+
+! On Core-SW-3 (backup for MSTI 2 & 1):
+Core-SW-3# configure terminal
+Core-SW-3(config)# spanning-tree mst 2 root secondary
+Core-SW-3(config)# spanning-tree mst 1 root secondary
+Core-SW-3(config)# end
+Core-SW-3# wr mem</div>
+
+<div class="alert alert-success">
+<strong>✅ Redundancy Active:</strong> Each MSTI has primary and backup root bridges for failover protection.
+</div>
+</div>
+
+<div class="command-step">
+<strong>Step 9: Set Access Switches to Default Priority</strong>
+<span class="config-label">Execute on Dis-SW-1 (and any access switches):</span>
+<div class="code-block">! Configure access/non-root switches
+Dis-SW-1# configure terminal
+
+! Set default priority on all instances
+Dis-SW-1(config)# spanning-tree mst 0 priority 32768
+Dis-SW-1(config)# spanning-tree mst 1 priority 32768
+Dis-SW-1(config)# spanning-tree mst 2 priority 32768
+Dis-SW-1(config)# spanning-tree mst 3 priority 32768
+
+Dis-SW-1(config)# end
+Dis-SW-1# wr mem</div>
+
+<div class="alert alert-success">
+<strong>✅ Expected Result:</strong><br>
+Dis-SW-1 now has default priority (32768) on all instances, ensuring it never becomes root.
+</div>
+</div>
+
+<!-- Verification Section -->
+<div class="section-title">✅ Verification & Validation</div>
+
+<div class="section-title" style="font-size: 1.3em;">Verification Checklist 1: MST Region Configuration</div>
+
+<ul class="checklist">
+<li>☐ All 4 switches have identical region name "ENTERPRISE-MST"</li>
+<li>☐ All 4 switches have revision number "2"</li>
+<li>☐ Instance mapping verified on all switches</li>
+<li>☐ IST (Instance 0) vlan 1, 100, 200 confirmed</li>
+<li>☐ MSTI 1 vlan 10, 20, 30 confirmed</li>
+<li>☐ MSTI 2 vlan 40, 50, 60 confirmed</li>
+<li>☐ MSTI 3 vlan 70, 80, 90 confirmed</li>
+</ul>
+
+<div class="section-title" style="font-size: 1.3em;">Verification Checklist 2: Asymmetric Root Bridges</div>
+
+<ul class="checklist">
+<li>☐ Core-SW-1: IST root (priority 4096)</li>
+<li>☐ Core-SW-1: MSTI 1 root (priority 8192)</li>
+<li>☐ Core-SW-2: MSTI 2 root (priority 8192)</li>
+<li>☐ Core-SW-3: MSTI 3 root (priority 8192)</li>
+<li>☐ All secondary roots configured</li>
+<li>☐ Load balancing verified with different root bridges per instance</li>
+</ul>
+
+<div class="section-title" style="font-size: 1.3em;">Verification Checklist 3: Trunk Links & Convergence</div>
+
+<ul class="checklist">
+<li>☐ All trunk links operational: show interface trunk</li>
+<li>☐ All trunks allow required VLANs</li>
+<li>☐ No errors on trunk ports</li>
+<li>☐ Convergence time < 10 seconds per instance</li>
+<li>☐ IST and all MSTIs converged</li>
+<li>☐ No port role conflicts across instances</li>
+</ul>
+
+<!-- Critical Verification Commands -->
+<div class="section-title">📋 Critical Verification Commands</div>
+
+<div class="command-step">
+<strong>1. MST Region Status Verification</strong>
+<div class="code-block">! Execute on any switch:
+show spanning-tree mst configuration
+
+! Expected Output:
+Name [ENTERPRISE-MST]
+Revision [2]
+Instance VlanMapping
+0        1,100,200
+1        10,20,30
+2        40,50,60
+3        70,80,90</div>
+</div>
+
+<div class="command-step">
+<strong>2. IST Root Bridge Verification</strong>
+<div class="code-block">! Execute on any switch:
+show spanning-tree mst 0 | include "Root\|Priority"
+
+! Expected on non-root switches:
+Root ID    Priority    4096
+         Address     aabb.ccdd.eeff  (Core-SW-1 MAC)
+Cost     0
+
+! Expected on Core-SW-1:
+This bridge is the root</div>
+</div>
+
+<div class="command-step">
+<strong>3. MSTI Root Bridge Verification</strong>
+<div class="code-block">! Verify MSTI 1 Root (should be Core-SW-1):
+show spanning-tree mst 1 | include "Root\|Priority"
+
+! Verify MSTI 2 Root (should be Core-SW-2):
+show spanning-tree mst 2 | include "Root\|Priority"
+
+! Verify MSTI 3 Root (should be Core-SW-3):
+show spanning-tree mst 3 | include "Root\|Priority"
+
+! Expected Output for MSTI 1 on Core-SW-2:
+Regional Root ID  Priority    8192
+                Address     aabb.1111.1111  (Core-SW-1 MAC)</div>
+</div>
+
+<div class="command-step">
+<strong>4. Port Roles Across Instances</strong>
+<div class="code-block">! Display detailed topology per instance:
+show spanning-tree mst 0 detail
+show spanning-tree mst 1 detail
+show spanning-tree mst 2 detail
+show spanning-tree mst 3 detail
+
+! Verify roles differ per instance:
+Interface       Role   State   Cost
+Gi0/1          Desg   Fwd     200000
+Gi0/2          Root   Fwd     200000
+Gi0/3          Altn   Blk     200000
+
+! Different port roles = Load balancing active</div>
+</div>
+
+<div class="command-step">
+<strong>5. Load Balancing Verification</strong>
+<div class="code-block">! Display all root bridges in single view:
+show spanning-tree mst root
+
+! Expected Output:
+Instance  Pri RootID         RootCost  RootPort  Cost
+0         4096 aabb.0000.0001 0        Gi0/1    200000
+1         8192 aabb.0000.0001 200000   Gi0/1    200000
+2         8192 aabb.0000.0002 200000   Gi0/2    200000
+3         8192 aabb.0000.0003 200000   Gi0/3    200000
+
+! Shows different roots and different paths for each instance!</div>
+</div>
+
+<div class="command-step">
+<strong>6. VLAN to Instance Mapping Verification</strong>
+<div class="code-block">! Verify VLAN belongs to correct instance:
+show spanning-tree vlan 10
+show spanning-tree vlan 40
+show spanning-tree vlan 70
+
+! Expected Output shows which instance each VLAN uses:
+VLAN 10 is executing the mst1 (MST Instance) version of the STP
+Spanning Tree enabled protocol mst
+Root ID    Priority    8192
+         Address     aabb.0000.0001  (Core-SW-1)
+Cost     200000
+Port     3 (Gigabit 0/3)</div>
+</div>
+
+<!-- Troubleshooting Guide -->
+<div class="section-title">🔍 Troubleshooting Guide</div>
+
+<div class="command-step">
+<strong>Issue 1: Region Mismatch - Different Names or Revisions</strong>
+<strong style="color: #dc3545;">Symptom:</strong> Switches show different region names or revision numbers
+<strong style="color: #dc3545; display: block; margin-top: 10px;">Root Cause:</strong> Configuration mismatch prevents unified region formation
+<strong style="color: #28a745; display: block; margin-top: 10px;">Solution:</strong>
+
+<div class="code-block">! On mismatched switch:
+Switch# configure terminal
+Switch(config)# spanning-tree mst configuration
+Switch(config-mst)# name ENTERPRISE-MST
+Switch(config-mst)# revision 2
+
+! Verify region matches
+Switch(config-mst)# exit
+Switch(config)# end
+Switch# show spanning-tree mst configuration
+
+! Region name and revision must match all other switches</div>
+</div>
+
+<div class="command-step">
+<strong>Issue 2: Different Root Bridges Not Applied Correctly</strong>
+<strong style="color: #dc3545;">Symptom:</strong> All MSTIs show same root bridge instead of different ones
+<strong style="color: #dc3545; display: block; margin-top: 10px;">Root Cause:</strong> Root bridge commands not executed on correct switches or priority values still at defaults
+<strong style="color: #28a745; display: block; margin-top: 10px;">Solution:</strong>
+
+<div class="code-block">! Verify on each switch:
+Core-SW-1# show spanning-tree mst 1 | include "Bridge ID\|Priority"
+Core-SW-1# show spanning-tree mst 2 | include "Bridge ID\|Priority"
+Core-SW-1# show spanning-tree mst 3 | include "Bridge ID\|Priority"
+
+! Should show different priorities on different switches
+! Check bridge ID addresses - should be different per instance
+
+! If all roots are same, verify root primary commands executed:
+Core-SW-1# show spanning-tree mst 1 root
+Core-SW-2# show spanning-tree mst 2 root
+Core-SW-3# show spanning-tree mst 3 root</div>
+</div>
+
+<div class="command-step">
+<strong>Issue 3: Load Balancing Not Working</strong>
+<strong style="color: #dc3545;">Symptom:</strong> Traffic for all VLANs follows same path (single root dominates)
+<strong style="color: #dc3545; display: block; margin-top: 10px;">Root Cause:</strong> Different MSTIs don't have different root bridges or port cost calculations favor one path
+<strong style="color: #28a745; display: block; margin-top: 10px;">Solution:</strong>
+
+<div class="code-block">! Check if all instances have their intended roots:
+show spanning-tree mst root
+
+! Output should show different Root IDs per instance:
+Instance  Pri RootID         RootCost  RootPort  Cost
+0         4096 aabb.0000.0001           Gi0/1
+1         8192 aabb.0000.0001           Gi0/1
+2         8192 aabb.0000.0002           Gi0/2   ← Different!
+3         8192 aabb.0000.0003           Gi0/3   ← Different!
+
+! If not different, reconfigure root priorities:
+Core-SW-2(config)# spanning-tree mst 2 priority 8192
+Core-SW-3(config)# spanning-tree mst 3 priority 8192</div>
+</div>
+
+<div class="command-step">
+<strong>Issue 4: Convergence Delays on Instance Change</strong>
+<strong style="color: #dc3545;">Symptom:</strong> One MSTI converges quickly, another takes 30+ seconds
+<strong style="color: #dc3545; display: block; margin-top: 10px;">Root Cause:</strong> Possible spanning tree port issues, mismatched timers, or RSTP not properly enabled
+<strong style="color: #28a745; display: block; margin-top: 10px;">Solution:</strong>
+
+<div class="code-block">! Check if RSTP is enabled in MST:
+show spanning-tree detail | include "Protocol"
+
+! Should show: STP Protocol = rstp (RSTP runs within MST)
+
+! Verify port states after simulated link failure:
+show spanning-tree mst 0 detail
+show spanning-tree mst 1 detail
+show spanning-tree mst 2 detail
+show spanning-tree mst 3 detail
+
+! All ports should transition within 6-10 seconds
+! If taking longer, check for BPDUguard or other port configurations</div>
+</div>
+
+<!-- Performance Comparison -->
+<div class="section-title">📈 Performance Comparison: MST Load Balancing vs Single STP Instance</div>
+
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Single STP Instance</th>
+<th>MST 4 Instances (Lab Result)</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bandwidth Utilization</td>
+<td>Single path active</td>
+<td>Multiple paths active</td>
+<td>300-400% throughput gain</td>
+</tr>
+<tr>
+<td>CPU Load</td>
+<td>35-40% baseline</td>
+<td>10-15% baseline</td>
+<td>70% reduction</td>
+</tr>
+<tr>
+<td>Memory Usage</td>
+<td>20 MB (20 PVST+ instances)</td>
+<td>4 MB (4 MSTI instances)</td>
+<td>80% reduction</td>
+</tr>
+<tr>
+<td>Convergence Time</td>
+<td>30-50 seconds</td>
+<td>6-10 seconds</td>
+<td>~80% faster</td>
+</tr>
+<tr>
+<td>Load Distribution</td>
+<td>Unbalanced</td>
+<td>Optimized</td>
+<td>Better utilization</td>
+</tr>
+<tr>
+<td>BPDU Overhead</td>
+<td>Multiple per port</td>
+<td>1 BPDU/port (4 instances inside)</td>
+<td>Significant reduction</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Key Learning Points -->
+<div class="section-title">📚 Key Learning Points</div>
+
+<div class="alert alert-info">
+<strong>🎯 Critical Concepts to Understand:</strong>
+
+<strong style="display: block; margin-top: 15px;">1. MST Region Requirement</strong>
+All switches in an MST region must have identical region name, revision, and instance VLAN mapping. Any mismatch creates separate spanning trees instead of a unified region.
+
+<strong style="display: block; margin-top: 15px;">2. Asymmetric Load Balancing</strong>
+By configuring different switches as root bridges for different MSTI instances, traffic for different VLAN groups takes different paths, maximizing bandwidth utilization across available redundant links.
+
+<strong style="display: block; margin-top: 15px;">3. IST (Internal Spanning Tree)</strong>
+MSTI 0 (Instance 0) acts as the IST and encapsulates all other MSTIs. All switches must participate in IST for inter-region communication. Configuration errors in IST affect all MSTIs.
+
+<strong style="display: block; margin-top: 15px;">4. Priority Values</strong>
+• Use primary/secondary commands for automatic priority calculation (4096 for primary, 16384 for secondary)
+• Increment by 4096 in manual configurations for easy management
+• Higher priority value = less preferred as root
+
+<strong style="display: block; margin-top: 15px;">5. BPDU Encapsulation Efficiency</strong>
+MST encapsulates all MSTI BPDUs into a single BPDU format (M-BPDU). This dramatically reduces bandwidth overhead compared to 20 separate STP instances in PVST+ mode.
+
+<strong style="display: block; margin-top: 15px;">6. Convergence Advantages</strong>
+RSTP-like rapid convergence (6-10 seconds) within MST replaces 30-50 second convergence times in traditional spanning tree, improving network resilience.
+
+<strong style="display: block; margin-top: 15px;">7. Per-VLAN Load Balancing</strong>
+Each VLAN follows its mapped instance's topology. This allows true asymmetric load balancing where different VLAN groups actively use different physical paths.
+</div>
+
+<!-- Common Mistakes -->
+<div class="section-title">❌ Common Mistakes to Avoid</div>
+
+<div class="alert alert-danger">
+<strong>Mistake 1: Mismatched Region Configuration</strong>
+✗ Setting different region names or revisions on switches
+✓ Verify ALL switches have identical: name ENTERPRISE-MST, revision 2
+
+<strong style="display: block; margin-top: 15px;">Mistake 2: Not Creating Backup Root Bridges</strong>
+✗ Only configuring primary roots without secondaries
+✓ Always configure secondary roots for failover protection
+
+<strong style="display: block; margin-top: 15px;">Mistake 3: Same Root for All Instances</strong>
+✗ Letting all instances use single root bridge by default
+✓ Explicitly configure different roots (primary commands) on different switches per instance
+
+<strong style="display: block; margin-top: 15px;">Mistake 4: Forgetting to Include Unassigned VLANs in Instance 0</strong>
+✗ Creating instances that don't include Instance 0 mapping
+✓ Instance 0 (IST) must include at least one VLAN (usually management VLANs 1, 100, 200)
+
+<strong style="display: block; margin-top: 15px;">Mistake 5: Not Verifying with Show Commands</strong>
+✗ Applying configuration without verifying actual state
+✓ After each major config step, run verification commands to confirm expected behavior
+
+<strong style="display: block; margin-top: 15px;">Mistake 6: Forgetting "write memory" After Configuration</strong>
+✗ Configuring switches but not saving with wr mem
+✓ Always save configuration after making changes to persist across reboots
+</div>
+
+<!-- Lab Completion Criteria -->
+<div class="section-title">✅ Lab Completion Criteria</div>
+
+<div class="alert alert-success">
+<strong>Successfully Complete This Lab When:</strong>
+
+<ul style="margin-top: 15px;">
+<li>✓ All 4 switches in same MST region (ENTERPRISE-MST, Rev 2)</li>
+<li>✓ IST and 3 MSTIs created with correct VLAN mappings</li>
+<li>✓ Asymmetric root bridges configured (Core-SW-1, Core-SW-2, Core-SW-3 roots)</li>
+<li>✓ Load balancing verified with different paths per VLAN group</li>
+<li>✓ All trunk links operational and error-free</li>
+<li>✓ Convergence time < 10 seconds per instance</li>
+<li>✓ All verification commands execute successfully</li>
+<li>✓ Performance metrics show resource reduction (CPU, Memory)</li>
+<li>✓ Secondary root bridges functional (manual failover test)</li>
+<li>✓ No region mismatches or BPDU errors in logs</li>
+</ul>
+</div>
+
+<!-- Advanced Challenge -->
+<div class="section-title">🎓 Advanced Challenge (Optional)</div>
+
+<div class="alert alert-warning">
+<strong>Challenge 1: Failover Testing</strong>
+Simulate Core-SW-1 failure while monitoring MSTI 1 convergence. Verify Core-SW-2 takes over as backup root within 10 seconds.
+
+<strong style="display: block; margin-top: 15px;">Challenge 2: Dynamic Load Rebalancing</strong>
+Add a 5th switch and redistribute VLANs across 5 instances. Measure CPU/memory reduction compared to 4 instances.
+
+<strong style="display: block; margin-top: 15px;">Challenge 3: MST to PVST+ Interoperability</strong>
+Connect a PVST+ switch to the MST region. Analyze BPDU exchanges and verify proper boundary handling.
+
+<strong style="display: block; margin-top: 15px;">Challenge 4: Cost Manipulation</strong>
+Adjust link costs on specific instances to force asymmetric traffic patterns. Example: Make VLAN 10-30 take path A, force VLAN 40-60 through path B intentionally.
+</div>
+
+</div>
+<!-- End of content wrapper -->
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p>CCNP Enterprise Certification Program</p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Password Protection & Anti-Tampering Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+initializeProtection();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT', { timestamp: new Date().toISOString() });
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+enableEditMode();
+}
+
+function lockPage() {
+isUnlocked = false;
+editMode = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+disableEditMode();
+setTimeout(() => {
+document.getElementById('passwordInput').focus();
+}, 100);
+}
+
+// ==================== EDIT MODE MANAGEMENT ====================
+function enableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'true');
+});
+editMode = true;
+logSecurityEvent('EDIT_MODE_ENABLED');
+}
+
+function disableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'false');
+});
+editMode = false;
+logSecurityEvent('EDIT_MODE_DISABLED');
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+
+// Disable right-click context menu
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+return false;
+});
+
+// Disable text selection and dragging
+document.addEventListener('selectstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('dragstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable dangerous keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+// F12 - Developer Tools
+if (e.keyCode === 123) {
+e.preventDefault();
+return false;
+}
+// Ctrl+Shift+I - Developer Tools
+if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+e.preventDefault();
+return false;
+}
+// Ctrl+Shift+C - Element Inspector
+if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+e.preventDefault();
+return false;
+}
+// Ctrl+Shift+J - Console
+if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+e.preventDefault();
+return false;
+}
+// Ctrl+U - View Source
+if (e.ctrlKey && e.keyCode === 85) {
+e.preventDefault();
+return false;
+}
+// Ctrl+S - Save Page (only works with password)
+if (e.ctrlKey && e.keyCode === 83) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 Cannot save - Content is password protected');
+return false;
+}
+}
+});
+
+// Disable copying
+document.addEventListener('copy', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable cutting
+document.addEventListener('cut', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Prevent right-click
+document.addEventListener('mousedown', function(e) {
+if (e.button === 2) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable double-click selection
+document.addEventListener('dblclick', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+// DevTools detection
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+// Monitor window focus
+window.addEventListener('blur', function() {
+logSecurityEvent('WINDOW_BLUR');
+});
+
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) {
+showPasswordModal();
+}
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType, details = {}) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+userAgent: navigator.userAgent,
+...details
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== ANTI-EXPORT MEASURES ====================
+// Prevent printing
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing is not allowed without password authentication');
+}
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+
+// Prevent drag & drop files
+document.addEventListener('dragover', function(e) {
+e.preventDefault();
+return false;
+});
+
+document.addEventListener('drop', function(e) {
+e.preventDefault();
+return false;
+});
+
+// ==================== CONSOLE SECURITY ====================
+// Security message on page load
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is FULLY PASSWORD PROTECTED',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c⚠️ Content Protections: ACTIVE',
+'color: #ff6b6b; font-size: 12px;');
+console.log('%c✓ Header Protected ✓ Body Protected ✓ Footer Protected',
+'color: #28a745; font-size: 12px;');
+console.log('%cMaster Password Required to Edit',
+'color: red; font-size: 11px; font-weight: bold;');
+console.log('%cUnauthorized access attempts are logged and monitored.',
+'color: #dc3545; font-size: 11px;');
+}, 500);
+});
+
+// ==================== SESSION EXPIRY WARNING ====================
+window.addEventListener('beforeunload', function() {
+if (isUnlocked) {
+logSecurityEvent('PAGE_UNLOAD', {
+isAuthenticated: isUnlocked,
+sessionExpires: new Date(Date.now() + SESSION_TIMEOUT).toISOString()
+});
+}
+});
+
+</script>
+
+</body>
+</html>

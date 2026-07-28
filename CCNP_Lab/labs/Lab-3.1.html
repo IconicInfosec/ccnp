@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 3.1: VLAN Segmentation & Access Port Configuration | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+.badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.vlan-badge { background: #e8f4f8; color: #0066cc; }
+.port-badge { background: #e8f8e8; color: #00aa00; }
+.security-badge { background: #fff8e8; color: #ff9900; }
+.warning-badge { background: #ffe8e8; color: #cc0000; }
+
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+line-height: 1.8;
+}
+
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.step-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+.lab-image {
+max-width: 100%;
+height: auto;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+margin: 20px 0;
+}
+
+.image-caption {
+text-align: center;
+font-size: 0.95em;
+color: #666;
+margin-top: 10px;
+font-style: italic;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🔧 Lab 3.1: VLAN Segmentation & Access Port Configuration</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Layer 2 Switching</p>
+<p style="font-size: 0.9em; opacity: 0.85;">Multi-Department Network Segmentation | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Overview -->
+<h2>📋 Lab Overview</h2>
+<p>This laboratory focuses on implementing VLAN segmentation and configuring access ports in a multi-department enterprise network. You will create multiple Virtual Local Area Networks (VLANs) to establish logical broadcast domains, segment network traffic, and configure access ports for end-user devices.</p>
+
+<!-- Lab Objectives -->
+<h2>🎯 Lab Objectives</h2>
+<ul>
+<li>Create and configure VLANs (normal range: 2-1001, extended range: 1006-4094)</li>
+<li>Assign access ports to specific VLANs for end devices</li>
+<li>Understand and implement broadcast domain isolation</li>
+<li>Configure port security to restrict MAC addresses on access ports</li>
+<li>Verify VLAN configuration and membership using CLI commands</li>
+<li>Troubleshoot VLAN and access port connectivity issues</li>
+<li>Apply security best practices for layer 2 access ports</li>
+</ul>
+
+<!-- Real-World Scenario -->
+<h2>🏢 Real-World Scenario</h2>
+<p>ABC Corporation requires network segmentation across three departments: Human Resources, Information Technology, and Finance. Each department operates in a different VLAN to enforce security policies, improve performance, and maintain compliance with organizational standards. You will design and implement this segmentation using Cisco Catalyst switches.</p>
+
+<!-- Equipment Requirements -->
+<h2>📦 Equipment & Prerequisites</h2>
+
+<h3>Hardware Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Equipment</th>
+<th>Quantity</th>
+<th>Model/Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco Catalyst Switch</td>
+<td>1</td>
+<td>Catalyst 2960, 3560, or higher</td>
+<td>Primary switching platform</td>
+</tr>
+<tr>
+<td>Network Cable (Ethernet)</td>
+<td>6+</td>
+<td>Cat5e or Cat6 patch cables</td>
+<td>Device connectivity</td>
+</tr>
+<tr>
+<td>End User Devices</td>
+<td>5</td>
+<td>PC, Laptop, or Virtual Machines</td>
+<td>Simulate departments</td>
+</tr>
+<tr>
+<td>Console Cable</td>
+<td>1</td>
+<td>RJ-45 to RS-232 or USB</td>
+<td>CLI access to switch</td>
+</tr>
+<tr>
+<td>Terminal Emulation Software</td>
+<td>1</td>
+<td>PuTTY, SecureCRT, or Cisco NETLAB</td>
+<td>Console session management</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Software & Knowledge Requirements</h3>
+<ul>
+<li>Cisco IOS or IOS-XE version 15.0 or later</li>
+<li>Basic understanding of OSI model and Layer 2 switching</li>
+<li>Familiarity with Cisco CLI command structure</li>
+<li>Knowledge of MAC addressing and broadcast domains</li>
+<li>Understanding of VLAN concepts and benefits</li>
+</ul>
+
+<!-- Network Topology -->
+<h2>🌐 Network Topology & Lab Picture</h2>
+
+<img src="https://f005.backblazeb2.com/file/CCNPLabPic/Lab-3.1.jpg" alt="Lab 3.1: VLAN Segmentation & Access Port Configuration" class="lab-image">
+<p class="image-caption">Figure 1: Lab 3.1 - Multi-Department VLAN Segmentation with ABC Corporation Network Setup</p>
+
+<h3>VLAN Configuration Summary</h3>
+<table>
+<thead>
+<tr>
+<th>VLAN ID</th>
+<th>VLAN Name</th>
+<th>Department</th>
+<th>Assigned Ports</th>
+<th>IP Subnet</th>
+<th>End Devices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="badge vlan-badge">10</span></td>
+<td>HR-Department</td>
+<td>Human Resources</td>
+<td>Gi0/0, Gi0/1</td>
+<td>192.168.10.0/24</td>
+<td>2 (PC-HR1, PC-HR2)</td>
+</tr>
+<tr>
+<td><span class="badge vlan-badge">20</span></td>
+<td>IT-Department</td>
+<td>Information Technology</td>
+<td>Gi0/2</td>
+<td>192.168.20.0/24</td>
+<td>1 (PC-IT1)</td>
+</tr>
+<tr>
+<td><span class="badge vlan-badge">30</span></td>
+<td>Finance-Department</td>
+<td>Finance</td>
+<td>Gi0/3, Gi1/0</td>
+<td>192.168.30.0/24</td>
+<td>2 (PC-FIN1, PC-FIN2)</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Configuration Guide</h2>
+
+<div class="exercise-box">
+<h3><span class="step-number">1</span>Initial Switch Configuration & Access</h3>
+<p><strong>Step 1.1: Enter Console Session</strong></p>
+<div class="code-box">
+Press Enter to establish connection<br>
+Switch>
+</div>
+<p><strong>Step 1.2: Enter Privileged EXEC Mode</strong></p>
+<div class="code-box">
+Switch> enable<br>
+Password: (enter enable password)<br>
+Switch#
+</div>
+<p><strong>Step 1.3: Enter Global Configuration Mode</strong></p>
+<div class="code-box">
+Switch# configure terminal<br>
+Switch(config)#
+</div>
+<p><strong>Step 1.4: Set Device Hostname</strong></p>
+<div class="code-box">
+Switch(config)# hostname ABC-SW1<br>
+ABC-SW1(config)#
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">2</span>Create Virtual LANs (VLANs)</h3>
+<p><strong>Step 2.1: Create VLAN 10 (HR Department)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# vlan 10<br>
+ABC-SW1(config-vlan)# name HR-Department<br>
+ABC-SW1(config-vlan)# exit
+</div>
+<p><strong>Step 2.2: Create VLAN 20 (IT Department)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# vlan 20<br>
+ABC-SW1(config-vlan)# name IT-Department<br>
+ABC-SW1(config-vlan)# exit
+</div>
+<p><strong>Step 2.3: Create VLAN 30 (Finance Department)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# vlan 30<br>
+ABC-SW1(config-vlan)# name Finance-Department<br>
+ABC-SW1(config-vlan)# exit
+</div>
+<div class="callout callout-warning">
+<strong>⚠️ Important:</strong> VLAN 1 is the default VLAN and cannot be deleted. For security best practices, avoid using VLAN 1 for user traffic.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">3</span>Configure Access Ports for End Devices</h3>
+<p><strong>Step 3.1: Configure HR Access Ports (Gi0/0 & Gi0/1)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface range GigabitEthernet 0/0 - 1<br>
+ABC-SW1(config-if-range)# switchport mode access<br>
+ABC-SW1(config-if-range)# switchport access vlan 10<br>
+ABC-SW1(config-if-range)# description HR-Workstation<br>
+ABC-SW1(config-if-range)# exit
+</div>
+<p><strong>Step 3.2: Configure IT Access Port (Gi0/2)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface GigabitEthernet 0/2<br>
+ABC-SW1(config-if)# switchport mode access<br>
+ABC-SW1(config-if)# switchport access vlan 20<br>
+ABC-SW1(config-if)# description IT-Workstation<br>
+ABC-SW1(config-if)# exit
+</div>
+<p><strong>Step 3.3: Configure Finance Access Ports (Gi0/3 & Gi1/0)</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface range GigabitEthernet 0/3<br>
+ABC-SW1(config-if-range)# switchport mode access<br>
+ABC-SW1(config-if-range)# switchport access vlan 30<br>
+ABC-SW1(config-if-range)# description Finance-Workstation<br>
+ABC-SW1(config-if-range)# exit<br>
+ABC-SW1(config)# interface range GigabitEthernet 1/0<br>
+ABC-SW1(config-if-range)# switchport mode access<br>
+ABC-SW1(config-if-range)# switchport access vlan 30<br>
+ABC-SW1(config-if-range)# description Finance-Workstation<br>
+ABC-SW1(config-if-range)# exit
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">4</span>Implement Port Security on Access Ports</h3>
+<p><strong>Step 4.1: Enable Port Security on HR Ports</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface range GigabitEthernet 0/0 - 1<br>
+ABC-SW1(config-if-range)# switchport port-security<br>
+ABC-SW1(config-if-range)# switchport port-security maximum 1<br>
+ABC-SW1(config-if-range)# switchport port-security violation shutdown<br>
+ABC-SW1(config-if-range)# exit
+</div>
+<p><strong>Step 4.2: Enable Port Security on IT Port</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface GigabitEthernet 0/2<br>
+ABC-SW1(config-if)# switchport port-security<br>
+ABC-SW1(config-if)# switchport port-security maximum 2<br>
+ABC-SW1(config-if)# switchport port-security violation shutdown<br>
+ABC-SW1(config-if)# exit
+</div>
+<p><strong>Step 4.3: Enable Port Security on Finance Ports</strong></p>
+<div class="code-box">
+ABC-SW1(config)# interface range GigabitEthernet 0/3<br>
+ABC-SW1(config-if-range)# switchport port-security<br>
+ABC-SW1(config-if-range)# switchport port-security maximum 1<br>
+ABC-SW1(config-if-range)# switchport port-security violation shutdown<br>
+ABC-SW1(config-if-range)# exit<br>
+ABC-SW1(config)# interface range GigabitEthernet 1/0<br>
+ABC-SW1(config-if-range)# switchport port-security<br>
+ABC-SW1(config-if-range)# switchport port-security maximum 1<br>
+ABC-SW1(config-if-range)# switchport port-security violation shutdown<br>
+ABC-SW1(config-if-range)# exit
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">5</span>Save Configuration to NVRAM</h3>
+<p><strong>Step 5.1: Exit Configuration Mode</strong></p>
+<div class="code-box">
+ABC-SW1(config)# exit<br>
+ABC-SW1#
+</div>
+<p><strong>Step 5.2: Save Running Configuration</strong></p>
+<div class="code-box">
+ABC-SW1# copy running-config startup-config<br>
+Destination filename [startup-config]? (press Enter)<br>
+1234 bytes copied in 1.234 secs
+</div>
+<div class="callout callout-success">
+<strong>✓ Success:</strong> Configuration saved successfully!
+</div>
+</div>
+
+<!-- Verification Commands -->
+<h2>✅ Configuration Verification & Testing</h2>
+
+<h3>Verification Commands</h3>
+<p><strong>Command: show vlan brief</strong></p>
+<div class="code-box">
+ABC-SW1# show vlan brief<br>
+<br>
+VLAN Name Status Ports<br>
+---- -------------------------------- --------- ----------------------------<br>
+1 default active Gi0/6, Gi0/7, Gi0/8, Gi0/9<br>
+10 HR-Department active Gi0/0, Gi0/1<br>
+20 IT-Department active Gi0/2<br>
+30 Finance-Department active Gi0/3, Gi1/0
+</div>
+
+<p><strong>Command: show interfaces switchport</strong></p>
+<div class="code-box">
+ABC-SW1# show interfaces switchport<br>
+<br>
+Name: Gi0/1<br>
+Switchport: Enabled<br>
+Administrative Mode: static access<br>
+Operational Mode: static access<br>
+Access Mode VLAN: 10 (HR-Department)
+</div>
+
+<p><strong>Command: show interface status</strong></p>
+<div class="code-box">
+ABC-SW1# show interface status<br>
+<br>
+Port Name Status VLAN Duplex Speed Type<br>
+--------- ---------------------- ------------ ---------- ------ ----- -----<br>
+Gi0/0 HR-Workstation connected 10 a-full a-100<br>
+Gi0/1 HR-Workstation connected 10 a-full a-100<br>
+Gi0/2 IT-Workstation connected 20 a-full a-100<br>
+Gi0/3 Finance-Workstation connected 30 a-full a-100<br>
+Gi1/0 Finance-Workstation connected 30 a-full a-100
+</div>
+
+<p><strong>Command: show port-security</strong></p>
+<div class="code-box">
+ABC-SW1# show port-security<br>
+<br>
+Secure Port MaxSecureAddr CurrentAddr SecurityViolation Security Action<br>
+----------- -------------- ----------- ----------------- ---------------<br>
+Gi0/0 1 1 0 Shutdown<br>
+Gi0/1 1 1 0 Shutdown<br>
+Gi0/2 2 1 0 Shutdown<br>
+Gi0/3 1 1 0 Shutdown<br>
+Gi1/0 1 1 0 Shutdown
+</div>
+
+<!-- Connectivity Testing -->
+<h2>🧪 Connectivity Testing & Validation</h2>
+
+<h3>Test Intra-VLAN Communication</h3>
+<p><strong>Test Case 1.1: HR-to-HR Communication</strong></p>
+<div class="code-box">
+C:\> ping 192.168.10.11<br>
+Pinging 192.168.10.11 with 32 bytes of data:<br>
+Reply from 192.168.10.11: bytes=32 time=2ms TTL=64<br>
+Reply from 192.168.10.11: bytes=32 time=1ms TTL=64<br>
+✓ Expected Result: Successful ping replies indicate VLAN 10 connectivity
+</div>
+
+<h3>Test Inter-VLAN Isolation</h3>
+<p><strong>Test Case 2.1: HR-to-IT Communication (Should Fail)</strong></p>
+<div class="code-box">
+C:\> ping 192.168.20.10<br>
+Pinging 192.168.20.10 with 32 bytes of data:<br>
+Request timed out<br>
+Request timed out<br>
+✓ Expected Result: Timeout confirms VLAN isolation
+</div>
+
+<!-- Completion Checklist -->
+<h2>📋 Lab Completion Checklist</h2>
+
+<h3>Configuration Verification</h3>
+<ul>
+<li>☐ All three VLANs (10, 20, 30) created successfully</li>
+<li>☐ VLAN names configured correctly</li>
+<li>☐ Access ports assigned to correct VLANs</li>
+<li>☐ All ports configured as switchport access mode</li>
+<li>☐ Port descriptions added to all access ports</li>
+<li>☐ Port security enabled on all access ports</li>
+<li>☐ Port security violation action set to shutdown</li>
+<li>☐ MAC address maximum limits configured appropriately</li>
+<li>☐ Configuration saved to startup-config</li>
+</ul>
+
+<h3>Connectivity Testing</h3>
+<ul>
+<li>☐ Intra-VLAN communication successful</li>
+<li>☐ Inter-VLAN communication blocked</li>
+<li>☐ MAC addresses learned in correct VLANs</li>
+<li>☐ Port status shows "connected" for all active devices</li>
+<li>☐ No port-security violations detected</li>
+<li>☐ All interfaces operational and error-free</li>
+</ul>
+
+<!-- Key Takeaways -->
+<h2>💡 Key Takeaways & Learning Outcomes</h2>
+<ul>
+<li>VLAN segmentation creates logical broadcast domains on a single physical switch, improving security and network performance</li>
+<li>Access ports carry untagged traffic for a single VLAN and are the primary connection point for end-user devices</li>
+<li>Broadcast domain isolation requires Layer 3 routing; Layer 2 alone cannot route traffic between VLANs</li>
+<li>Port security provides Layer 2 protection by restricting MAC addresses on specific ports</li>
+<li>Proper VLAN naming and port descriptions are essential for network documentation and troubleshooting</li>
+<li>Configuration verification commands are critical for validating that changes were applied correctly</li>
+<li>Cisco switches support normal (2-1001) and extended (1006-4094) VLAN ranges for scalability</li>
+</ul>
+
+<!-- Best Practices -->
+<h2>🏆 Best Practices & Security Recommendations</h2>
+
+<h3>VLAN Configuration Best Practices</h3>
+<ul>
+<li>Always document VLAN allocation and port assignments in a network diagram</li>
+<li>Use meaningful VLAN names that reflect department or function</li>
+<li>Reserve VLAN 1 for administrative/management purposes only</li>
+<li>Implement consistent VLAN numbering scheme across all switches</li>
+<li>Regularly audit VLAN assignments to ensure compliance with security policies</li>
+<li>Remove unused VLANs to maintain a clean configuration</li>
+</ul>
+
+<h3>Port Security Best Practices</h3>
+<ul>
+<li>Enable port security on all access ports connected to untrusted devices</li>
+<li>Set port security violation action to "shutdown" for high-security environments</li>
+<li>Use "restrict" or "protect" for production environments where port shutdown may cause business disruption</li>
+<li>Configure appropriate maximum MAC address limits based on device requirements</li>
+<li>Regularly monitor port security violations for security incidents</li>
+<li>Use sticky MAC address learning to persistently record authorized MAC addresses</li>
+</ul>
+
+<h3>Layer 2 Security Best Practices</h3>
+<ul>
+<li>Avoid creating VLANs 1002-1005 as they are reserved legacy VLANs</li>
+<li>Implement STP or Rapid PVST+ to prevent Layer 2 loops</li>
+<li>Use VLAN access control lists (VACLs) for additional traffic filtering within VLANs</li>
+<li>Monitor MAC address table for signs of spoofing or flooding attacks</li>
+<li>Document all MAC address assignments for inventory and compliance purposes</li>
+</ul>
+
+<!-- Troubleshooting Guide -->
+<h2>🔧 Troubleshooting Guide</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Port remains in shutdown state</td>
+<td>Port security violation or manual shutdown</td>
+<td>ABC-SW1(config-if)# no shutdown</td>
+</tr>
+<tr>
+<td>Device cannot ping others in same VLAN</td>
+<td>Port VLAN mismatch or cable issue</td>
+<td>Verify with show interfaces switchport and check physical connection</td>
+</tr>
+<tr>
+<td>VLAN not appearing in show vlan output</td>
+<td>VLAN created but no active ports assigned</td>
+<td>VLAN only appears active when at least one port is assigned</td>
+</tr>
+<tr>
+<td>Port security violation repeatedly</td>
+<td>Unauthorized or multiple devices connecting</td>
+<td>Check violation count and ensure only authorized device is connected</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 3.1 when you can create VLANs, configure access ports, implement port security, and verify VLAN isolation while understanding Layer 2 broadcast domain segmentation.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Layer 2 Switching Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 7.1: VTP Domain Configuration & VLAN Synchronization</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+min-height: 100vh;
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+.container {
+max-width: 1000px;
+margin: 0 auto;
+background: white;
+border-radius: 10px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+overflow: hidden;
+}
+
+.header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 30px;
+text-align: center;
+position: relative;
+}
+
+.header h1 {
+font-size: 28px;
+margin-bottom: 10px;
+font-weight: bold;
+}
+
+.header .subtitle {
+font-size: 14px;
+opacity: 0.9;
+margin-bottom: 5px;
+}
+
+.header .description {
+font-size: 12px;
+opacity: 0.85;
+margin-bottom: 10px;
+}
+
+.lab-meta {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 15px;
+padding: 30px;
+background: #f8f9fa;
+border-bottom: 2px solid #e9ecef;
+}
+
+.meta-item {
+text-align: center;
+}
+
+.meta-label {
+font-weight: 600;
+color: #667eea;
+font-size: 12px;
+text-transform: uppercase;
+margin-bottom: 5px;
+}
+
+.meta-value {
+font-size: 18px;
+color: #333;
+}
+
+.content {
+padding: 40px;
+}
+
+.section {
+margin-bottom: 40px;
+}
+
+.section-title {
+font-size: 20px;
+font-weight: 700;
+color: #2a5298;
+margin-bottom: 15px;
+padding-bottom: 10px;
+border-left: 4px solid #667eea;
+padding-left: 15px;
+}
+
+.subsection-title {
+font-size: 16px;
+font-weight: 600;
+color: #444;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.alert {
+padding: 15px;
+border-radius: 5px;
+margin-bottom: 20px;
+display: flex;
+align-items: flex-start;
+}
+
+.alert.danger {
+background: #f8d7da;
+border-left: 4px solid #f5c6cb;
+color: #721c24;
+}
+
+.alert.success {
+background: #d4edda;
+border-left: 4px solid #c3e6cb;
+color: #155724;
+}
+
+.alert.info {
+background: #d1ecf1;
+border-left: 4px solid #bee5eb;
+color: #0c5460;
+}
+
+.alert-icon {
+margin-right: 10px;
+font-weight: bold;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+}
+
+table th {
+background: #2a5298;
+color: white;
+padding: 12px;
+text-align: left;
+font-weight: 600;
+}
+
+table td {
+padding: 12px;
+border-bottom: 1px solid #e9ecef;
+}
+
+table tr:hover {
+background: #f8f9fa;
+}
+
+.code-block {
+background: #2d2d2d;
+color: #f8f8f2;
+padding: 20px;
+border-radius: 5px;
+overflow-x: auto;
+margin: 20px 0;
+font-family: 'Courier New', monospace;
+font-size: 13px;
+border-left: 4px solid #667eea;
+line-height: 1.8;
+}
+
+.topology-image {
+text-align: center;
+margin: 30px 0;
+padding: 20px;
+background: #f8f9fa;
+border-radius: 5px;
+border: 2px solid #667eea;
+}
+
+.topology-image img {
+max-width: 100%;
+height: auto;
+border-radius: 5px;
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.topology-caption {
+font-size: 14px;
+color: #666;
+margin-top: 10px;
+font-weight: 600;
+}
+
+.checklist {
+background: #f8f9fa;
+padding: 20px;
+border-radius: 5px;
+margin: 20px 0;
+}
+
+.checklist-item {
+display: flex;
+align-items: center;
+padding: 10px;
+margin: 5px 0;
+}
+
+.checklist-item input {
+margin-right: 10px;
+width: 20px;
+height: 20px;
+}
+
+.equipment-list {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 15px;
+margin: 20px 0;
+}
+
+.equipment-item {
+background: #f8f9fa;
+padding: 15px;
+border-radius: 5px;
+display: flex;
+align-items: center;
+}
+
+.equipment-item:before {
+content: "✓";
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-right: 15px;
+font-weight: bold;
+}
+
+.footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 30px 20px;
+text-align: center;
+border-top: 2px solid #667eea;
+position: relative;
+}
+
+.footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+.footer p {
+margin: 5px 0;
+font-size: 0.95em;
+opacity: 0.9;
+}
+
+.footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+.footer .copyright {
+margin-top: 15px;
+opacity: 0.9;
+font-size: 0.9em;
+}
+
+.footer .security-note {
+opacity: 0.8;
+font-size: 0.85em;
+}
+
+ul {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+li {
+margin-bottom: 8px;
+}
+
+pre {
+background: #f8f9fa;
+padding: 20px;
+border-radius: 5px;
+overflow-x: auto;
+font-family: 'Courier New', monospace;
+}
+</style>
+</head>
+<body>
+<!-- PASSWORD PROTECTION MODAL -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container protected-element" id="protectedContent">
+
+<!-- HEADER -->
+<div class="header">
+<h1>🔐 LAB 7.1: VTP Domain Configuration & VLAN Synchronization</h1>
+<div class="subtitle">Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Networking</div>
+<div class="description">VLAN Trunking Protocol Configuration, Management, and Optimization</div>
+<div class="protection-indicator">🔒 Protected</div>
+</div>
+
+<!-- LAB METADATA -->
+<div class="lab-meta">
+<div class="meta-item">
+<div class="meta-label">Duration</div>
+<div class="meta-value">90-120 min</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Difficulty</div>
+<div class="meta-value">Intermediate-Advanced</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Lab Version</div>
+<div class="meta-value">1</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Certification</div>
+<div class="meta-value">CCNP 350-401</div>
+</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+<!-- SECTION 1: OVERVIEW -->
+<div class="section">
+<div class="section-title">📋 Lab Overview & Objectives</div>
+<p>This lab provides comprehensive hands-on training on VLAN Trunking Protocol (VTP) configuration, management, and optimization. Students will configure VTP domains, implement server/client/transparent modes, manage revision numbers, and optimize trunk links with VTP pruning .</p>
+
+<div class="subsection-title">Learning Objectives:</div>
+<ul>
+<li>Configure VTP server, client, transparent, and off modes </li>
+<li>Manage VTP domain membership and revision numbers </li>
+<li>Implement VTP version selection (1, 2, and 3) </li>
+<li>Optimize trunk links using VTP pruning techniques </li>
+<li>Troubleshoot VTP synchronization issues </li>
+<li>Implement VTP security with password protection </li>
+</ul>
+
+<div class="alert info">
+<span class="alert-icon">ℹ️</span>
+<strong>Key Concept:</strong> VTP is a Cisco proprietary protocol designed to reduce the burden of provisioning VLANs across multiple switches by centralizing VLAN management 
+</div>
+</div>
+
+<!-- SECTION 2: VTP FUNDAMENTALS -->
+<div class="section">
+<div class="section-title">🔍 Section 1: VTP Fundamentals & Architecture</div>
+
+<div class="subsection-title">What is VTP?</div>
+<p>VTP is a Layer 2 messaging protocol that allows automatic propagation of VLAN configurations across a network domain. VTP saves time and helps avoid configuration errors by centralizing VLAN management . VTP is enabled by default on all Cisco switches, and the default mode is server .</p>
+
+<div class="subsection-title">VTP Versions Comparison</div>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Version 1 & 2</th>
+<th>Version 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLAN Range Supported</td>
+<td>1–1005 </td>
+<td>1–4094 (full range) </td>
+</tr>
+<tr>
+<td>Default Version</td>
+<td>Version 1 is default </td>
+<td>Requires manual configuration</td>
+</tr>
+<tr>
+<td>Primary Server</td>
+<td>Automatic selection</td>
+<td>Configured using `vtp primary` command </td>
+</tr>
+<tr>
+<td>Enhancement</td>
+<td>Standard operation</td>
+<td>Enhanced VLAN handling; pruning not required </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">VTP Configuration Revision Number</div>
+<p>VTP advertisements include a 32-bit configuration revision number that identifies the most current VLAN database revision . Any change to the VLAN database increments the configuration revision number by 1 . A higher revision number represents a newer database .</p>
+</div>
+
+<!-- SECTION 3: VTP ROLES -->
+<div class="section">
+<div class="section-title">⚙️ Section 2: VTP Roles & Configuration</div>
+
+<div class="subsection-title">VTP Role Definitions</div>
+<table>
+<thead>
+<tr>
+<th>VTP Role</th>
+<th>Description</th>
+<th>Capabilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Server</strong></td>
+<td>Creates, modifies, and deletes VLANs </td>
+<td>Creates VLANs; sends advertisements to propagate changes </td>
+</tr>
+<tr>
+<td><strong>Client</strong></td>
+<td>Receives VTP advertisements and updates local VLAN database </td>
+<td>Cannot configure VLANs locally </td>
+</tr>
+<tr>
+<td><strong>Transparent</strong></td>
+<td>Receives and forwards VTP advertisements; does not modify local database </td>
+<td>Configures VLANs only locally; maintains independent VLAN configuration </td>
+</tr>
+<tr>
+<td><strong>Off</strong></td>
+<td>Does not participate in VTP </td>
+<td>VTP communication completely disabled </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">VTP Configuration Steps</div>
+<p><strong>Step 1:</strong> Define the VTP version</p>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp version {1 | 2 | 3}<br>
+end
+</div>
+
+<p><strong>Step 2:</strong> Define the VTP domain</p>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp domain domain-name<br>
+end
+</div>
+
+<p><strong>Step 3:</strong> Define the VTP switch role</p>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp mode {server | client | transparent | off}<br>
+end
+</div>
+
+<p><strong>Step 4 (Optional):</strong> Secure VTP domain (Recommended)</p>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp password password<br>
+end
+</div>
+
+<div class="subsection-title">Complete VTP Server Configuration Example</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp version 2<br>
+vtp domain MARKETING<br>
+vtp mode server<br>
+vtp password VTPsecure123<br>
+end<br>
+write memory
+</div>
+
+<div class="subsection-title">Complete VTP Client Configuration Example</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp version 2<br>
+vtp domain MARKETING<br>
+vtp mode client<br>
+vtp password VTPsecure123<br>
+end<br>
+write memory
+</div>
+</div>
+
+<!-- SECTION 4: VTP MESSAGES -->
+<div class="section">
+<div class="section-title">📡 Section 3: VTP Advertisement Types</div>
+
+<div class="subsection-title">Summary Advertisements</div>
+<p>Sent by both VTP servers and clients every 300 seconds (5 minutes) . Contains information about VTP domain: version, domain name, configuration revision number, timestamp, and MD5 digest .</p>
+
+<div class="subsection-title">Subset Advertisements</div>
+<p>Contains detailed VLAN information . Sent immediately after VLAN database changes . Received by VTP clients to update their local VLAN database .</p>
+
+<div class="subsection-title">Advertisement Requests</div>
+<p>Sent by VTP clients to request VLAN information from VTP server . Typically sent after client boots up or detects configuration mismatch .</p>
+
+<table>
+<thead>
+<tr>
+<th>Advertisement Type</th>
+<th>Sent By</th>
+<th>Frequency</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Summary</td>
+<td>Servers & Clients </td>
+<td>Every 5 minutes </td>
+<td>Domain info, revision number, MD5 digest </td>
+</tr>
+<tr>
+<td>Subset</td>
+<td>Servers </td>
+<td>On VLAN change </td>
+<td>Detailed VLAN data </td>
+</tr>
+<tr>
+<td>Request</td>
+<td>Clients </td>
+<td>On mismatch </td>
+<td>Request for VLAN database </td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- SECTION 9: LAB TOPOLOGY with IMAGE -->
+<div class="section">
+<div class="section-title">📐 Lab Network Topology</div>
+<div class="topology-image">
+<img src="https://f005.backblazeb2.com/file/CCNPLabPic/VTP.jpg" alt="VTP Lab Topology Diagram" style="max-width: 100%; height: auto;">
+<div class="topology-caption">VTP Lab Topology: 4-Switch Domain Configuration<br>Showing Server-Client Hierarchy with Trunk Links</div>
+</div>
+</div>
+
+<!-- SECTION 5: REVISION NUMBER MANAGEMENT -->
+<div class="section">
+<div class="section-title">🔄 Section 4: VTP Revision Number Management</div>
+
+<div class="alert danger">
+<span class="alert-icon">⚠️</span>
+<strong>Critical Best Practice:</strong> Reset revision number before production deployment. Configure a new switch as VTP client and reset its revision number to zero to prevent the new switch from overwriting VLAN database with outdated revision 
+</div>
+
+<div class="subsection-title">Method 1: Change VTP Domain Name (Resets Revision to 0)</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp domain TEMP_DOMAIN<br>
+vtp domain MARKETING<br>
+end<br>
+show vtp status
+</div>
+
+<div class="subsection-title">Method 2: Change VTP Mode to Transparent (Resets Revision to 0)</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp mode transparent<br>
+vtp mode server<br>
+end<br>
+show vtp status
+</div>
+</div>
+
+<!-- SECTION 6: VTP PRUNING -->
+<div class="section">
+<div class="section-title">✂️ Section 5: VTP Pruning Optimization</div>
+
+<div class="subsection-title">VTP Pruning Concept</div>
+<p>VTP Pruning is a feature used to optimize bandwidth utilization on trunk links . By default, switches in VTP domain flood broadcast, multicast, and unknown unicast traffic to all trunk links, even if receiving switch has no ports in that VLAN . VTP Pruning prevents unnecessary traffic from being sent across trunk links to switches that do not have ports in the VLAN .</p>
+
+<div class="subsection-title">How VTP Pruning Works</div>
+<ul>
+<li>VTP Pruning dynamically identifies which VLANs are active on each switch </li>
+<li>If a VLAN is not active on a switch, that switch is removed from flooding list for that VLAN </li>
+<li>Traffic for pruned VLANs is not forwarded on trunk links to switches that do not need it </li>
+</ul>
+
+<div class="subsection-title">Benefits of VTP Pruning</div>
+<ul>
+<li>Reduces unnecessary bandwidth consumption on trunk links </li>
+<li>Improves network performance by reducing traffic load </li>
+<li>Decreases CPU utilization on switches </li>
+</ul>
+
+<div class="subsection-title">Global VTP Pruning Configuration</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+vtp domain MARKETING<br>
+vtp pruning<br>
+vtp mode server<br>
+end<br>
+write memory
+</div>
+
+<div class="subsection-title">Per-Interface Trunk Pruning Configuration</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+interface GigabitEthernet1/0/1<br>
+switchport trunk pruning vlan ?<br>
+exit<br>
+end
+</div>
+
+<div class="subsection-title">Optional: Restrict VLANs on Trunk Ports</div>
+<p>Manually restricting VLANs on trunk links using `switchport trunk allowed vlan` overrides VTP pruning . Manual restrictions take precedence over automatic pruning decisions .</p>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+interface GigabitEthernet1/0/1<br>
+switchport trunk allowed vlan 10,20,30<br>
+end
+</div>
+
+<div class="subsection-title">VTP Pruning Considerations</div>
+<table>
+<thead>
+<tr>
+<th>Consideration</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Version Support</td>
+<td>Works with VTP v1 and v2. In VTP v3, pruning not required; protocol includes enhanced VLAN handling </td>
+</tr>
+<tr>
+<td>Transparent Mode</td>
+<td>Switches in Transparent Mode do not participate in VTP pruning </td>
+</tr>
+<tr>
+<td>Manual Pruning</td>
+<td>Manual VLAN restrictions override VTP pruning </td>
+</tr>
+<tr>
+<td>Spanning Tree</td>
+<td>Ensure STP topology is stable before implementing VTP Pruning as it dynamically modifies VLAN trunk configurations </td>
+</tr>
+</tbody>
+</table>
+
+<div class="alert success">
+<span class="alert-icon">✓</span>
+<strong>Best Practice:</strong> Always stabilize your Spanning Tree topology before enabling VTP Pruning to avoid unexpected STP recalculations 
+</div>
+</div>
+
+<!-- SECTION 7: VERIFICATION & TROUBLESHOOTING -->
+<div class="section">
+<div class="section-title">🔧 Section 6: Verification & Troubleshooting</div>
+
+<div class="subsection-title">Show Commands for VTP Verification</div>
+<div class="code-block">
+! Verify VTP status<br>
+show vtp status<br>
+<br>
+! Verify VTP password<br>
+show vtp password<br>
+<br>
+! Verify VLAN synchronization<br>
+show vlan brief<br>
+<br>
+! View running configuration<br>
+show running-config | include vtp
+</div>
+
+<div class="subsection-title">Expected Output Analysis</div>
+<p><code>show vtp status</code> will display:</p>
+<ul>
+<li>VTP Operating Mode (Server/Client/Transparent/Off) </li>
+<li>Current Configuration Revision </li>
+<li>Number of existing VLANs </li>
+<li>VTP Pruning Mode enabled/disabled </li>
+</ul>
+
+<div class="subsection-title">Common Troubleshooting Issues</div>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLANs not synchronizing</td>
+<td>Domain mismatch or revision number conflict</td>
+<td>Verify domain name matches; reset revision number using Method 1 or 2 </td>
+</tr>
+<tr>
+<td>Revision number too high</td>
+<td>Multiple VLAN changes accumulated</td>
+<td>Reset using transparent mode method or domain name change </td>
+</tr>
+<tr>
+<td>Password mismatch error</td>
+<td>Inconsistent VTP password across domain</td>
+<td>Verify all switches use same VTP password </td>
+</tr>
+<tr>
+<td>Advertisements not received</td>
+<td>Trunk link down or protocol disabled</td>
+<td>Verify trunk links active; check VTP mode not set to Off </td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- SECTION 8: EQUIPMENT & SETUP -->
+<div class="section">
+<div class="section-title">🖥️ Equipment Required</div>
+<div class="equipment-list">
+<div class="equipment-item">4 Cisco Switches (Catalyst 2960, 3560, or higher)</div>
+<div class="equipment-item">Ethernet cables for trunk connections</div>
+<div class="equipment-item">Console cables (RJ-45 to USB or Serial)</div>
+<div class="equipment-item">Terminal emulation software (PuTTY, Tera Term)</div>
+</div>
+</div>
+
+<!-- SECTION 10: PRACTICAL LAB EXERCISES -->
+<div class="section">
+<div class="section-title">📝 Hands-On Lab Exercises</div>
+
+<div class="subsection-title">Exercise 1: Configure VTP Server and Clients</div>
+<ol>
+<li>Configure SW1 as VTP Server for MARKETING domain </li>
+<li>Configure SW2 and SW3 as VTP Clients </li>
+<li>Create VLANs 10, 20, 30 on SW1 </li>
+<li>Verify synchronization on SW2 and SW3 using <code>show vlan brief</code></li>
+</ol>
+
+<div class="subsection-title">Exercise 2: Implement Revision Number Reset</div>
+<ol>
+<li>Add new switch (SW4) with higher revision number </li>
+<li>Reset revision to 0 using transparent mode method </li>
+<li>Verify revision number reset with <code>show vtp status</code></li>
+</ol>
+
+<div class="subsection-title">Exercise 3: Configure VTP Pruning</div>
+<ol>
+<li>Enable global VTP pruning on SW1 (VTP Server) </li>
+<li>Configure per-interface pruning on trunk link </li>
+<li>Verify pruning status with <code>show vtp status</code></li>
+<li>Monitor trunk utilization before and after pruning </li>
+</ol>
+
+<div class="subsection-title">Exercise 4: Implement VTP Security</div>
+<ol>
+<li>Configure VTP password on all switches </li>
+<li>Test authentication by mismatching password on one switch</li>
+<li>Verify synchronization fails without correct password </li>
+<li>Restore correct password and verify sync resumes </li>
+</ol>
+</div>
+
+<!-- SECTION 11: VERIFICATION CHECKLIST -->
+<div class="section">
+<div class="section-title">✓ Lab Completion Checklist</div>
+<div class="checklist">
+<div class="checklist-item">
+<input type="checkbox">
+<span>Configured VTP Server with domain name and appropriate version </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Configured VTP Clients to synchronize with server </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Verified VLAN creation on server propagates to clients </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Reset revision number to 0 before production deployment </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Implemented and verified VTP pruning optimization </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Configured VTP password for domain security </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Successfully troubleshot domain mismatch scenario</span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>All switches show synchronized VLAN database </span>
+</div>
+</div>
+</div>
+
+<!-- SECTION 12: EXAM FOCUS AREAS -->
+<div class="section">
+<div class="section-title">🎯 CCNP 350-401 Exam Focus Areas</div>
+<div class="alert info">
+<span class="alert-icon">ℹ️</span>
+This lab covers the following CCNP 350-401 exam objectives:
+</div>
+<ul>
+<li><strong>1.3:</strong> Implement and troubleshoot VTP (server, client, transparent, off) </li>
+<li><strong>1.3a:</strong> VTP domain, version, pruning, password </li>
+<li><strong>2.1:</strong> Describe common issues and best practices in multi-switch topologies</li>
+<li><strong>2.1a:</strong> VLAN management and synchronization best practices </li>
+</ul>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p>CCNP Enterprise Certification Program</p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p class="copyright">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p class="security-note">This content is password-protected and cannot be edited without authorization.</p>
+<p class="security-note">Authorized Use Only | Strict Access Control Enabled</p>
+</div>
+
+</div>
+
+<!-- SECURITY SCRIPT -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+initializeProtection();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT', { timestamp: new Date().toISOString() });
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+enableEditMode();
+}
+
+function lockPage() {
+isUnlocked = false;
+editMode = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+disableEditMode();
+setTimeout(() => {
+document.getElementById('passwordInput').focus();
+}, 100);
+}
+
+// ==================== EDIT MODE MANAGEMENT ====================
+function enableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'true');
+});
+editMode = true;
+logSecurityEvent('EDIT_MODE_ENABLED');
+}
+
+function disableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'false');
+});
+editMode = false;
+logSecurityEvent('EDIT_MODE_DISABLED');
+}
+
+// ==================== PROTECTION INITIALIZATION ====================
+function initializeProtection() {
+// Disable right-click context menu
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+return false;
+});
+
+// Disable text selection if locked
+document.addEventListener('selectstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable dangerous keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+if (e.keyCode === 123) e.preventDefault(); // F12
+if (e.ctrlKey && e.shiftKey && e.keyCode === 73) e.preventDefault(); // Ctrl+Shift+I
+if (e.ctrlKey && e.shiftKey && e.keyCode === 67) e.preventDefault(); // Ctrl+Shift+C
+if (e.ctrlKey && e.shiftKey && e.keyCode === 74) e.preventDefault(); // Ctrl+Shift+J
+if (e.ctrlKey && e.keyCode === 85) e.preventDefault(); // Ctrl+U
+});
+
+// Disable copying if locked
+document.addEventListener('copy', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+}
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', function() {
+logSecurityEvent('WINDOW_BLUR');
+});
+
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) {
+showPasswordModal();
+}
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType, details = {}) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+...details
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is FULLY PASSWORD PROTECTED',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c⚠️ Content Protections: ACTIVE',
+'color: #ff6b6b; font-size: 12px;');
+console.log('%cMaster Password Required to Edit',
+'color: red; font-size: 11px; font-weight: bold;');
+console.log('%cUnauthorized access attempts are logged and monitored.',
+'color: #dc3545; font-size: 11px;');
+}, 500);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 4.2: STP Convergence & Topology Change Handling | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+.badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.tcn-badge { background: #e8f4f8; color: #0066cc; }
+.convergence-badge { background: #e8f8e8; color: #00aa00; }
+.failure-badge { background: #fff8e8; color: #ff9900; }
+.warning-badge { background: #ffe8e8; color: #cc0000; }
+
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+line-height: 1.8;
+}
+
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.step-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+.topology-image {
+max-width: 100%;
+height: auto;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+margin: 20px 0;
+}
+
+.image-caption {
+text-align: center;
+font-size: 0.95em;
+color: #666;
+margin-top: 10px;
+font-style: italic;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🔄 Lab 4.2: STP Convergence & Topology Change Handling</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Spanning Tree Protocol</p>
+<p style="font-size: 0.9em; opacity: 0.85;">Direct-Link Failures, Indirect Failures & TCN BPDU Processing | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Overview -->
+<h2>📋 Lab Overview</h2>
+<p>This laboratory exercise focuses on understanding Spanning Tree Protocol convergence behavior, analyzing Topology Change Notification (TCN) BPDU processing, and troubleshooting network failures. You will simulate direct-link failures, indirect failures, and measure convergence timing to understand STP behavior during topology changes.</p>
+
+<!-- Lab Objectives -->
+<h2>🎯 Lab Objectives</h2>
+<ul>
+<li>Understand direct-link failures and how STP detects topology changes</li>
+<li>Master Topology Change Notification (TCN) BPDU processing</li>
+<li>Comprehend indirect failures and BPDU loss scenarios</li>
+<li>Monitor STP convergence timing and optimize performance</li>
+<li>Analyze MAC address table aging during topology changes</li>
+<li>Troubleshoot convergence delays and network instability</li>
+<li>Configure and test failover scenarios in production-like environments</li>
+</ul>
+
+<!-- Real-World Scenario -->
+<h2>🏢 Real-World Scenario</h2>
+<p>You are a network engineer at a financial institution managing a three-switch STP topology. During business hours, a critical link fails between the root bridge and a distribution switch. Your task is to:</p>
+<ul>
+<li>Monitor and document TCN BPDU exchanges</li>
+<li>Verify MAC address table updates during convergence</li>
+<li>Measure convergence time and validate network stability</li>
+<li>Test alternate path activation and traffic resumption</li>
+</ul>
+
+<!-- Network Topology -->
+<h2>🌐 Network Topology</h2>
+
+<p><strong>Three-Switch STP Topology with Redundant Links (Same as Lab 4.1):</strong></p>
+<p style="text-align: center; margin: 20px 0;">
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23f0f0f0'/%3E%3Ccircle cx='400' cy='100' r='50' fill='%231e3c72'/%3E%3Ctext x='400' y='110' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-A (Root)%3C/text%3E%3Ccircle cx='200' cy='400' r='50' fill='%232a5298'/%3E%3Ctext x='200' y='410' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-B%3C/text%3E%3Ccircle cx='600' cy='400' r='50' fill='%232a5298'/%3E%3Ctext x='600' y='410' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-C%3C/text%3E%3Cline x1='400' y1='150' x2='200' y2='350' stroke='%23667eea' stroke-width='3'/%3E%3Ctext x='280' y='240' fill='%23667eea' font-size='12' font-weight='bold'%3EGi0/1 (Forwarding)%3C/text%3E%3Cline x1='400' y1='150' x2='600' y2='350' stroke='%23667eea' stroke-width='3'/%3E%3Ctext x='520' y='240' fill='%23667eea' font-size='12' font-weight='bold'%3EGi0/2 (Forwarding)%3C/text%3E%3Cline x1='200' y1='450' x2='600' y2='450' stroke='%23764ba2' stroke-width='3' stroke-dasharray='5,5'/%3E%3Ctext x='400' y='480' text-anchor='middle' fill='%23764ba2' font-size='12' font-weight='bold'%3EBlocked (STP - Prevents Loops)%3C/text%3E%3C/svg%3E" alt="Lab 4.2: Three-Switch STP Topology" class="topology-image">
+</p>
+<p class="image-caption">Figure 1: Three-Switch STP Triangle Topology - Root Bridge (SW-A) with two active forwarding links to SW-B and SW-C, STP blocks redundant link between SW-B and SW-C to prevent loops</p>
+
+<!-- Prerequisites -->
+<h2>📋 Prerequisites</h2>
+<div class="callout callout-warning">
+<strong>⚠️ Important:</strong> Complete Lab 4.1 (Root Bridge Election & Port Role Configuration) before starting this lab. All switches should have Rapid PVST+ configured with proper priority settings.
+</div>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Lab Execution</h2>
+
+<div class="exercise-box">
+<h3><span class="step-number">1</span>Monitor Initial STP Status Before Link Failure</h3>
+<p><strong>Document baseline topology before simulating link failure</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1<br>
+show mac address-table<br>
+show interfaces trunk
+</div>
+<p><strong>Expected Output on SW-A (Root Bridge):</strong></p>
+<div class="code-box">
+VLAN0001<br>
+Bridge ID Priority 4097 (priority 4096 sys-id-ext 1)<br>
+Address aabb.ccdd.eeff<br>
+Root ID Priority 4097<br>
+Address aabb.ccdd.eeff ← I am the root<br>
+RootPort —<br>
+Interface Role Sts Cost Prio.Nbr Type<br>
+Gi0/1 Desg FWD 4 128.1 P2p<br>
+Gi0/2 Desg FWD 4 128.2 P2p
+</div>
+<div class="callout callout-info">
+<strong>ℹ️ Documentation:</strong> Record MAC address table entries and verify they are stable. This baseline is critical for comparing before/after convergence behavior.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">2</span>Enable Detailed Logging on All Switches</h3>
+<p><strong>Configure timestamp and debug logging to capture TCN BPDU events</strong></p>
+<div class="code-box">
+configure terminal<br>
+service timestamps log datetime msec<br>
+logging buffered 8192 debug<br>
+spanning-tree logging portfast bpdu-guard<br>
+spanning-tree logging portfast bpdu-filter<br>
+exit
+</div>
+<p><strong>Enable real-time debug output:</strong></p>
+<div class="code-box">
+terminal monitor<br>
+debug spanning-tree events<br>
+debug spanning-tree bpdu
+</div>
+<div class="callout callout-success">
+<strong>✓ Verification:</strong> Each console should show timestamped debug messages as events occur.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">3</span>Simulate Direct-Link Failure (SW-A to SW-C Link)</h3>
+<p><strong>Disable link between SW-A (Root) and SW-C to trigger failure detection</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/2<br>
+shutdown<br>
+exit<br>
+exit
+</div>
+<p><strong>Immediately observe console output on all switches:</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1<br>
+show spanning-tree vlan 1 detail
+</div>
+<div class="callout callout-info">
+<strong>💡 What's Happening:</strong>
+<ul>
+<li>Step 1: SW-A detects link failure on Gi0/2</li>
+<li>Step 2: SW-C detects failure on its Root Port (Gi0/1)</li>
+<li>Step 3: SW-C sends TCN BPDU upstream toward root</li>
+<li>Step 4: Root Bridge (SW-A) sends Configuration BPDU with TC flag set</li>
+<li>Step 5: All switches reduce MAC aging time temporarily</li>
+<li>Step 6: SW-C transitions Gi0/2 to Root Port role</li>
+</ul>
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">4</span>Document Convergence Timeline & Port State Changes</h3>
+<p><strong>Record sequence of events and timing as network reconverges</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1 detail<br>
+show spanning-tree statistics vlan 1<br>
+show log | include "TCN\|Root\|transition"
+</div>
+<p><strong>Expected Convergence Timeline:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Time (Seconds)</th>
+<th>Event</th>
+<th>STP Element</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0</td>
+<td>Link failure detected</td>
+<td>Port transitions to Discarding state</td>
+</tr>
+<tr>
+<td>T+0-1</td>
+<td>TCN BPDU sent upstream</td>
+<td>Topology Change Notification</td>
+</tr>
+<tr>
+<td>T+1-3</td>
+<td>Root Bridge receives TCN</td>
+<td>Configuration BPDU with TC flag sent</td>
+</tr>
+<tr>
+<td>T+3-6</td>
+<td>Alternate port promotes to Root Port</td>
+<td>Port transitions through Listening→Learning→Forwarding</td>
+</tr>
+<tr>
+<td>T+6</td>
+<td>Full convergence (Rapid PVST+)</td>
+<td>All ports in stable state</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-success">
+<strong>✓ Rapid PVST+ Advantage:</strong> Convergence typically completes in 6 seconds with Rapid PVST+, compared to ~50 seconds with classic 802.1D STP.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">5</span>Verify New STP Topology After Convergence</h3>
+<p><strong>Confirm traffic now flows via alternate path (SW-A → SW-B → SW-C)</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1<br>
+show spanning-tree root<br>
+show mac address-table
+</div>
+<p><strong>Expected Output on SW-C (After Convergence):</strong></p>
+<div class="code-box">
+Bridge ID Priority 12289<br>
+Root ID Priority 4097<br>
+Address aabb.ccdd.eeff ← Still SW-A (no re-election)<br>
+RootPort Gi0/2 ← Changed from Gi0/1 (now via SW-B)<br>
+Interface Role Sts Cost Prio.Nbr Type<br>
+Gi0/1 Desg FWD/Discarding<br>
+Gi0/2 Root FWD 8 128.2 P2p ← Direct path cost now higher
+</div>
+<div class="callout callout-success">
+<strong>✓ Convergence Complete:</strong> SW-C now reaches root bridge via SW-B. Gi0/2 is now the Root Port with cost 8 (4+4 through SW-B).
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">6</span>Re-enable Failed Link & Observe Re-convergence</h3>
+<p><strong>Bring link back online and watch topology stabilize</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/2<br>
+no shutdown<br>
+exit<br>
+exit
+</div>
+<p><strong>Monitor convergence again:</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1 detail
+</div>
+<div class="callout callout-info">
+<strong>⏱️ Timing Observation:</strong> With Rapid PVST+, port transitions directly to Forwarding state through rapid handshake mechanism instead of waiting for Forward Delay timers.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">7</span>Simulate Indirect Failure - BPDU Filtering</h3>
+<p><strong>Configure port to simulate BPDU loss while physical connectivity remains</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/1<br>
+spanning-tree bpdu-filter enable<br>
+exit<br>
+exit
+</div>
+<p><strong>Monitor console on all switches:</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1 detail
+</div>
+<div class="callout callout-info">
+<strong>💡 What's Happening:</strong>
+<ul>
+<li>Step 1: BPDU filter enabled on SW-B Gi0/1</li>
+<li>Step 2: SW-C stops receiving Configuration BPDUs from root via SW-B</li>
+<li>Step 3: Max Age timer begins on SW-C</li>
+<li>Step 4: When Max Age expires, SW-C assumes root path invalid</li>
+<li>Step 5: SW-C recalculates topology and transitions Gi0/2 through states</li>
+</ul>
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">8</span>Monitor Max Age Timer & Convergence Delay</h3>
+<p><strong>Document impact of Max Age timeout on convergence timing</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1 detail | include "Root\|Port 2\|Max Age\|Cost"
+</div>
+<p><strong>Expected Convergence Timeline for Indirect Failure:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Time (Seconds)</th>
+<th>Event</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0</td>
+<td>BPDU filter activated</td>
+<td>No immediate change; port appears up</td>
+</tr>
+<tr>
+<td>T+0-20</td>
+<td>Max Age timer running</td>
+<td>SW-C still believes root is reachable</td>
+</tr>
+<tr>
+<td>T+20</td>
+<td>Max Age expires</td>
+<td>SW-C transitions Root Port to Listening state</td>
+</tr>
+<tr>
+<td>T+20-35</td>
+<td>Listening + Learning states</td>
+<td>Default 15 seconds per state = 30 second delay</td>
+</tr>
+<tr>
+<td>T+35</td>
+<td>Port transitions to Forwarding</td>
+<td>Full convergence in 35 seconds (vs 6 sec for direct failure)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-warning">
+<strong>⚠️ Impact of Indirect Failures:</strong> Indirect failures cause much longer convergence times (~35 seconds) because STP must wait for Max Age timer before detecting the problem. This is why monitoring link quality is critical.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">9</span>Remove BPDU Filter & Verify Recovery</h3>
+<p><strong>Restore normal BPDU flow and confirm rapid convergence back to optimal state</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/1<br>
+no spanning-tree bpdu-filter enable<br>
+exit<br>
+exit
+</div>
+<p><strong>Verify convergence:</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1 detail
+</div>
+<div class="callout callout-success">
+<strong>✓ Recovery:</strong> SW-C should quickly detect restored BPDU flow and return to optimal path through SW-B via direct link with lower cost.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">10</span>Trigger Topology Change & Monitor MAC Aging Reduction</h3>
+<p><strong>Observe how MAC aging time changes during TCN processing</strong></p>
+<div class="code-box">
+show mac address-table aging-time<br>
+show spanning-tree vlan 1 summary
+</div>
+<p><strong>Disable SW-A to SW-C link again (from earlier scenario):</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/2<br>
+shutdown<br>
+exit<br>
+exit
+</div>
+<p><strong>Immediately run on all switches:</strong></p>
+<div class="code-box">
+show mac address-table aging-time
+</div>
+<p><strong>Expected Behavior During TCN:</strong></p>
+<ul>
+<li>Global aging time during topology change: 15 seconds (reduced)</li>
+<li>Duration of reduced aging: ~30-35 seconds (varies by platform)</li>
+<li>After TCN processing: Returns to 300 seconds (default)</li>
+</ul>
+<div class="callout callout-info">
+<strong>💡 Why MAC Aging Reduction Matters:</strong>
+<ul>
+<li>Prevents stale MAC entries from causing frame misdelivery</li>
+<li>Forces switches to relearn MAC locations via new paths</li>
+<li>Reduces unnecessary flooded frames during convergence</li>
+<li>Critical for business applications requiring fast failover</li>
+</ul>
+</div>
+</div>
+
+<!-- Completion Checklist -->
+<h2>📋 Lab Completion Checklist</h2>
+
+<h3>Convergence Testing Checklist</h3>
+<ul>
+<li>☐ Direct-link failure scenario completed successfully</li>
+<li>☐ TCN BPDUs observed and documented during convergence</li>
+<li>☐ MAC address table aging reduction verified during topology change</li>
+<li>☐ Convergence time measured for direct failure (~6 seconds with Rapid PVST+)</li>
+<li>☐ Indirect failure scenario completed with BPDU filtering</li>
+<li>☐ Max Age timer impact documented (~35 seconds for indirect failure)</li>
+<li>☐ All port role transitions (Discarding → Listening → Learning → Forwarding) verified</li>
+<li>☐ Root Bridge remained stable (no re-election) during failures</li>
+<li>☐ Alternate paths activated correctly when primary links failed</li>
+<li>☐ Network recovered successfully after link restoration</li>
+<li>☐ Debug output logged and analyzed for all scenarios</li>
+<li>☐ Results documented in convergence measurement template</li>
+</ul>
+
+<!-- Key Concepts -->
+<h2>💡 Key Concepts & Learning Outcomes</h2>
+
+<h3>Direct-Link Failure Flow</h3>
+<ul>
+<li><strong>Link Detected as Down:</strong> Physical interface change detected immediately</li>
+<li><strong>TCN BPDU Generated:</strong> Affected switch sends Topology Change Notification upstream</li>
+<li><strong>Root Bridge Responds:</strong> Root sends Configuration BPDU with TC flag</li>
+<li><strong>MAC Aging Reduced:</strong> All switches shorten aging time for faster relearning</li>
+<li><strong>Port Role Changes:</strong> Alternate/Backup ports promoted through state transitions</li>
+<li><strong>Convergence Complete:</strong> Network stabilizes (~6 seconds with Rapid PVST+)</li>
+</ul>
+
+<h3>Indirect Failure Characteristics</h3>
+<ul>
+<li><strong>Detection Delay:</strong> Requires Max Age timer to expire (~20 seconds default)</li>
+<li><strong>Physical Link:</strong> Link remains up but BPDU flow is interrupted</li>
+<li><strong>Port Behavior:</strong> Port doesn't immediately transition but waits for Max Age timeout</li>
+<li><strong>Convergence Time:</strong> ~35 seconds total (20 sec wait + 15 sec transitions)</li>
+<li><strong>Real-World Example:</strong> Unidirectional link failure, dirty fiber optic, or upstream switch CPU overload</li>
+</ul>
+
+<h3>Direct vs. Indirect Failures Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Direct Failure</th>
+<th>Indirect Failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detection Mechanism</td>
+<td>Link state change event</td>
+<td>Max Age timer expiration</td>
+</tr>
+<tr>
+<td>Physical Link Status</td>
+<td>Down/Disabled</td>
+<td>Up but BPDU loss</td>
+</tr>
+<tr>
+<td>TCN Timing</td>
+<td>Immediate (1-2 sec)</td>
+<td>Delayed (20+ sec)</td>
+</tr>
+<tr>
+<td>Total Convergence</td>
+<td>~6 seconds (Rapid PVST+)</td>
+<td>~35 seconds</td>
+</tr>
+<tr>
+<td>User Impact</td>
+<td>Brief service interruption</td>
+<td>Extended downtime</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Best Practices -->
+<h2>🏆 Best Practices & Optimization</h2>
+
+<h3>STP Convergence Best Practices</h3>
+<ul>
+<li>Always use Rapid PVST+ mode for faster convergence than classic 802.1D STP</li>
+<li>Monitor convergence timing regularly to identify network instability</li>
+<li>Enable proper logging for troubleshooting topology changes</li>
+<li>Test failover scenarios during maintenance windows</li>
+<li>Document baseline convergence times for trend analysis</li>
+<li>Consider timer optimization for ultra-low-latency environments</li>
+</ul>
+
+<h3>TCN BPDU Processing Best Practices</h3>
+<ul>
+<li>Ensure all switches are synchronized on STP mode and timers</li>
+<li>Monitor for excessive topology changes indicating instability</li>
+<li>Verify MAC aging reduction is functioning during topology changes</li>
+<li>Use debug logging only during troubleshooting; disable in production</li>
+<li>Document topology change events for compliance and auditing</li>
+</ul>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 4.2 when you can explain direct vs. indirect failure scenarios, understand TCN BPDU processing, measure and optimize convergence timing, and troubleshoot network instability during topology changes.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Spanning Tree Protocol Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

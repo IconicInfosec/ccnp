@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNP Foundational Networking Labs - Lab 1 Complete Guide</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+/* Header & Footer Styles */
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+position: relative;
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+/* Main Content Container */
+.main-container {
+max-width: 1200px;
+margin: 0 auto;
+background: white;
+border-radius: 8px;
+padding: 40px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.lab-section {
+margin-bottom: 40px;
+padding-bottom: 30px;
+border-bottom: 2px solid #667eea;
+}
+
+.lab-section:last-child {
+border-bottom: none;
+}
+
+.lab-section h2 {
+color: #1e3c72;
+font-size: 2em;
+margin-bottom: 15px;
+border-left: 5px solid #667eea;
+padding-left: 15px;
+}
+
+.lab-section h3 {
+color: #2a5298;
+font-size: 1.5em;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.objectives-list, .deliverables-list, .commands-list {
+list-style-position: inside;
+margin: 15px 0;
+padding-left: 20px;
+}
+
+.objectives-list li, .deliverables-list li, .commands-list li {
+margin: 8px 0;
+line-height: 1.8;
+}
+
+/* Command Box */
+.command-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+font-family: 'Courier New', monospace;
+overflow-x: auto;
+}
+
+.command-box code {
+color: #1e3c72;
+font-weight: bold;
+}
+
+/* Equipment Table */
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 15px 0;
+}
+
+table thead {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+}
+
+table th, table td {
+padding: 12px;
+text-align: left;
+border-bottom: 1px solid #ddd;
+}
+
+table tbody tr:hover {
+background-color: #f9f9f9;
+}
+
+/* Scenario Box */
+.scenario-box {
+background: #e8f4f8;
+border-left: 5px solid #2a5298;
+padding: 20px;
+margin: 20px 0;
+border-radius: 4px;
+}
+
+.scenario-box strong {
+color: #1e3c72;
+}
+
+/* Checklist */
+.checklist {
+background: #f0f8ff;
+border-left: 5px solid #28a745;
+padding: 20px;
+margin: 20px 0;
+border-radius: 4px;
+}
+
+.checklist ul {
+list-style: none;
+padding-left: 0;
+}
+
+.checklist li:before {
+content: "☐ ";
+margin-right: 10px;
+font-weight: bold;
+color: #28a745;
+}
+
+/* Warning Box */
+.warning-box {
+background: #fff3cd;
+border-left: 5px solid #ff9800;
+padding: 20px;
+margin: 20px 0;
+border-radius: 4px;
+}
+
+.warning-box strong {
+color: #ff6b00;
+}
+
+/* Note Box */
+.note-box {
+background: #e3f2fd;
+border-left: 5px solid #2196F3;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+font-style: italic;
+}
+
+/* Footer */
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+.footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+/* Password Protection Modal */
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Denied</h2>
+<p>This page is password protected</p>
+<p>Enter your master password to view/edit content</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🌐 CCNP Foundational Networking Labs</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Training</p>
+<p style="font-size: 0.95em;">Lab 1: Device Fundamentals, Flash Management & Security Configuration</p>
+<p style="font-size: 0.9em; margin-top: 10px;">Enterprise Network Foundation - Laboratory Setup & Configuration Guides</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div id="protectedBody" class="protected-element main-container">
+
+<!-- Lab 1.1: Device Familiarization -->
+<section class="lab-section">
+<h2>📋 Lab 1.1: Cisco Device Familiarization & IOS Navigation</h2>
+
+<h3>Lab Objectives</h3>
+<ul class="objectives-list">
+<li>Understand Cisco device types and their roles in enterprise networks</li>
+<li>Navigate Cisco IOS command-line interface (CLI)</li>
+<li>Execute basic show commands to gather device information</li>
+<li>Identify device capabilities based on IOS image type</li>
+<li>Understand device hardware specifications</li>
+</ul>
+
+<div class="scenario-box">
+<strong>Scenario Overview:</strong> You are a network technician starting your first day at a mid-sized enterprise. Your supervisor asks you to conduct an inventory of existing network devices and document their specifications, software versions, and capabilities. You'll practice navigating Cisco CLI to gather this critical information.
+</div>
+
+<h3>Equipment Required</h3>
+<table>
+<thead>
+<tr>
+<th>Equipment Type</th>
+<th>Model (Example)</th>
+<th>Quantity</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Router</td>
+<td>Cisco ISR 4331 or ISR 4000 Series</td>
+<td>1</td>
+<td>Edge/Branch routing</td>
+<td>Can use Cisco vLabs or GNS3 emulation</td>
+</tr>
+<tr>
+<td>Switch</td>
+<td>Catalyst 3650 or 9300</td>
+<td>1</td>
+<td>Access layer switching</td>
+<td>Physical or emulated device</td>
+</tr>
+<tr>
+<td>Console Cable</td>
+<td>RJ-45 to DB-9 Serial</td>
+<td>2</td>
+<td>Initial device access (if physical)</td>
+<td>Or use terminal emulation in vLabs</td>
+</tr>
+<tr>
+<td>Ethernet Cables</td>
+<td>Cat5e or Cat6</td>
+<td>2</td>
+<td>Device interconnection</td>
+<td>Optional if using emulation</td>
+</tr>
+<tr>
+<td>Terminal Emulation Software</td>
+<td>PuTTY, Tera Term, or SecureCRT</td>
+<td>1</td>
+<td>Console connection management</td>
+<td>For accessing device CLI</td>
+</tr>
+<tr>
+<td>Network Documentation Tool</td>
+<td>Cisco DNA Center or vLabs</td>
+<td>1</td>
+<td>Network inventory tracking</td>
+<td>Optional: Excel or network documentation software</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Step-by-Step Lab Configuration</h3>
+
+<h4>1. Establish Console Connection to Router</h4>
+<p><strong>Physical Setup (if using actual hardware):</strong></p>
+<ul class="commands-list">
+<li>Connect console cable from router's console port (RJ-45) to your PC's serial port</li>
+<li>Set terminal emulation software to: 9600 baud, 8 data bits, 1 stop bit, no parity</li>
+<li>Press Enter when connected; you should see a router prompt</li>
+</ul>
+<p><strong>For Emulation (GNS3/vLabs):</strong></p>
+<ul class="commands-list">
+<li>Open terminal window within the emulation platform</li>
+<li>Select the router device</li>
+<li>Click "Console" to access CLI</li>
+</ul>
+<div class="note-box">💡 If you're in User Executive mode (>) instead of Privileged mode (#), type <code>enable</code> to escalate privileges.</div>
+
+<h4>2. Execute show version Command</h4>
+<p>The <code>show version</code> command displays comprehensive device information including IOS version, hardware details, and running time.</p>
+<div class="command-box"><code>Router# show version</code></div>
+
+<strong>Expected Output Example:</strong>
+<div class="command-box">
+<code>
+Cisco IOS XE Software, Version 17.3.1<br>
+Router uptime is 2 days, 5 hours, 30 minutes<br>
+System returned to ROM by power-on<br>
+System image file is "flash:/cat9k_iosxe.17.03.01.SPA.bin"<br>
+cisco ISR4331 (ARM) processor (revision A0) with 4194304K bytes of memory<br>
+Processor board ID FDO1234567A<br>
+4 Virtual Execution Environments<br>
+2 Virtual CPU cores<br>
+Router booted with ROM image<br>
+1 Gigabit Ethernet interfaces<br>
+1 Small Form-factor Pluggable (SFP) interfaces<br>
+License Level: ipbasek9<br>
+License Type: Subscription
+</code>
+</div>
+
+<strong>Key Information to Document:</strong>
+<ul class="commands-list">
+<li><strong>IOS Version:</strong> Version number and feature set</li>
+<li><strong>Uptime:</strong> How long device has been running</li>
+<li><strong>Model:</strong> Router/switch model (e.g., ISR4331, Catalyst 3650)</li>
+<li><strong>Memory:</strong> DRAM available on device</li>
+<li><strong>Processor Board ID:</strong> Unique device identifier</li>
+<li><strong>Interfaces:</strong> Number and types of physical interfaces</li>
+<li><strong>License Level:</strong> Feature set enabled (IP Base, Advanced IP Services, Enterprise Services)</li>
+</ul>
+
+<h4>3. Check Device Inventory</h4>
+<p>The <code>show inventory</code> command displays all hardware modules installed in the device, including line cards, power supplies, and memory modules.</p>
+<div class="command-box"><code>Router# show inventory</code></div>
+
+<strong>Expected Output Example:</strong>
+<div class="command-box">
+<code>
+NAME: "Chassis", DESCR: "Cisco ISR4331 Integrated Services Router"<br>
+PID: ISR4331, VID: V01, SN: FDO1234567A<br>
+NAME: "Power Supply Module 0", DESCR: "ISR4331 Power Supply"<br>
+PID: ISR4330-PWR-1.6A, VID: V02, SN: PSU001234<br>
+NAME: "Clock FPGA", DESCR: "Clock FPGA Module"<br>
+SN: CLK001234<br>
+NAME: "GigabitEthernet0/0/0", DESCR: "GigabitEthernet0/0/0"<br>
+PID: ISR4331-GE, VID: V01, SN: GE001234
+</code>
+</div>
+
+<h4>4. Examine Running Configuration</h4>
+<p>The <code>show running-config</code> command displays the currently active configuration on the device.</p>
+<div class="command-box"><code>Router# show running-config</code></div>
+
+<strong>Key Configuration Elements to Examine:</strong>
+<ul class="commands-list">
+<li><strong>Hostname:</strong> Device name for identification</li>
+<li><strong>Interface configurations:</strong> IP addresses, descriptions, enabled/disabled status</li>
+<li><strong>Routing protocols:</strong> EIGRP, OSPF, BGP configurations (if enabled)</li>
+<li><strong>Access Control Lists (ACLs):</strong> Security policies</li>
+<li><strong>AAA settings:</strong> Authentication, Authorization, Accounting</li>
+</ul>
+
+<div class="command-box">
+<code>Router# show running-config | include hostname<br>
+Router# show running-config | include interface</code>
+</div>
+
+<h4>5. View Interface Information</h4>
+<p>The <code>show interfaces</code> command provides detailed information about all interfaces on the device, including status, bandwidth, and statistics.</p>
+<div class="command-box">
+<code>Router# show interfaces<br>
+Router# show interfaces brief<br>
+Router# show interfaces GigabitEthernet 0/0/0</code>
+</div>
+
+<strong>Expected Output Example:</strong>
+<div class="command-box">
+<code>
+GigabitEthernet0/0/0 is up, line protocol is up (connected)<br>
+Hardware is ISR4330-onboard GE, address is a8ab.1234.5678<br>
+Internet address is 192.168.1.1/24<br>
+MTU 1500 bytes, BW 1000000 Kbit/sec<br>
+Encapsulation ARPA, loopback not set<br>
+Keepalive set (10 sec)<br>
+Half-duplex, 100Mb/s (Negotiated), 100BaseTX<br>
+Input queue: 0/75/0 (size/max/drops); Total output drops: 0<br>
+Queueing strategy: FIFO<br>
+5 minute input rate 0 bits/sec, 0 packets/sec<br>
+5 minute output rate 0 bits/sec, 0 packets/sec
+</code>
+</div>
+
+<h4>6. Repeat Process for Switch Device</h4>
+<p>Connect to the Catalyst switch and execute the same commands to gather switch-specific information.</p>
+<div class="command-box">
+<code>Switch# show version<br>
+Switch# show inventory<br>
+Switch# show flash:<br>
+Switch# show vlan brief</code>
+</div>
+
+<strong>Additional Switch-Specific Commands:</strong>
+<div class="command-box">
+<code>Switch# show interfaces switchport<br>
+Switch# show mac address-table<br>
+Switch# show spanning-tree summary</code>
+</div>
+
+<h3>Lab Deliverables</h3>
+<ul class="deliverables-list">
+<li><strong>Device Inventory Report:</strong> Comprehensive documentation of all devices with model, IOS version, and capabilities</li>
+<li><strong>Configuration Snapshot:</strong> Exported running-config from both router and switch</li>
+<li><strong>Interface Status Documentation:</strong> Current status of all physical and logical interfaces</li>
+<li><strong>Hardware Specifications Sheet:</strong> CPU, memory, power supply details</li>
+<li><strong>Network Diagram:</strong> Visual representation of lab topology with device connections</li>
+</ul>
+
+<div class="checklist">
+<strong>✅ Verification Checklist</strong>
+<ul>
+<li>Successfully connected to router console</li>
+<li>Executed show version and documented IOS version</li>
+<li>Identified device model and serial number</li>
+<li>Examined license level and feature set</li>
+<li>Reviewed running-config and identified key settings</li>
+<li>Documented all interface configurations</li>
+<li>Repeated process for switch device</li>
+<li>Created comprehensive inventory report</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<strong>⚠️ Common Issues & Troubleshooting:</strong>
+<ul class="commands-list">
+<li><strong>No Response on Console:</strong> Verify baud rate (9600), check cable connection, ensure device is powered on</li>
+<li><strong>Cannot Execute Commands:</strong> Ensure you're in Privileged mode (#). Type <code>enable</code> if needed</li>
+<li><strong>Partial Output:</strong> Command output may be long. Use <code>| more</code> to paginate, or <code>| include</code> to filter specific lines</li>
+</ul>
+</div>
+</section>
+
+<!-- Lab 1.2: Flash Memory Management -->
+<section class="lab-section">
+<h2>📦 Lab 1.2: Cisco Flash Memory & Image Management</h2>
+
+<h3>Lab Objectives</h3>
+<ul class="objectives-list">
+<li>Understand Cisco IOS image types and their features</li>
+<li>Navigate flash memory using CLI commands</li>
+<li>Verify available flash space</li>
+<li>Understand boot loader configuration</li>
+<li>Prepare for software image upgrades</li>
+</ul>
+
+<div class="scenario-box">
+<strong>Scenario Overview:</strong> Your organization is planning a software upgrade across all routers and switches. Before proceeding, you need to verify that each device has sufficient flash memory, understand which IOS image type is currently running, and document compatibility requirements for the upgrade.
+</div>
+
+<h3>Equipment Required</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Router Device</td>
+<td>ISR 4000 Series</td>
+<td>Primary device for flash memory inspection</td>
+</tr>
+<tr>
+<td>New IOS Image File</td>
+<td>.bin file (e.g., cat4k_iosxe.17.03.01.SPA.bin)</td>
+<td>For simulating upgrade process</td>
+</tr>
+<tr>
+<td>TFTP Server</td>
+<td>Tftpd32 or Cisco TFTP Server</td>
+<td>Image distribution</td>
+</tr>
+<tr>
+<td>Network Connection</td>
+<td>Ethernet interface configured</td>
+<td>Communication to TFTP server</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Cisco IOS Image Types Overview</h3>
+<table>
+<thead>
+<tr>
+<th>IOS Image Type</th>
+<th>Features Included</th>
+<th>Use Case</th>
+<th>Typical Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP Base</strong></td>
+<td>Entry-level Cisco IOS, basic routing, VLAN support</td>
+<td>Small branches, entry-level deployment</td>
+<td>~150-200 MB</td>
+</tr>
+<tr>
+<td><strong>Advanced IP Services</strong></td>
+<td>IPv6, Advanced Security (firewall, VPN, SSH), MPLS, Multi-Protocol support</td>
+<td>Medium-sized enterprises with advanced routing needs</td>
+<td>~200-300 MB</td>
+</tr>
+<tr>
+<td><strong>Enterprise Services</strong></td>
+<td>Full Cisco IOS Software, all security features, VPN, ATM, Voice services</td>
+<td>Large enterprises requiring complete feature set</td>
+<td>~300-400 MB</td>
+</tr>
+<tr>
+<td><strong>Service Provider Services</strong></td>
+<td>MPLS, BGP, advanced carrier-class features, IP Voice VoIP</td>
+<td>Service providers and carrier networks</td>
+<td>~250-350 MB</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Step-by-Step Configuration</h3>
+
+<h4>1. Check Available Flash Memory</h4>
+<p>The <code>show flash:</code> command displays the contents of flash memory and available space.</p>
+<div class="command-box"><code>Router# show flash:</code></div>
+
+<strong>Expected Output:</strong>
+<div class="command-box">
+<code>
+Directory of flash:/<br>
+1 -rw- 536870912 Apr 12 2023 12:00:00 +00:00 cat4k_iosxe.17.03.01.SPA.bin<br>
+2 drw- 4096 Apr 12 2023 11:00:00 +00:00 .installer<br>
+11353194496 bytes total (5234567890 bytes free)<br>
+[Output shows: Total flash size = 11.35 GB, Used space, Free space available]
+</code>
+</div>
+
+<strong>Key Information to Document:</strong>
+<ul class="commands-list">
+<li><strong>Current IOS Image:</strong> Filename and size</li>
+<li><strong>Total Flash:</strong> Total capacity of flash memory (in bytes)</li>
+<li><strong>Used Space:</strong> Currently occupied by files</li>
+<li><strong>Free Space:</strong> Available capacity for new images</li>
+<li><strong>Calculate Free Percentage:</strong> Free / Total × 100</li>
+</ul>
+
+<h4>2. Identify Current IOS Image and Version</h4>
+<p>Extract the specific IOS image information from show flash and show version output.</p>
+<div class="command-box">
+<code>Router# show version | include Cisco IOS<br>
+Router# show version | include System image</code>
+</div>
+
+<strong>Analysis Points:</strong>
+<ul class="commands-list">
+<li>Identify feature set (IP Base, Advanced IP Services, Enterprise Services)</li>
+<li>Note version number and release date</li>
+<li>Document if image is compressed or uncompressed</li>
+</ul>
+
+<h4>3. Examine Boot Loader Configuration</h4>
+<p>The boot loader determines which IOS image loads on device startup. Use <code>show boot</code> to verify configuration.</p>
+<div class="command-box"><code>Router# show boot</code></div>
+
+<strong>Expected Output:</strong>
+<div class="command-box">
+<code>
+Current Boot Variables:<br>
+BOOT variable = flash:cat4k_iosxe.17.03.01.SPA.bin;<br>
+Config Register = 0x2102<br>
+<br>
+Boot variable shows the primary IOS image to load<br>
+<br>
+Config Register:<br>
+0x2100 = Load from ROM monitor<br>
+0x2101 = Load first valid image in flash<br>
+0x2102 = Normal operation (load from BOOT variable)
+</code>
+</div>
+
+<h4>4. Document Memory Upgrade Compatibility</h4>
+<p>Ensure sufficient flash space exists for the new IOS image. Create an upgrade assessment document.</p>
+
+<div class="note-box">
+<strong>💡 Flash Space Calculation:</strong><br>
+Required Flash = Current Image Size + New Image Size + 10% buffer<br>
+Example: Current (500MB) + New (600MB) + 110MB buffer = 1.21GB minimum required
+</div>
+
+<strong>Pre-Upgrade Verification Commands:</strong>
+<div class="command-box">
+<code>Router# dir flash:<br>
+Router# show version | include image file<br>
+Router# verify /md5 flash:cat4k_iosxe.17.03.01.SPA.bin</code>
+</div>
+
+<h4>5. Clean Up Old/Unnecessary Files (Optional)</h4>
+<p>If flash space is limited, remove old IOS images or unnecessary files to free up space.</p>
+
+<div class="warning-box">
+<strong>⚠️ Warning:</strong> Only delete files if you have verified a backup exists. Never delete the currently running IOS image!
+</div>
+
+<div class="command-box"><code>Router# delete flash:old_ios_image.bin</code></div>
+
+<h3>Lab Deliverables</h3>
+<ul class="deliverables-list">
+<li><strong>Flash Memory Assessment Report:</strong> Total capacity, used space, available space, percentage utilized</li>
+<li><strong>IOS Image Documentation:</strong> Current version, feature set, filename</li>
+<li><strong>Upgrade Compatibility Checklist:</strong> Verification that new image will fit in available flash</li>
+<li><strong>Boot Configuration Snapshot:</strong> Current boot variable and config register settings</li>
+<li><strong>Pre-Upgrade Verification Worksheet:</strong> MD5 checksums, file sizes, version compatibility</li>
+</ul>
+
+<div class="checklist">
+<strong>✅ Verification Checklist</strong>
+<ul>
+<li>Executed show flash: and documented free space</li>
+<li>Identified current IOS image name and size</li>
+<li>Determined IOS feature set (IP Base, Advanced IP Services, Enterprise Services)</li>
+<li>Verified boot configuration with show boot</li>
+<li>Calculated available space for new image</li>
+<li>Created comprehensive flash management report</li>
+<li>Verified MD5 checksum of current image (optional)</li>
+</ul>
+</div>
+</section>
+
+<!-- Lab 1.3: Device Access & Security -->
+<section class="lab-section">
+<h2>🔐 Lab 1.3: Cisco Device Access & Initial Security Configuration</h2>
+
+<h3>Lab Objectives</h3>
+<ul class="objectives-list">
+<li>Configure basic device access security</li>
+<li>Set up console line protection</li>
+<li>Enable SSH for secure remote access</li>
+<li>Configure privilege levels and user accounts</li>
+<li>Enable basic device hardening</li>
+</ul>
+
+<div class="scenario-box">
+<strong>Scenario Overview:</strong> Your organization requires all network devices to have basic security controls implemented. You must configure console line passwords, enable SSH, and establish privilege levels to restrict unauthorized access to critical network infrastructure.
+</div>
+
+<h3>Basic Device Configuration Workflow</h3>
+
+<h4>1. Enter Global Configuration Mode</h4>
+<div class="command-box">
+<code>Router# configure terminal<br>
+Router(config)# hostname CORP-R1<br>
+Router(config)# exit</code>
+</div>
+
+<h4>2. Set Console Line Password</h4>
+<div class="command-box">
+<code>Router(config)# line console 0<br>
+Router(config-line)# password SECURE_PASSWORD<br>
+Router(config-line)# login<br>
+Router(config-line)# exec-timeout 10 0<br>
+Router(config-line)# exit</code>
+</div>
+
+<h3>Lab Deliverables</h3>
+<ul class="deliverables-list">
+<li><strong>Device Configuration Backup:</strong> Running configuration with security settings</li>
+<li><strong>Access Control Documentation:</strong> User accounts, privilege levels, authentication methods</li>
+<li><strong>Security Audit Report:</strong> Current access controls and recommendations</li>
+</ul>
+
+<div class="checklist">
+<strong>✅ Security Configuration Checklist</strong>
+<ul>
+<li>Configured hostname for device identification</li>
+<li>Set console line password and login requirement</li>
+<li>Configured exec timeout (10 0 = 10 minutes, 0 seconds)</li>
+<li>Enabled SSH for secure remote access (if applicable)</li>
+<li>Configured privilege levels for access control</li>
+<li>Created user accounts with appropriate permissions</li>
+<li>Documented all security settings</li>
+<li>Tested access controls and verified functionality</li>
+</ul>
+</div>
+</section>
+
+<!-- Resources & References -->
+<section class="lab-section">
+<h2>📚 Resources & References</h2>
+
+<h3>Cisco IOS Command Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+<th>Output Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>show version</code></td>
+<td>Display IOS version, uptime, hardware details</td>
+<td>Device Information</td>
+</tr>
+<tr>
+<td><code>show inventory</code></td>
+<td>List all hardware components and modules</td>
+<td>Hardware Details</td>
+</tr>
+<tr>
+<td><code>show flash:</code></td>
+<td>Display flash memory contents and available space</td>
+<td>Storage Information</td>
+</tr>
+<tr>
+<td><code>show running-config</code></td>
+<td>Display active device configuration</td>
+<td>Configuration</td>
+</tr>
+<tr>
+<td><code>show interfaces</code></td>
+<td>Display detailed interface status and statistics</td>
+<td>Interface Details</td>
+</tr>
+<tr>
+<td><code>show boot</code></td>
+<td>Display boot loader configuration</td>
+<td>Boot Configuration</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Recommended Study Materials</h3>
+<ul class="commands-list">
+<li><strong>Cisco Official Documentation:</strong> Cisco IOS XE Configuration Guides</li>
+<li><strong>CCNP 350-401 ENCOR:</strong> Exam Study Guide - Coverage of enterprise architecture and device management</li>
+<li><strong>CCNP 300-410 ENARSI:</strong> Exam Study Guide - Advanced routing and service infrastructure</li>
+<li><strong>Cisco Learning Network:</strong> Community forums and resources</li>
+<li><strong>GNS3 Emulation Software:</strong> For practice without physical hardware</li>
+</ul>
+
+<h3>Understanding IOS Feature Sets</h3>
+<ul class="commands-list">
+<li><strong>IP Base:</strong> Entry-level image with basic routing and switching capabilities</li>
+<li><strong>Advanced IP Services:</strong> Adds IPv6, Advanced Security (firewall, IPsec VPN, SSH), MPLS, multi-protocol support</li>
+<li><strong>Enterprise Services:</strong> Full feature set including VoIP, ATM, and comprehensive carrier-class services</li>
+</ul>
+</section>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p>CCNP Enterprise Certification Program</p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Password Protection & Anti-Tampering Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT', { timestamp: new Date().toISOString() });
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+enableEditMode();
+}
+
+function lockPage() {
+isUnlocked = false;
+editMode = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+disableEditMode();
+setTimeout(() => {
+document.getElementById('passwordInput').focus();
+}, 100);
+}
+
+// ==================== EDIT MODE MANAGEMENT ====================
+function enableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'true');
+});
+editMode = true;
+logSecurityEvent('EDIT_MODE_ENABLED');
+}
+
+function disableEditMode() {
+document.querySelectorAll('[contenteditable]').forEach(element => {
+element.setAttribute('contenteditable', 'false');
+});
+editMode = false;
+logSecurityEvent('EDIT_MODE_DISABLED');
+}
+
+// ==================== CONTENT PROTECTION ====================
+function protectElement(elementId) {
+const element = document.getElementById(elementId);
+if (element) {
+element.addEventListener('keydown', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 This content is protected. Please unlock with password first.');
+showPasswordModal();
+return false;
+}
+});
+
+element.addEventListener('paste', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 Paste not allowed on protected content');
+return false;
+}
+});
+
+element.addEventListener('drop', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 Drag and drop not allowed on protected content');
+return false;
+}
+});
+}
+}
+
+// Make protected elements editable when unlocked
+protectElement('protectedHeader');
+protectElement('protectedBody');
+protectElement('protectedFooter');
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+return false;
+});
+
+document.addEventListener('selectstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('dragstart', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('keydown', function(e) {
+// F12 - Developer Tools
+if (e.keyCode === 123) { e.preventDefault(); return false; }
+// Ctrl+Shift+I - Developer Tools
+if (e.ctrlKey && e.shiftKey && e.keyCode === 73) { e.preventDefault(); return false; }
+// Ctrl+Shift+C - Element Inspector
+if (e.ctrlKey && e.shiftKey && e.keyCode === 67) { e.preventDefault(); return false; }
+// Ctrl+Shift+J - Console
+if (e.ctrlKey && e.shiftKey && e.keyCode === 74) { e.preventDefault(); return false; }
+// Ctrl+U - View Source
+if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; }
+// Ctrl+S - Save Page
+if (e.ctrlKey && e.keyCode === 83) {
+if (!isUnlocked) {
+e.preventDefault();
+alert('🔒 Cannot save - Content is password protected');
+return false;
+}
+}
+});
+
+document.addEventListener('copy', function(e) {
+if (!isUnlocked) { e.preventDefault(); return false; }
+});
+
+document.addEventListener('cut', function(e) {
+if (!isUnlocked) { e.preventDefault(); return false; }
+});
+
+document.addEventListener('mousedown', function(e) {
+if (e.button === 2) { e.preventDefault(); return false; }
+});
+
+document.addEventListener('dblclick', function(e) {
+if (!isUnlocked) { e.preventDefault(); return false; }
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', function() {
+logSecurityEvent('WINDOW_BLUR');
+});
+
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) {
+showPasswordModal();
+}
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType, details = {}) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+userAgent: navigator.userAgent,
+...details
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== ANTI-EXPORT MEASURES ====================
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing is not allowed without password authentication');
+}
+});
+
+if (self !== top) {
+top.location = self.location;
+}
+
+document.addEventListener('dragover', function(e) {
+e.preventDefault();
+return false;
+});
+
+document.addEventListener('drop', function(e) {
+e.preventDefault();
+return false;
+});
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is FULLY PASSWORD PROTECTED',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c⚠️ Content Protections: ACTIVE',
+'color: #ff6b6b; font-size: 12px;');
+console.log('%c✓ Header Protected ✓ Body Protected ✓ Footer Protected',
+'color: #28a745; font-size: 12px;');
+console.log('%cMaster Password Required to Edit',
+'color: red; font-size: 11px; font-weight: bold;');
+console.log('%cUnauthorized access attempts are logged and monitored.',
+'color: #dc3545; font-size: 11px;');
+}, 500);
+});
+
+Object.defineProperty(window, 'console', {
+get: function() {
+if (!isUnlocked) {
+showPasswordModal();
+}
+return window._console;
+},
+set: function(val) {
+window._console = val;
+}
+});
+
+window.addEventListener('beforeunload', function() {
+if (isUnlocked) {
+logSecurityEvent('PAGE_UNLOAD', {
+isAuthenticated: isUnlocked,
+sessionExpires: new Date(Date.now() + SESSION_TIMEOUT).toISOString()
+});
+}
+});
+</script>
+
+</body>
+</html>

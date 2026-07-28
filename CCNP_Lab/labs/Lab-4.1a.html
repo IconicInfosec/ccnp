@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 4.1: Root Bridge Election & Port Role Configuration | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+.badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.stp-badge { background: #e8f4f8; color: #0066cc; }
+.root-badge { background: #e8f8e8; color: #00aa00; }
+.port-badge { background: #fff8e8; color: #ff9900; }
+.warning-badge { background: #ffe8e8; color: #cc0000; }
+
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+line-height: 1.8;
+}
+
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.step-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+.topology-image {
+max-width: 100%;
+height: auto;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+margin: 20px 0;
+}
+
+.image-caption {
+text-align: center;
+font-size: 0.95em;
+color: #666;
+margin-top: 10px;
+font-style: italic;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🌳 Lab 4.1: Root Bridge Election & Port Role Configuration</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Spanning Tree Protocol</p>
+<p style="font-size: 0.9em; opacity: 0.85;">STP Fundamentals & Loop Prevention | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Overview -->
+<h2>📋 Lab Overview</h2>
+<p>This laboratory exercise focuses on understanding Spanning Tree Protocol (STP) fundamentals, configuring root bridge election, and analyzing port roles in a redundant network topology. You will configure bridge priorities to influence root bridge selection and verify port roles (root port, designated port, blocked port) using Cisco CLI commands.</p>
+
+<!-- Lab Objectives -->
+<h2>🎯 Lab Objectives</h2>
+<ul>
+<li>Understand Spanning Tree Protocol (STP) fundamentals and loop prevention mechanisms</li>
+<li>Configure and manipulate Bridge Priority to influence Root Bridge election</li>
+<li>Identify Root Ports, Designated Ports, and Blocked Ports in a redundant topology</li>
+<li>Analyze path costs and tie-breaker mechanisms for port role selection</li>
+<li>Verify STP topology using Cisco CLI commands</li>
+<li>Troubleshoot Root Bridge election issues and port role discrepancies</li>
+</ul>
+
+<!-- Real-World Scenario -->
+<h2>🏢 Real-World Scenario</h2>
+<p>ABC Corporation operates a three-switch network with redundant links to prevent single points of failure. The network requires proper STP configuration to block redundant paths and prevent Layer 2 loops. You will configure bridge priorities to designate SW-A as the root bridge, verify port roles on all switches, and understand the STP convergence process.</p>
+
+<!-- Equipment Requirements -->
+<h2>📦 Equipment & Prerequisites</h2>
+
+<h3>Hardware Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Equipment</th>
+<th>Quantity</th>
+<th>Model/Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco Catalyst Switch</td>
+<td>3</td>
+<td>Catalyst 2960, 3560, or higher</td>
+<td>Primary switching platform</td>
+</tr>
+<tr>
+<td>Ethernet Cables</td>
+<td>4+</td>
+<td>Cat5e or Cat6 patch cables</td>
+<td>Inter-switch connectivity</td>
+</tr>
+<tr>
+<td>Console Cable</td>
+<td>3</td>
+<td>RJ-45 to RS-232 or USB</td>
+<td>CLI access to switches</td>
+</tr>
+<tr>
+<td>Terminal Emulation Software</td>
+<td>1</td>
+<td>PuTTY, SecureCRT, or Cisco NETLAB</td>
+<td>Console session management</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Software & Knowledge Requirements</h3>
+<ul>
+<li>Cisco IOS or IOS-XE version 15.0 or later</li>
+<li>Basic understanding of Layer 2 switching concepts</li>
+<li>Familiarity with Cisco CLI command structure</li>
+<li>Knowledge of STP concepts (BPDU, bridge ID, path cost)</li>
+<li>Understanding of redundancy and loop prevention</li>
+</ul>
+
+<!-- Network Topology -->
+<h2>🌐 Network Topology</h2>
+
+<p><strong>Three-Switch STP Topology with Redundant Links:</strong></p>
+<p style="text-align: center; margin: 20px 0;">
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23f0f0f0'/%3E%3Ccircle cx='400' cy='100' r='50' fill='%231e3c72'/%3E%3Ctext x='400' y='110' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-A%3C/text%3E%3Ccircle cx='200' cy='400' r='50' fill='%232a5298'/%3E%3Ctext x='200' y='410' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-B%3C/text%3E%3Ccircle cx='600' cy='400' r='50' fill='%232a5298'/%3E%3Ctext x='600' y='410' text-anchor='middle' fill='white' font-weight='bold' font-size='16'%3ESW-C%3C/text%3E%3Cline x1='400' y1='150' x2='200' y2='350' stroke='%23667eea' stroke-width='3'/%3E%3Ctext x='280' y='240' fill='%23667eea' font-size='12' font-weight='bold'%3EGi0/1%3C/text%3E%3Cline x1='400' y1='150' x2='600' y2='350' stroke='%23667eea' stroke-width='3'/%3E%3Ctext x='520' y='240' fill='%23667eea' font-size='12' font-weight='bold'%3EGi0/2%3C/text%3E%3Cline x1='200' y1='450' x2='600' y2='450' stroke='%23764ba2' stroke-width='3' stroke-dasharray='5,5'/%3E%3Ctext x='400' y='480' text-anchor='middle' fill='%23764ba2' font-size='12' font-weight='bold'%3EBlocked (STP)%3C/text%3E%3C/svg%3E" alt="Lab 4.1: Three-Switch STP Topology" class="topology-image">
+</p>
+<p class="image-caption">Figure 1: Three-Switch STP Topology with Redundant Links - Root Bridge (SW-A) with two active links to SW-B and SW-C, STP blocks one link between SW-B and SW-C to prevent loops</p>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Configuration Guide</h2>
+
+<div class="exercise-box">
+<h3><span class="step-number">1</span>Initial Access & Switch Verification</h3>
+<p><strong>Step 1.1: Connect to Switch via Console</strong></p>
+<div class="code-box">
+Switch> enable<br>
+Password: (enter enable password)<br>
+Switch#
+</div>
+<p><strong>Step 1.2: Verify Basic Configuration</strong></p>
+<div class="code-box">
+Switch# show running-config | section spanning-tree<br>
+Switch# show version<br>
+Switch# show spanning-tree
+</div>
+<div class="callout callout-info">
+<strong>ℹ️ Note:</strong> Document the MAC address and current priority of each switch. These values are critical for understanding Root Bridge election.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">2</span>Configure Switch Hostnames</h3>
+<p><strong>Step 2.1: Set Hostname on Switch A</strong></p>
+<div class="code-box">
+configure terminal<br>
+hostname SW-A<br>
+no logging console<br>
+exit<br>
+write memory
+</div>
+<p><strong>Step 2.2: Set Hostname on Switch B</strong></p>
+<div class="code-box">
+configure terminal<br>
+hostname SW-B<br>
+no logging console<br>
+exit<br>
+write memory
+</div>
+<p><strong>Step 2.3: Set Hostname on Switch C</strong></p>
+<div class="code-box">
+configure terminal<br>
+hostname SW-C<br>
+no logging console<br>
+exit<br>
+write memory
+</div>
+<div class="callout callout-success">
+<strong>✓ Verification:</strong> Prompt should change on each switch to reflect the new hostname.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">3</span>Configure Trunk Ports Between Switches</h3>
+<p><strong>Step 3.1: Configure Trunk Ports on Switch A</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/1<br>
+description Link to SW-B<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+interface gi0/2<br>
+description Link to SW-C<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+exit
+</div>
+<p><strong>Step 3.2: Configure Trunk Ports on Switch B (Similar)</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/1<br>
+description Link to SW-A<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+interface gi0/2<br>
+description Link to SW-C<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+exit
+</div>
+<p><strong>Step 3.3: Configure Trunk Ports on Switch C (Similar)</strong></p>
+<div class="code-box">
+configure terminal<br>
+interface gi0/1<br>
+description Link to SW-A<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+interface gi0/2<br>
+description Link to SW-B<br>
+switchport mode trunk<br>
+switchport trunk allowed vlan 1-1005<br>
+no shutdown<br>
+exit<br>
+exit
+</div>
+<div class="callout callout-success">
+<strong>✓ Verification:</strong> Run show interfaces trunk on each switch to confirm trunk configuration.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">4</span>Configure Spanning Tree Mode (Rapid PVST+)</h3>
+<p><strong>Step 4.1: Change STP Mode on All Switches</strong></p>
+<div class="code-box">
+configure terminal<br>
+spanning-tree mode rapid-pvst<br>
+exit
+</div>
+<p><strong>Step 4.2: Verify Configuration</strong></p>
+<div class="code-box">
+show spanning-tree summary
+</div>
+<div class="callout callout-info">
+<strong>ℹ️ About RAPID PVST+:</strong> This mode provides faster convergence (typically 6 seconds vs 50 seconds for classic STP) and is the industry best practice for modern networks.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">5</span>Configure Bridge Priority for Root Bridge Election</h3>
+<p><strong>Step 5.1: Set Priority on Switch A (Make it Root Bridge)</strong></p>
+<div class="code-box">
+configure terminal<br>
+spanning-tree vlan 1 priority 4096<br>
+exit
+</div>
+<p><strong>Step 5.2: Set Priority on Switch B (Secondary Root)</strong></p>
+<div class="code-box">
+configure terminal<br>
+spanning-tree vlan 1 priority 8192<br>
+exit
+</div>
+<p><strong>Step 5.3: Set Priority on Switch C</strong></p>
+<div class="code-box">
+configure terminal<br>
+spanning-tree vlan 1 priority 12288<br>
+exit
+</div>
+<div class="callout callout-success">
+<strong>✓ Result:</strong> STP will immediately recalculate and SW-A should become the new Root Bridge.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">6</span>Verify Root Bridge Election & Port Roles</h3>
+<p><strong>Step 6.1: Check STP Status on All Switches</strong></p>
+<div class="code-box">
+show spanning-tree vlan 1<br>
+show spanning-tree detail
+</div>
+<p><strong>Step 6.2: Expected Output on SW-A (Root Bridge)</strong></p>
+<div class="code-box">
+Bridge ID Priority 4097 (priority 4096 sys-id-ext 1)<br>
+Address aaaa.bbbb.cccc<br>
+Root ID Priority 4097<br>
+Address aaaa.bbbb.cccc ← Same as Bridge ID (This IS the root)<br>
+RootPort — ← No root port on root bridge
+</div>
+<div class="callout callout-info">
+<strong>Key Observations:</strong>
+<ul>
+<li>Root Bridge has no Root Port</li>
+<li>Each non-root switch has exactly one Root Port</li>
+<li>Port states: Forwarding (active) or Discarding (blocked)</li>
+</ul>
+</div>
+</div>
+
+<!-- Verification Commands -->
+<h2>✅ Configuration Verification Commands</h2>
+
+<h3>Display STP Summary</h3>
+<div class="code-box">
+show spanning-tree summary<br>
+(Shows STP mode, root bridge info)
+</div>
+
+<h3>View Detailed STP Information</h3>
+<div class="code-box">
+show spanning-tree vlan 1 detail<br>
+(Comprehensive STP topology including port states)
+</div>
+
+<h3>Check Interface STP Status</h3>
+<div class="code-box">
+show spanning-tree interface gi0/1<br>
+(Specific interface role and state)
+</div>
+
+<h3>Monitor STP Statistics</h3>
+<div class="code-box">
+show spanning-tree statistics<br>
+(BPDU counters and topology change history)
+</div>
+
+<!-- Completion Checklist -->
+<h2>📋 Lab Completion Checklist</h2>
+
+<h3>Configuration Verification</h3>
+<ul>
+<li>☐ All three switches are properly configured with correct hostnames</li>
+<li>☐ Trunk ports are active and passing traffic between switches</li>
+<li>☐ Root Bridge election is successful with SW-A as primary root</li>
+<li>☐ All port roles are correctly assigned (Root, Designated, Blocked)</li>
+<li>☐ Path costs reflect accurate link speeds (4 for 1Gbps)</li>
+<li>☐ No Layer 2 loops present in the topology</li>
+<li>☐ STP is running in Rapid PVST+ mode</li>
+<li>☐ All verification commands execute successfully</li>
+<li>☐ Failover test completed and Root Bridge re-election confirmed</li>
+<li>☐ Configuration saved to NVRAM on all switches</li>
+</ul>
+
+<!-- Key Takeaways -->
+<h2>💡 Key Takeaways & Learning Outcomes</h2>
+<ul>
+<li>Spanning Tree Protocol (STP) prevents Layer 2 loops by blocking redundant paths</li>
+<li>Bridge Priority determines Root Bridge election (lower priority wins)</li>
+<li>Root Port selection depends on path cost (lower cost to root wins)</li>
+<li>Designated Ports forward traffic on segments, Blocked Ports prevent loops</li>
+<li>Rapid PVST+ provides faster convergence than classic STP (6 seconds vs 50 seconds)</li>
+<li>BPDU (Bridge Protocol Data Unit) frames carry STP information between switches</li>
+<li>Port roles: Root Port (best path to root), Designated Port (lowest cost to segment), Blocked Port (redundant)</li>
+</ul>
+
+<!-- Best Practices -->
+<h2>🏆 Best Practices & Security Recommendations</h2>
+
+<h3>STP Configuration Best Practices</h3>
+<ul>
+<li>Always manually set bridge priority for root candidates instead of relying on MAC address</li>
+<li>Use consistent priority values across all switches (e.g., 4096, 8192, 12288)</li>
+<li>Configure Rapid PVST+ for faster convergence in production networks</li>
+<li>Enable BPDU Guard on access ports to prevent accidental topology changes</li>
+<li>Monitor STP topology changes and investigate unexpected root bridge elections</li>
+<li>Document the intended STP topology and root bridge designation</li>
+<li>Use Root Guard to prevent rogue switches from becoming root bridge</li>
+</ul>
+
+<h3>STP Security Best Practices</h3>
+<ul>
+<li>Disable STP on edge ports (not connected to other switches) using PortFast</li>
+<li>Enable BPDU Guard to prevent accidental or malicious STP manipulation</li>
+<li>Use STP Loop Guard to prevent alternate/backup port transitions to designated port</li>
+<li>Monitor for STP topology changes that could indicate network compromise</li>
+<li>Implement STP authentication using MD5 or SHA (if supported)</li>
+<li>Prevent unauthorized switch connections that could influence root bridge election</li>
+</ul>
+
+<!-- Troubleshooting Guide -->
+<h2>🔧 Troubleshooting Guide</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unexpected Root Bridge election</td>
+<td>Bridge priority not configured or MAC address tie-breaker activated</td>
+<td>Verify bridge priority values with show spanning-tree</td>
+</tr>
+<tr>
+<td>Port stuck in blocking state</td>
+<td>Port role calculation resulted in blocked port (normal or loop condition)</td>
+<td>Verify topology with show spanning-tree detail and physical cable connections</td>
+</tr>
+<tr>
+<td>No Root Port on non-root switch</td>
+<td>Switch is incorrectly acting as root or BPDU reception issue</td>
+<td>Check bridge priority configuration and BPDU reception on all ports</td>
+</tr>
+<tr>
+<td>Slow convergence after topology change</td>
+<td>STP mode set to classic instead of Rapid PVST+</td>
+<td>Configure spanning-tree mode rapid-pvst and reload if necessary</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 4.1 when you can explain Root Bridge election, identify port roles in a three-switch topology, understand bridge priority influence, and verify STP configuration using CLI commands.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Spanning Tree Protocol Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

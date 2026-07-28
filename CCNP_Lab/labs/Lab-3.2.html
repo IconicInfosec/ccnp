@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 3.2: Trunk Ports, VLAN Tagging & Native VLAN Configuration | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 8px;
+font-size: 1.05em;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+.badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 5px 5px 5px 0;
+font-size: 0.9em;
+}
+
+.vlan-badge { background: #e8f4f8; color: #0066cc; }
+.trunk-badge { background: #e8f0ff; color: #0066cc; }
+.security-badge { background: #fff8e8; color: #ff9900; }
+.warning-badge { background: #ffe8e8; color: #cc0000; }
+
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+.callout-info {
+background: #e8f0ff;
+border-left-color: #0066cc;
+}
+
+.code-box {
+background: #f5f5f5;
+border-left: 4px solid #667eea;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+font-family: 'Courier New', monospace;
+font-size: 0.9em;
+overflow-x: auto;
+color: #333;
+line-height: 1.8;
+}
+
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+.step-number {
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+margin-right: 10px;
+}
+
+.lab-image {
+max-width: 100%;
+height: auto;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+margin: 20px 0;
+}
+
+.image-caption {
+text-align: center;
+font-size: 0.95em;
+color: #666;
+margin-top: 10px;
+font-style: italic;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>🔗 Lab 3.2: Trunk Ports, VLAN Tagging & Native VLAN Configuration</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Layer 2 Switching</p>
+<p style="font-size: 0.9em; opacity: 0.85;">Multi-Floor Datacenter with Inter-Switch VLAN Propagation | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Overview -->
+<h2>📋 Lab Overview</h2>
+<p>This laboratory exercise focuses on configuring trunk ports and implementing VLAN tagging across multiple switches in a datacenter environment. You will establish secure trunk links between switches, configure allowed VLANs, manage native VLAN assignments, and understand VLAN propagation across the network infrastructure.</p>
+
+<!-- Lab Objectives -->
+<h2>🎯 Lab Objectives</h2>
+<ul>
+<li>Configure trunk ports between switches using Dynamic Trunking Protocol (DTP)</li>
+<li>Understand 802.1Q VLAN tagging standards and frame structure</li>
+<li>Configure allowed VLANs on trunk links using switchport trunk allowed vlan commands</li>
+<li>Manage native VLAN configuration to prevent VLAN tagging mismatches</li>
+<li>Verify trunk port configuration and VLAN propagation across switches</li>
+<li>Identify and mitigate VLAN hopping vulnerabilities</li>
+<li>Implement Layer 2 security best practices for trunk links</li>
+<li>Troubleshoot inter-switch VLAN connectivity issues</li>
+</ul>
+
+<!-- Real-World Scenario -->
+<h2>🏢 Real-World Scenario</h2>
+<p>ABC operates a multi-floor datacenter with servers and resources distributed across two physical floors. Each floor has independent Cisco Catalyst switches (Floor1-SW1 and Floor2-SW2), and they must communicate while maintaining VLAN segmentation. You will configure trunk ports using 802.1Q tagging to extend VLANs across switch interconnects, properly configure native VLANs, and demonstrate secure inter-switch communication while preventing VLAN hopping attacks.</p>
+
+<!-- Equipment Requirements -->
+<h2>📦 Equipment & Prerequisites</h2>
+
+<h3>Hardware Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Equipment</th>
+<th>Quantity</th>
+<th>Model/Specification</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco Catalyst Switches</td>
+<td>2</td>
+<td>Catalyst 2960, 3560, or higher</td>
+<td>Floor 1 and Floor 2 distribution</td>
+</tr>
+<tr>
+<td>Ethernet Cables</td>
+<td>8+</td>
+<td>Cat5e or Cat6 patch cables</td>
+<td>Trunk links and access ports</td>
+</tr>
+<tr>
+<td>End User Devices</td>
+<td>6</td>
+<td>PC, Laptop, or Virtual Machines</td>
+<td>Simulate server resources on each floor</td>
+</tr>
+<tr>
+<td>Console Cables</td>
+<td>2</td>
+<td>RJ-45 to RS-232 or USB</td>
+<td>CLI access to both switches</td>
+</tr>
+<tr>
+<td>Terminal Emulation Software</td>
+<td>1</td>
+<td>PuTTY, SecureCRT, or Cisco NETLAB</td>
+<td>Console session management</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Software & Knowledge Requirements</h3>
+<ul>
+<li>Cisco IOS or IOS-XE version 15.0 or later on both switches</li>
+<li>Understanding of 802.1Q VLAN tagging standards</li>
+<li>Knowledge of trunk port concepts and inter-switch links</li>
+<li>Familiarity with MAC address learning and forwarding</li>
+<li>Comprehension of Layer 2 security vulnerabilities</li>
+<li>Proficiency with Cisco CLI command syntax</li>
+</ul>
+
+<!-- Network Topology -->
+<h2>🌐 Network Topology & Lab Picture</h2>
+
+<img src="https://f005.backblazeb2.com/file/CCNPLabPic/Lab-3.2.jpg" alt="Lab 3.2: Trunk Ports, VLAN Tagging & Native VLAN Configuration" class="lab-image">
+<p class="image-caption">Figure 1: ABC Multi-Floor Datacenter - Inter-Switch VLAN Propagation with Trunk Link Configuration</p>
+
+<h3>VLAN Configuration Summary</h3>
+<table>
+<thead>
+<tr>
+<th>VLAN ID</th>
+<th>VLAN Name</th>
+<th>Floor 1 Ports</th>
+<th>Floor 2 Ports</th>
+<th>IP Subnet</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="badge vlan-badge">10</span></td>
+<td>HR-Department</td>
+<td>Gi0/1</td>
+<td>Gi0/1</td>
+<td>192.168.10.0/24</td>
+<td>HR - Cross-floor connectivity</td>
+</tr>
+<tr>
+<td><span class="badge vlan-badge">20</span></td>
+<td>IT-Department</td>
+<td>Gi0/2</td>
+<td>Gi0/2</td>
+<td>192.168.20.0/24</td>
+<td>IT - Cross-floor connectivity</td>
+</tr>
+<tr>
+<td><span class="badge vlan-badge">30</span></td>
+<td>Finance-Department</td>
+<td>Gi0/3</td>
+<td>Gi0/3</td>
+<td>192.168.30.0/24</td>
+<td>Finance - Cross-floor connectivity</td>
+</tr>
+<tr>
+<td><span class="badge trunk-badge">99</span></td>
+<td>Management</td>
+<td>Management only</td>
+<td>Management only</td>
+<td>192.168.99.0/24</td>
+<td>Native VLAN for administrative traffic</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Configuration Guide</h2>
+
+<div class="exercise-box">
+<h3><span class="step-number">1</span>Create VLANs on Both Switches (Floor 1 & Floor 2)</h3>
+<p><strong>Step 1.1: Access Floor1-SW1 Configuration Mode</strong></p>
+<div class="code-box">
+Switch> enable<br>
+Switch# configure terminal<br>
+Switch(config)# hostname Floor1-SW1<br>
+Floor1-SW1(config)#
+</div>
+<p><strong>Step 1.2: Create VLANs on Floor1-SW1</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# vlan 10<br>
+Floor1-SW1(config-vlan)# name HR-Department<br>
+Floor1-SW1(config-vlan)# exit<br>
+Floor1-SW1(config)# vlan 20<br>
+Floor1-SW1(config-vlan)# name IT-Department<br>
+Floor1-SW1(config-vlan)# exit<br>
+Floor1-SW1(config)# vlan 30<br>
+Floor1-SW1(config-vlan)# name Finance-Department<br>
+Floor1-SW1(config-vlan)# exit<br>
+Floor1-SW1(config)# vlan 99<br>
+Floor1-SW1(config-vlan)# name Management<br>
+Floor1-SW1(config-vlan)# exit
+</div>
+<p><strong>Step 1.3: Configure Access Ports on Floor1-SW1</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# interface GigabitEthernet 0/1<br>
+Floor1-SW1(config-if)# switchport mode access<br>
+Floor1-SW1(config-if)# switchport access vlan 10<br>
+Floor1-SW1(config-if)# description HR-Floor1-Access<br>
+Floor1-SW1(config-if)# exit<br>
+Floor1-SW1(config)# interface GigabitEthernet 0/2<br>
+Floor1-SW1(config-if)# switchport mode access<br>
+Floor1-SW1(config-if)# switchport access vlan 20<br>
+Floor1-SW1(config-if)# description IT-Floor1-Access<br>
+Floor1-SW1(config-if)# exit<br>
+Floor1-SW1(config)# interface GigabitEthernet 0/3<br>
+Floor1-SW1(config-if)# switchport mode access<br>
+Floor1-SW1(config-if)# switchport access vlan 30<br>
+Floor1-SW1(config-if)# description Finance-Floor1-Access<br>
+Floor1-SW1(config-if)# exit
+</div>
+<p><strong>Step 1.4: Repeat VLAN Creation on Floor2-SW2</strong></p>
+<div class="code-box">
+Floor2-SW2> enable<br>
+Floor2-SW2# configure terminal<br>
+Floor2-SW2(config)# hostname Floor2-SW2<br>
+Floor2-SW2(config)# vlan 10<br>
+Floor2-SW2(config-vlan)# name HR-Department<br>
+Floor2-SW2(config-vlan)# exit<br>
+Floor2-SW2(config)# vlan 20<br>
+Floor2-SW2(config-vlan)# name IT-Department<br>
+Floor2-SW2(config-vlan)# exit<br>
+Floor2-SW2(config)# vlan 30<br>
+Floor2-SW2(config-vlan)# name Finance-Department<br>
+Floor2-SW2(config-vlan)# exit<br>
+Floor2-SW2(config)# vlan 99<br>
+Floor2-SW2(config-vlan)# name Management<br>
+Floor2-SW2(config-vlan)# exit
+</div>
+<p><strong>Step 1.5: Configure Access Ports on Floor2-SW2</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# interface GigabitEthernet 0/1<br>
+Floor2-SW2(config-if)# switchport mode access<br>
+Floor2-SW2(config-if)# switchport access vlan 10<br>
+Floor2-SW2(config-if)# description HR-Floor2-Access<br>
+Floor2-SW2(config-if)# exit<br>
+Floor2-SW2(config)# interface GigabitEthernet 0/2<br>
+Floor2-SW2(config-if)# switchport mode access<br>
+Floor2-SW2(config-if)# switchport access vlan 20<br>
+Floor2-SW2(config-if)# description IT-Floor2-Access<br>
+Floor2-SW2(config-if)# exit<br>
+Floor2-SW2(config)# interface GigabitEthernet 0/3<br>
+Floor2-SW2(config-if)# switchport mode access<br>
+Floor2-SW2(config-if)# switchport access vlan 30<br>
+Floor2-SW2(config-if)# description Finance-Floor2-Access<br>
+Floor2-SW2(config-if)# exit
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">2</span>Configure Trunk Ports on Both Switches</h3>
+<p><strong>Step 2.1: Configure Trunk Port on Floor1-SW1 (Gi0/24)</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# interface GigabitEthernet 0/24<br>
+Floor1-SW1(config-if)# switchport mode trunk<br>
+Floor1-SW1(config-if)# description Trunk-Link-Floor1-to-Floor2<br>
+Floor1-SW1(config-if)# exit
+</div>
+<p><strong>Step 2.2: Configure Trunk Port on Floor2-SW2 (Gi0/24)</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# interface GigabitEthernet 0/24<br>
+Floor2-SW2(config-if)# switchport mode trunk<br>
+Floor2-SW2(config-if)# description Trunk-Link-Floor2-to-Floor1<br>
+Floor2-SW2(config-if)# exit
+</div>
+<div class="callout callout-warning">
+<strong>⚠️ Important:</strong> By default, DTP (Dynamic Trunking Protocol) will automatically negotiate the trunk if one side is set to trunk mode. For security, disable DTP and use "switchport nonegotiate" in production environments.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">3</span>Configure Allowed VLANs on Trunk Links</h3>
+<p><strong>Step 3.1: Configure Allowed VLANs on Floor1-SW1 Trunk (Gi0/24)</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# interface GigabitEthernet 0/24<br>
+Floor1-SW1(config-if)# switchport trunk allowed vlan 10,20,30<br>
+Floor1-SW1(config-if)# exit
+</div>
+<p><strong>Step 3.2: Configure Allowed VLANs on Floor2-SW2 Trunk (Gi0/24)</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# interface GigabitEthernet 0/24<br>
+Floor2-SW2(config-if)# switchport trunk allowed vlan 10,20,30<br>
+Floor2-SW2(config-if)# exit
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">4</span>Configure Native VLAN on Trunk Links</h3>
+<p><strong>Step 4.1: Set Native VLAN to 99 on Floor1-SW1 Trunk</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# interface GigabitEthernet 0/24<br>
+Floor1-SW1(config-if)# switchport trunk native vlan 99<br>
+Floor1-SW1(config-if)# exit
+</div>
+<p><strong>Step 4.2: Set Native VLAN to 99 on Floor2-SW2 Trunk</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# interface GigabitEthernet 0/24<br>
+Floor2-SW2(config-if)# switchport trunk native vlan 99<br>
+Floor2-SW2(config-if)# exit
+</div>
+<div class="callout callout-success">
+<strong>✓ Security Best Practice:</strong> By using VLAN 99 (Management) as the native VLAN instead of VLAN 1, we prevent unauthorized access through the default VLAN.
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">5</span>Disable DTP and Enable Nonegotiate (Security Best Practice)</h3>
+<p><strong>Step 5.1: Disable DTP on Floor1-SW1 Trunk (Gi0/24)</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# interface GigabitEthernet 0/24<br>
+Floor1-SW1(config-if)# switchport nonegotiate<br>
+Floor1-SW1(config-if)# exit
+</div>
+<p><strong>Step 5.2: Disable DTP on Floor2-SW2 Trunk (Gi0/24)</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# interface GigabitEthernet 0/24<br>
+Floor2-SW2(config-if)# switchport nonegotiate<br>
+Floor2-SW2(config-if)# exit
+</div>
+</div>
+
+<div class="exercise-box">
+<h3><span class="step-number">6</span>Save Configuration to NVRAM</h3>
+<p><strong>Step 6.1: Save Floor1-SW1 Configuration</strong></p>
+<div class="code-box">
+Floor1-SW1(config)# exit<br>
+Floor1-SW1# copy running-config startup-config<br>
+Destination filename [startup-config]? (press Enter)<br>
+1890 bytes copied in 1.234 secs
+</div>
+<p><strong>Step 6.2: Save Floor2-SW2 Configuration</strong></p>
+<div class="code-box">
+Floor2-SW2(config)# exit<br>
+Floor2-SW2# copy running-config startup-config<br>
+Destination filename [startup-config]? (press Enter)<br>
+1890 bytes copied in 1.234 secs
+</div>
+<div class="callout callout-success">
+<strong>✓ Success:</strong> Configurations saved successfully on both switches!
+</div>
+</div>
+
+<!-- Verification Commands -->
+<h2>✅ Configuration Verification & Testing</h2>
+
+<h3>Trunk Port Verification Commands</h3>
+<p><strong>Command: show interfaces trunk</strong></p>
+<div class="code-box">
+Floor1-SW1# show interfaces trunk<br>
+<br>
+Port Mode Encapsulation Status Native vlan<br>
+----- ---- ---------- ------ -----------<br>
+Gi0/24 on 802.1q trunking 99<br>
+<br>
+Port Vlans allowed on trunk<br>
+----- -----------------------------------------------<br>
+Gi0/24 10,20,30<br>
+<br>
+Port Vlans allowed and active in management domain<br>
+----- -----------------------------------------------<br>
+Gi0/24 10,20,30,99<br>
+<br>
+Port Vlans in spanning tree forwarding state and not pruned<br>
+----- -----------------------------------------------<br>
+Gi0/24 10,20,30,99
+</div>
+
+<p><strong>Command: show interface status</strong></p>
+<div class="code-box">
+Floor1-SW1# show interface status<br>
+<br>
+Port Name Status VLAN Duplex Speed Type<br>
+--------- ------------------------------- ------------ ---------- ------ ----- -----<br>
+Gi0/1 HR-Floor1-Access connected 10 a-full a-100<br>
+Gi0/2 IT-Floor1-Access connected 20 a-full a-100<br>
+Gi0/3 Finance-Floor1-Access connected 30 a-full a-100<br>
+Gi0/24 Trunk-Link-Floor1-to-Floor2 connected trunk a-full a-1000
+</div>
+
+<p><strong>Command: show vlan brief</strong></p>
+<div class="code-box">
+Floor1-SW1# show vlan brief<br>
+<br>
+VLAN Name Status Ports<br>
+---- -------------------------------- --------- ----------------------------<br>
+10 HR-Department active Gi0/1, Gi0/24(trunk)<br>
+20 IT-Department active Gi0/2, Gi0/24(trunk)<br>
+30 Finance-Department active Gi0/3, Gi0/24(trunk)<br>
+99 Management active Gi0/24(trunk)
+</div>
+
+<p><strong>Command: show mac address-table</strong></p>
+<div class="code-box">
+Floor1-SW1# show mac address-table<br>
+<br>
+Mac Address Table<br>
+-------------------------------------------<br>
+Vlan Mac Address Type Ports<br>
+---- ----------- -------- -----<br>
+10 0011.2233.4401 DYNAMIC Gi0/1<br>
+10 0011.2233.4402 DYNAMIC Gi0/24<br>
+20 0055.6677.8801 DYNAMIC Gi0/2<br>
+20 0055.6677.8802 DYNAMIC Gi0/24<br>
+30 00aa.bbcc.dd01 DYNAMIC Gi0/3<br>
+30 00aa.bbcc.dd02 DYNAMIC Gi0/24
+</div>
+
+<!-- Connectivity Testing -->
+<h2>🧪 Inter-Switch Connectivity Testing</h2>
+
+<h3>Test Intra-VLAN Communication Across Floors</h3>
+<p><strong>Test Case 1: HR Department (VLAN 10) - Floor1 to Floor2</strong></p>
+<div class="code-box">
+C:\PC-HR-Floor1> ping 192.168.10.20<br>
+Pinging 192.168.10.20 with 32 bytes of data:<br>
+Reply from 192.168.10.20: bytes=32 time=3ms TTL=64<br>
+Reply from 192.168.10.20: bytes=32 time=2ms TTL=64<br>
+✓ Expected Result: Successful ping indicates VLAN 10 propagation across trunk link
+</div>
+
+<p><strong>Test Case 2: IT Department (VLAN 20) - Floor1 to Floor2</strong></p>
+<div class="code-box">
+C:\PC-IT-Floor1> ping 192.168.20.20<br>
+Pinging 192.168.20.20 with 32 bytes of data:<br>
+Reply from 192.168.20.20: bytes=32 time=2ms TTL=64<br>
+✓ Expected Result: Successful ping confirms VLAN 20 trunk propagation
+</div>
+
+<h3>Test VLAN Isolation (Negative Test)</h3>
+<p><strong>Test Case: HR to IT Communication Across Floors (Should Fail)</strong></p>
+<div class="code-box">
+C:\PC-HR-Floor1> ping 192.168.20.20<br>
+Pinging 192.168.20.20 with 32 bytes of data:<br>
+Request timed out<br>
+Request timed out<br>
+✓ Expected Result: Timeout confirms VLAN isolation
+</div>
+
+<!-- Completion Checklist -->
+<h2>📋 Lab Completion Checklist</h2>
+
+<h3>Trunk Port Configuration Checklist</h3>
+<ul>
+<li>☐ All four VLANs (10, 20, 30, 99) created on Floor1-SW1</li>
+<li>☐ All four VLANs (10, 20, 30, 99) created on Floor2-SW2</li>
+<li>☐ Access ports (Gi0/1, Gi0/2, Gi0/3) assigned to correct VLANs on Floor1-SW1</li>
+<li>☐ Access ports (Gi0/1, Gi0/2, Gi0/3) assigned to correct VLANs on Floor2-SW2</li>
+<li>☐ Trunk port (Gi0/24) configured on Floor1-SW1</li>
+<li>☐ Trunk port (Gi0/24) configured on Floor2-SW2</li>
+<li>☐ Allowed VLANs restricted to 10, 20, 30 on both trunk links</li>
+<li>☐ Native VLAN set to 99 (Management) on both trunk links</li>
+<li>☐ Switchport nonegotiate configured on both trunks</li>
+<li>☐ Configuration saved to startup-config on both switches</li>
+</ul>
+
+<h3>Inter-Switch Connectivity Checklist</h3>
+<ul>
+<li>☐ Ping successful from HR Floor1 to HR Floor2 (same VLAN)</li>
+<li>☐ Ping successful from IT Floor1 to IT Floor2 (same VLAN)</li>
+<li>☐ Ping successful from Finance Floor1 to Finance Floor2 (same VLAN)</li>
+<li>☐ Ping failed from HR to IT across floors (different VLANs, as expected)</li>
+<li>☐ MAC addresses learned correctly across trunk link</li>
+<li>☐ Trunk port status shows "trunking"</li>
+<li>☐ All allowed VLANs appear in show vlan output</li>
+</ul>
+
+<!-- Key Takeaways -->
+<h2>💡 Key Takeaways & Learning Outcomes</h2>
+<ul>
+<li>Trunk ports carry multiple VLANs using 802.1Q tagging, enabling inter-switch communication</li>
+<li>Native VLAN is the untagged VLAN on a trunk link and must match on both endpoints</li>
+<li>Allowed VLANs should be explicitly restricted on trunk links to prevent unauthorized VLAN propagation</li>
+<li>DTP should be disabled in production environments to prevent VLAN hopping attacks</li>
+<li>MAC address learning occurs across trunk links, enabling inter-switch communication within the same VLAN</li>
+<li>Mismatched native VLANs create security vulnerabilities and should be immediately corrected</li>
+<li>Using a dedicated management VLAN (instead of VLAN 1) as the native VLAN improves Layer 2 security</li>
+</ul>
+
+<!-- Best Practices -->
+<h2>🏆 Best Practices & Security Recommendations</h2>
+
+<h3>Trunk Port Configuration Best Practices</h3>
+<ul>
+<li>Always explicitly configure switchport mode trunk instead of relying on DTP negotiation</li>
+<li>Disable DTP with switchport nonegotiate to prevent DTP attacks</li>
+<li>Restrict allowed VLANs to only those required for the link, not "all"</li>
+<li>Configure native VLAN explicitly and verify it matches on both trunk endpoints</li>
+<li>Use a dedicated management VLAN (e.g., VLAN 99) instead of VLAN 1 for the native VLAN</li>
+<li>Document trunk links, allowed VLANs, and native VLAN in network diagrams</li>
+<li>Use consistent naming conventions for trunk port descriptions</li>
+</ul>
+
+<h3>VLAN Hopping Prevention</h3>
+<ul>
+<li>Never use VLAN 1 as native VLAN; create dedicated management VLAN (e.g., VLAN 99)</li>
+<li>Disable DTP to prevent double-tagged VLAN hopping attacks</li>
+<li>Ensure native VLANs match on both trunk ends</li>
+<li>Restrict access ports to specific VLANs with proper port security</li>
+<li>Regularly audit VLAN and trunk configurations for security gaps</li>
+</ul>
+
+<!-- Troubleshooting Guide -->
+<h2>🔧 Troubleshooting Guide</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trunk link not establishing</td>
+<td>Trunk mode not enabled or port modes mismatch</td>
+<td>Verify both ends: show interfaces trunk</td>
+</tr>
+<tr>
+<td>VLAN not propagating across trunk</td>
+<td>VLAN not in allowed list or native VLAN mismatch</td>
+<td>Verify allowed VLANs and native VLAN on both switches</td>
+</tr>
+<tr>
+<td>Cross-floor devices cannot communicate</td>
+<td>Different VLAN assignments or trunk not configured</td>
+<td>Verify VLAN membership and ping test</td>
+</tr>
+<tr>
+<td>MAC addresses not learned across trunk</td>
+<td>Trunk link down or VLAN not allowed</td>
+<td>Check trunk status and MAC address table</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 3.2 when you can configure trunk ports, manage native VLANs, restrict allowed VLANs, verify VLAN propagation across switches, and implement Layer 2 security best practices to prevent VLAN hopping attacks.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Layer 2 Switching Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

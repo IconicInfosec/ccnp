@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 5.2: STP Port Priority & Convergence Tuning - CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px;
+border-radius: 8px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.95;
+margin: 5px 0;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto;
+background: white;
+padding: 40px;
+border-radius: 8px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+h2 {
+color: #1e3c72;
+border-left: 5px solid #667eea;
+padding-left: 15px;
+margin-top: 30px;
+margin-bottom: 15px;
+font-size: 1.8em;
+}
+
+h3 {
+color: #2a5298;
+margin-top: 25px;
+margin-bottom: 12px;
+font-size: 1.4em;
+}
+
+h4 {
+color: #667eea;
+margin-top: 15px;
+margin-bottom: 10px;
+font-size: 1.1em;
+font-weight: 600;
+}
+
+.section {
+margin-bottom: 30px;
+padding: 20px;
+background: #f8f9fa;
+border-radius: 6px;
+border-left: 4px solid #667eea;
+}
+
+.code-block {
+background: #1e3c72;
+color: #00ff00;
+padding: 20px;
+border-radius: 6px;
+font-family: 'Courier New', monospace;
+margin: 15px 0;
+overflow-x: auto;
+line-height: 1.8;
+border-left: 4px solid #667eea;
+font-size: 0.9em;
+}
+
+.command {
+color: #00ff00;
+font-weight: bold;
+}
+
+.output {
+color: #87ceeb;
+font-weight: normal;
+}
+
+.tip {
+background: #e3f2fd;
+border-left: 4px solid #2196f3;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+color: #1565c0;
+}
+
+.warning {
+background: #fff3e0;
+border-left: 4px solid #ff9800;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+color: #e65100;
+}
+
+.important {
+background: #fce4ec;
+border-left: 4px solid #e91e63;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+color: #880e4f;
+}
+
+.success {
+background: #e8f5e9;
+border-left: 4px solid #4caf50;
+padding: 15px;
+margin: 15px 0;
+border-radius: 4px;
+color: #2e7d32;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+background: white;
+border-radius: 6px;
+overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+th {
+background: #1e3c72;
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: 600;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background: #f5f5f5;
+}
+
+.topology-diagram {
+background: white;
+padding: 30px;
+border-radius: 8px;
+margin: 20px 0;
+border: 2px solid #667eea;
+font-family: 'Courier New', monospace;
+color: #1e3c72;
+line-height: 1.4;
+text-align: center;
+overflow-x: auto;
+}
+
+.checklist {
+list-style: none;
+padding: 0;
+}
+
+.checklist li {
+padding: 10px;
+margin: 5px 0;
+background: #f0f0f0;
+border-radius: 4px;
+border-left: 4px solid #667eea;
+}
+
+.checklist li:before {
+content: "☐ ";
+color: #667eea;
+font-weight: bold;
+margin-right: 10px;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px;
+margin-top: 40px;
+border-radius: 8px;
+max-width: 1200px;
+margin: 40px auto 0;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+}
+
+ul, ol {
+margin-left: 20px;
+}
+
+li {
+margin: 8px 0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Denied</h2>
+<p>This page is password protected</p>
+<p>Enter your master password to view/edit content</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>⚙️ LAB 5.2: STP Port Priority & Convergence Tuning</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Training</p>
+<p style="font-size: 0.95em; margin-top: 10px;">Port Priority Optimization, BackboneFast & UplinkFast Implementation</p>
+<p style="font-size: 0.9em; opacity: 0.85;">⏱️ Duration: 45-60 minutes | 📊 Difficulty: Intermediate</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element">
+
+<!-- Lab Overview -->
+<h2>📚 Lab Overview & Learning Objectives</h2>
+
+<div class="section">
+<h3>🎯 Learning Outcomes</h3>
+<p>Upon completing this lab, you will be able to:</p>
+<ul>
+<li>Understand STP port priority and its role in port role selection</li>
+<li>Configure port priority on designated and alternate ports for optimal topology</li>
+<li>Implement BackboneFast for rapid indirect failure detection</li>
+<li>Enable and configure UplinkFast on access-layer switches</li>
+<li>Optimize port selection in redundant switch environments</li>
+<li>Verify port role assignments and convergence improvements</li>
+<li>Measure and document convergence time reduction</li>
+<li>Troubleshoot port priority conflicts and resolve convergence issues</li>
+</ul>
+</div>
+
+<div class="section">
+<h3>🏢 Real-World Scenario</h3>
+<p><strong>Access Layer Redundancy with Rapid Failover</strong></p>
+<p>You are managing a three-tier network for a mid-sized enterprise with the following requirements:</p>
+<ul>
+<li><strong>Access Layer (ACC-1, ACC-2):</strong> Two access switches with uplinks to distribution layer</li>
+<li><strong>Distribution Layer (DIST-1, DIST-2):</strong> Two distribution switches providing redundancy</li>
+<li><strong>Challenge:</strong> Optimize port role selection to ensure fastest convergence during uplink failures</li>
+<li><strong>Goal:</strong> Reduce convergence time from ~30 seconds to <5 seconds using BackboneFast and UplinkFast</li>
+</ul>
+<p><strong>Current Network State:</strong> All switches running Rapid PVST+ mode with default STP timers. Port priorities are not yet optimized, and BackboneFast/UplinkFast are disabled.</p>
+</div>
+
+<!-- Network Topology -->
+<h2>🏗️ Network Topology & Equipment Setup</h2>
+
+<div class="topology-container">
+                        <p style="margin-bottom: 15px; color: #666;"><strong>LAB 5.2: ACCESS LAYER REDUNDANCY - PORT PRIORITY CONFIGURATION</strong></p>
+                        <img src="https://f005.backblazeb2.com/file/CCNPLabPic/Lab.5.2.jpg" alt="Network Topology" class="topology-image">
+                        <div class="topology-legend">
+						</div>
+
+<h3>🔌 Equipment Required</h3>
+<ul>
+<li>2x Distribution Switches (Catalyst 3850/2960X)</li>
+<li>2x Access Switches (Catalyst 2960X)</li>
+<li>Multiple console cables</li>
+<li>Ethernet cables (10+ for redundancy)</li>
+<li>Cisco IOS 15.0+ with Rapid PVST+ support</li>
+<li>Terminal emulation software with multiple sessions</li>
+<li>Ping utility for convergence timing measurement</li>
+<li>Stopwatch or time measurement utility</li>
+</ul>
+
+<h3>🖥️ Switch Configuration Summary</h3>
+<table>
+<tr>
+<th>Switch Hostname</th>
+<th>Role</th>
+<th>Layer</th>
+<th>Initial Priority</th>
+<th>Target Priority</th>
+</tr>
+<tr>
+<td>DIST-1</td>
+<td>Primary Root Bridge</td>
+<td>Distribution (L2)</td>
+<td>32768 (default)</td>
+<td>4096 (primary)</td>
+</tr>
+<tr>
+<td>DIST-2</td>
+<td>Secondary Root Bridge</td>
+<td>Distribution (L2)</td>
+<td>32768 (default)</td>
+<td>8192 (secondary)</td>
+</tr>
+<tr>
+<td>ACC-1</td>
+<td>Access Switch 1</td>
+<td>Access (L1)</td>
+<td>32768 (default)</td>
+<td>32768 (no change)</td>
+</tr>
+<tr>
+<td>ACC-2</td>
+<td>Access Switch 2</td>
+<td>Access (L1)</td>
+<td>32768 (default)</td>
+<td>32768 (no change)</td>
+</tr>
+</table>
+
+<!-- Pre-Lab Setup -->
+<h2>✅ Pre-Lab Setup & Baseline Configuration</h2>
+
+<div class="section">
+<h3>Pre-Lab Checklist</h3>
+<ul class="checklist">
+<li>All four switches running Rapid PVST+ mode</li>
+<li>Labs 1-4 baseline configurations present</li>
+<li>DIST-1 priority set to 4096 (primary root)</li>
+<li>DIST-2 priority set to 8192 (secondary root)</li>
+<li>Console access to all four switches established</li>
+<li>Timestamps enabled: service timestamps log datetime msec</li>
+<li>Debug logging ready: debug spanning-tree events</li>
+<li>All trunk ports active and passing traffic</li>
+<li>Baseline topology verified with show spanning-tree</li>
+<li>Convergence time baseline measured (should be ~6 sec for Rapid PVST+)</li>
+</ul>
+</div>
+
+<!-- Configuration Steps -->
+<h2>⚙️ Step-by-Step Configuration Guide</h2>
+
+<h3>PART A: STP Port Priority Fundamentals & Configuration</h3>
+
+<div class="section">
+<h4>A1: Port Priority Basics</h4>
+<p><strong>Understanding Port Priority:</strong></p>
+<ul>
+<li><strong>Default Value:</strong> 128 on all ports</li>
+<li><strong>Valid Range:</strong> 0-240 in increments of 16</li>
+<li><strong>Selection Criterion:</strong> When path costs equal, lower port priority wins</li>
+<li><strong>Port ID Format:</strong> 1 byte priority + 1 byte port number</li>
+<li><strong>Impact:</strong> Determines which port becomes Designated vs Blocked</li>
+</ul>
+
+<p><strong>Port Priority Election Hierarchy:</strong></p>
+<table>
+<tr>
+<th>Criterion</th>
+<th>Preference</th>
+<th>Applies When</th>
+</tr>
+<tr>
+<td>Path Cost</td>
+<td>Lowest wins</td>
+<td>Primary selection method</td>
+</tr>
+<tr>
+<td>Bridge ID</td>
+<td>Lowest wins</td>
+<td>Path costs equal</td>
+</tr>
+<tr>
+<td>Port Priority</td>
+<td>Lowest wins</td>
+<td>Same bridge, costs equal</td>
+</tr>
+<tr>
+<td>Port Number</td>
+<td>Lowest wins</td>
+<td>Same priority, costs equal</td>
+</tr>
+</table>
+
+<div class="tip">
+💡 Key Insight: By decreasing port priority (e.g., 64 instead of 128), you make that port more likely to become Designated Port or Root Port.
+</div>
+</div>
+
+<div class="section">
+<h4>A2: Verify Current Port Priority Settings</h4>
+<p>Display port priority values on all switches before configuration.</p>
+
+<div class="code-block">
+<span class="output"># On all switches:</span><br>
+<span class="command">show spanning-tree vlan 1 detail | include "Interface\|Priority"</span><br>
+<span class="command">show spanning-tree interface gi0/1</span><br>
+<span class="command">show spanning-tree interface gi0/2</span><br>
+<br>
+<span class="output"># Expected default output:</span><br>
+<span class="output">Interface Role Sts Cost Prio.Nbr Type</span><br>
+<span class="output">───────────────────────────────────────────</span><br>
+<span class="output">Gi0/1 Root FWD 4 128.1 P2p ← Default priority 128</span><br>
+<span class="output">Gi0/2 Altn BLK 4 128.2 P2p ← Alternate port (blocked)</span>
+</div>
+
+<div class="success">
+✓ Verification: All ports have default priority 128. Gi0/2 is blocked because it's the alternate port (higher port number acts as tie-breaker).
+</div>
+</div>
+
+<div class="section">
+<h4>A3: Configure Port Priority on Primary Uplinks</h4>
+<p>Lower priority on primary uplinks to make them preferred Designated Ports.</p>
+
+<div class="code-block">
+<span class="output"># On DIST-1 (Primary uplink to ACC-1):</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">description Link to ACC-1 (Primary - Lower Priority)</span><br>
+<span class="command">spanning-tree vlan 1 port-priority 64</span><br>
+<span class="output"># Lower priority (64) makes this Designated Port</span><br>
+<span class="command">exit</span><br>
+<br>
+<span class="output"># On DIST-1 (Backup uplink to ACC-2):</span><br>
+<span class="command">interface gi0/2</span><br>
+<span class="command">description Link to ACC-2 (Backup - Higher Priority)</span><br>
+<span class="command">spanning-tree vlan 1 port-priority 192</span><br>
+<span class="output"># Higher priority (192) makes this less preferred</span><br>
+<span class="command">exit</span><br>
+<br>
+<span class="output"># On DIST-2 (Backup uplink):</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">description Link to ACC-2 (Primary)</span><br>
+<span class="command">spanning-tree vlan 1 port-priority 64</span><br>
+<span class="command">exit</span><br>
+<span class="command">interface gi0/2</span><br>
+<span class="command">description Link to ACC-1 (Backup)</span><br>
+<span class="command">spanning-tree vlan 1 port-priority 192</span><br>
+<span class="command">exit</span><br>
+<span class="command">exit</span>
+</div>
+
+<div class="success">
+✓ Result: Lower priority ports (64) become Designated Ports, higher priority ports (192) become Alternate/Blocked.
+</div>
+</div>
+
+<div class="section">
+<h4>A4: Verify Port Priority Configuration</h4>
+<p>Confirm port priorities are correctly applied and affecting port roles.</p>
+
+<div class="code-block">
+<span class="output"># On all switches:</span><br>
+<span class="command">show spanning-tree vlan 1 detail | include "Interface\|Priority\|Role"</span><br>
+<br>
+<span class="output"># Expected output (ACC-1 perspective):</span><br>
+<span class="output">Interface Role Sts Cost Prio.Nbr Type</span><br>
+<span class="output">───────────────────────────────────────────</span><br>
+<span class="output">Gi0/1 Root FWD 4 64.1 P2p ← Primary uplink, lower priority</span><br>
+<span class="output">Gi0/2 Altn BLK 4 192.2 P2p ← Backup uplink, higher priority</span>
+</div>
+
+<div class="tip">
+💡 Port Priority Effect: Gi0/1 is now Root Port (primary path), Gi0/2 remains Alternate/Blocked because of higher priority (192) making it less preferred.
+</div>
+</div>
+
+<!-- Part B: BackboneFast -->
+<h3>PART B: BackboneFast Implementation for Indirect Failure Detection</h3>
+
+<div class="section">
+<h4>B1: BackboneFast Overview</h4>
+<ul>
+<li><strong>Purpose:</strong> Rapidly detects indirect (BPDU loss) failures</li>
+<li><strong>Mechanism:</strong> Sends Root Link Query (RLQ) BPDUs to detect alternate paths</li>
+<li><strong>Convergence Reduction:</strong> From ~35 seconds to ~3-6 seconds</li>
+<li><strong>Default:</strong> Disabled on most switches (requires explicit enable)</li>
+<li><strong>Compatibility:</strong> Works with 802.1D STP and later</li>
+</ul>
+</div>
+
+<div class="section">
+<h4>B2: Enable BackboneFast on All Switches</h4>
+<p>Configure BackboneFast globally to speed up indirect failure detection.</p>
+
+<div class="code-block">
+<span class="output"># On all four switches (DIST-1, DIST-2, ACC-1, ACC-2):</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">spanning-tree backbonefast</span><br>
+<span class="command">exit</span><br>
+<span class="command">write memory</span><br>
+<br>
+<span class="output"># Verify BackboneFast is enabled:</span><br>
+<span class="command">show spanning-tree backbonefast</span><br>
+<br>
+<span class="output"># Expected output:</span><br>
+<span class="output">BackboneFast is enabled</span><br>
+<span class="output">Number of ROOT link failures detected: 0</span><br>
+<span class="output">Number of RLQ requests received: 0</span>
+</div>
+
+<div class="success">
+✓ Enabled: BackboneFast is now active on all switches. Indirect failures will be detected rapidly via RLQ mechanism.
+</div>
+</div>
+
+<div class="section">
+<h4>B3: Test BackboneFast - Simulate Indirect Failure</h4>
+<p>Test BackboneFast convergence by simulating BPDU loss without physical link down.</p>
+
+<div class="code-block">
+<span class="output"># Setup monitoring on ACC-1:</span><br>
+<span class="command">debug spanning-tree events</span><br>
+<span class="command">terminal monitor</span><br>
+<span class="command">show spanning-tree vlan 1 | include "Root"</span><br>
+<br>
+<span class="output"># On DIST-1, simulate BPDU filter (indirect failure):</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">spanning-tree bpdu-filter enable</span><br>
+<span class="command">exit</span><br>
+<span class="command">exit</span><br>
+<span class="output"># Watch ACC-1 console for rapid failure detection</span><br>
+<br>
+<span class="output"># Expected BackboneFast behavior:</span><br>
+<span class="output"># Without BackboneFast: ~20-35 second wait (Max Age timeout)</span><br>
+<span class="output"># With BackboneFast: ~3-6 second detection via RLQ</span><br>
+<span class="output">STP: Rapid Root link failure detection enabled</span><br>
+<span class="output">STP: RLQ sent through alternate port</span><br>
+<span class="output">STP: RLQ response indicates root unreachable</span><br>
+<span class="output">STP: Alternate port becomes Root Port</span><br>
+<br>
+<span class="output"># Remove the BPDU filter:</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">no spanning-tree bpdu-filter enable</span><br>
+<span class="command">exit</span><br>
+<span class="command">exit</span>
+</div>
+
+<div class="tip">
+ℹ️ BackboneFast Advantage: Eliminates waiting for Max Age timer to expire. Rapidly queries alternate paths to confirm root is unreachable.
+</div>
+</div>
+
+<!-- Part C: UplinkFast -->
+<h3>PART C: UplinkFast Configuration for Access-Layer Switches</h3>
+
+<div class="section">
+<h4>C1: UplinkFast Overview</h4>
+<ul>
+<li><strong>Purpose:</strong> Rapidly activates alternate port when primary uplink fails</li>
+<li><strong>Mechanism:</strong> Skips Listening/Learning states, goes directly to Forwarding</li>
+<li><strong>Convergence Reduction:</strong> ~30 seconds → ~5-10 seconds</li>
+<li><strong>Ideal For:</strong> Access layer switches with redundant uplinks</li>
+<li><strong>Limitation:</strong> Only one uplink per VLAN can use UplinkFast</li>
+<li><strong>Default:</strong> Disabled (requires explicit enable)</li>
+</ul>
+</div>
+
+<div class="section">
+<h4>C2: Enable UplinkFast on Access Switches</h4>
+<p>Configure UplinkFast on ACC-1 and ACC-2 for rapid uplink recovery.</p>
+
+<div class="code-block">
+<span class="output"># On ACC-1 (Access Switch):</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">spanning-tree uplinkfast</span><br>
+<span class="command">exit</span><br>
+<br>
+<span class="output"># On ACC-2 (Access Switch):</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">spanning-tree uplinkfast</span><br>
+<span class="command">exit</span><br>
+<br>
+<span class="output"># Do NOT enable on distribution switches (DIST-1, DIST-2):</span><br>
+<span class="output"># UplinkFast should only be on access-layer switches</span><br>
+<span class="output"># Distribution switches participate in backbone topology</span><br>
+<br>
+<span class="output"># Verify UplinkFast is enabled:</span><br>
+<span class="command">show spanning-tree uplinkfast</span><br>
+<br>
+<span class="output"># Expected output:</span><br>
+<span class="output">UplinkFast is enabled</span><br>
+<span class="output">Number of uplink failures detected: 0</span><br>
+<span class="output">Number of times alternate port was activated: 0</span>
+</div>
+
+<div class="success">
+✓ Configuration Applied: UplinkFast now active on access layer. Alternate ports will be rapidly promoted on uplink failure.
+</div>
+</div>
+
+<div class="section">
+<h4>C3: Verify UplinkFast Port Configuration</h4>
+<p>Confirm UplinkFast has identified primary and alternate uplinks.</p>
+
+<div class="code-block">
+<span class="output"># On ACC-1, view UplinkFast topology:</span><br>
+<span class="command">show spanning-tree uplinkfast summary</span><br>
+<span class="command">show spanning-tree vlan 1 detail | include "Port\|Priority"</span><br>
+<br>
+<span class="output"># Expected ACC-1 UplinkFast configuration:</span><br>
+<span class="output">Primary Uplink Port(s): Gi0/1 (Root Port)</span><br>
+<span class="output">Alternate Uplink Port(s): Gi0/2 (Alternate Port - Ready for rapid transition)</span><br>
+<span class="output">Root Port Cost: 4</span><br>
+<span class="output">Alternate Port Cost: 4</span>
+</div>
+
+<div class="tip">
+ℹ️ UplinkFast Ready: Both uplinks detected. If Gi0/1 fails, Gi0/2 will immediately transition to Forwarding within 1-2 seconds.
+</div>
+</div>
+
+<div class="section">
+<h4>C4: Test UplinkFast - Simulate Primary Uplink Failure</h4>
+<p>Measure convergence improvement when primary uplink fails.</p>
+
+<div class="code-block">
+<span class="output"># From test device (continuous ping):</span><br>
+<span class="command">ping -t 10.0.1.1</span><br>
+<span class="output"># Watch for ping loss during uplink failure</span><br>
+<br>
+<span class="output"># On ACC-1, enable monitoring:</span><br>
+<span class="command">debug spanning-tree events</span><br>
+<span class="command">terminal monitor</span><br>
+<span class="command">show spanning-tree vlan 1 | include "Role\|Cost"</span><br>
+<br>
+<span class="output"># Simulate failure: Shutdown primary uplink on ACC-1:</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">shutdown</span><br>
+<span class="output"># Observe console output and count ping loss</span><br>
+<br>
+<span class="output"># Expected UplinkFast convergence:</span><br>
+<span class="output">Time T+0: Primary link shutdown detected</span><br>
+<span class="output">Time T+0-1: Alternate port rapidly promoted to Forwarding</span><br>
+<span class="output">Time T+1-5: Total convergence time (1-5 seconds typical)</span><br>
+<span class="output">Ping loss: 1-3 packets (vs 10+ without UplinkFast)</span><br>
+<br>
+<span class="output"># Re-enable the link:</span><br>
+<span class="command">configure terminal</span><br>
+<span class="command">interface gi0/1</span><br>
+<span class="command">no shutdown</span><br>
+<span class="command">exit</span><br>
+<span class="command">exit</span>
+</div>
+
+<div class="success">
+✓ UplinkFast Working: Convergence achieved in 1-5 seconds with minimal packet loss. Without UplinkFast, convergence would take 30+ seconds.
+</div>
+</div>
+
+<!-- Verification -->
+<h2>🔍 Verification & Performance Measurement</h2>
+
+<div class="section">
+<h3>Convergence Time Measurements & Optimization</h3>
+
+<div class="code-block">
+<span class="output"># Document Convergence Improvements:</span><br>
+<span class="output"># Create performance baseline comparing before/after configurations</span>
+</div>
+
+<table>
+<tr>
+<th>Failure Type</th>
+<th>Without Optimization</th>
+<th>With Port Priority</th>
+<th>With UplinkFast</th>
+<th>With BackboneFast</th>
+</tr>
+<tr>
+<td>Direct Link Failure</td>
+<td>6 seconds</td>
+<td>6 seconds</td>
+<td>1-5 seconds</td>
+<td>6 seconds</td>
+</tr>
+<tr>
+<td>Indirect Failure</td>
+<td>35 seconds (Max Age wait)</td>
+<td>35 seconds</td>
+<td>5-10 seconds</td>
+<td>3-6 seconds (RLQ detection)</td>
+</tr>
+<tr>
+<td>Root Bridge Change</td>
+<td>20 seconds</td>
+<td>20 seconds</td>
+<td>N/A</td>
+<td>10-15 seconds</td>
+</tr>
+</table>
+
+<div class="success">
+💡 Performance Gain: Combined optimizations reduce indirect failure convergence from 35 seconds to <10 seconds, improving user experience significantly.
+</div>
+</div>
+
+<div class="section">
+<h3>Verification Checklist</h3>
+<ul class="checklist">
+<li>Port priority configured on all uplinks (64 for primary, 192 for backup)</li>
+<li>Port priorities verified with show spanning-tree vlan 1 detail</li>
+<li>Port roles correctly assigned (Root Port on primary, Alternate on backup)</li>
+<li>BackboneFast enabled on all four switches</li>
+<li>BackboneFast functionality verified (show spanning-tree backbonefast)</li>
+<li>UplinkFast enabled on ACC-1 and ACC-2 (access switches only)</li>
+<li>UplinkFast disabled on distribution switches (DIST-1, DIST-2)</li>
+<li>UplinkFast topology verified (Primary and Alternate ports identified)</li>
+<li>Direct link failure scenario tested and convergence measured</li>
+<li>Indirect failure scenario tested with BackboneFast</li>
+<li>Primary uplink failure scenario tested with UplinkFast</li>
+<li>Convergence time improvements documented</li>
+<li>All configurations saved to NVRAM (write memory)</li>
+</ul>
+</div>
+
+<!-- Troubleshooting -->
+<h2>🔧 Troubleshooting & Common Issues</h2>
+
+<div class="section">
+<h3>Common Issues & Solutions</h3>
+<table>
+<tr>
+<th>Issue</th>
+<th>Possible Cause</th>
+<th>Solution</th>
+</tr>
+<tr>
+<td>Port priority not affecting port roles</td>
+<td>Path costs are different (not equal)</td>
+<td>Port priority only used as tie-breaker when costs equal. Verify costs: <code>show spanning-tree vlan 1 detail</code></td>
+</tr>
+<tr>
+<td>UplinkFast not activating alternate</td>
+<td>UplinkFast not enabled or wrong switch</td>
+<td>Verify with <code>show spanning-tree uplinkfast</code>. Must be enabled on access switch, not core.</td>
+</tr>
+<tr>
+<td>BackboneFast RLQ fails</td>
+<td>Alternate port blocked or invalid</td>
+<td>Check alternate port status. Ensure BPDU flow on backup paths.</td>
+</tr>
+<tr>
+<td>Convergence still slow (>10 sec)</td>
+<td>Features not enabled or STP timers set high</td>
+<td>Verify BackboneFast/UplinkFast enabled. Check timers: <code>show spanning-tree vlan 1 | include "Hello\|Max Age"</code></td>
+</tr>
+<tr>
+<td>Incorrect port becomes Designated</td>
+<td>Port priority incorrectly configured</td>
+<td>Verify priorities: <code>show spanning-tree vlan 1 detail</code>. Lower priority = more preferred.</td>
+</tr>
+</table>
+</div>
+
+<!-- Command Reference -->
+<h2>📖 Complete Command Reference</h2>
+
+<div class="section">
+<table>
+<tr>
+<th>Feature</th>
+<th>Command</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>Port Priority Configuration</td>
+<td><code>spanning-tree vlan 1 port-priority 64</code></td>
+<td>Set port priority (lower = more preferred)</td>
+</tr>
+<tr>
+<td>View Port Priority</td>
+<td><code>show spanning-tree vlan 1 detail</code></td>
+<td>Display port priorities and roles</td>
+</tr>
+<tr>
+<td>Enable BackboneFast</td>
+<td><code>spanning-tree backbonefast</code></td>
+<td>Enable rapid indirect failure detection</td>
+</tr>
+<tr>
+<td>Verify BackboneFast</td>
+<td><code>show spanning-tree backbonefast</code></td>
+<td>Display BackboneFast status and statistics</td>
+</tr>
+<tr>
+<td>Enable UplinkFast</td>
+<td><code>spanning-tree uplinkfast</code></td>
+<td>Enable rapid uplink failover (access switches only)</td>
+</tr>
+<tr>
+<td>Verify UplinkFast</td>
+<td><code>show spanning-tree uplinkfast</code></td>
+<td>Display UplinkFast status and uplink configuration</td>
+</tr>
+</table>
+</div>
+
+<!-- CCNP Alignment -->
+<h2>🏆 CCNP Certification Alignment</h2>
+
+<div class="section">
+<h3>Cisco CCNP 350-401 & 300-410 Objectives Covered</h3>
+<ul>
+<li><strong>3.1a:</strong> Configure STP port priority for optimized port role selection</li>
+<li><strong>3.1b:</strong> Implement BackboneFast for rapid indirect failure detection</li>
+<li><strong>3.1c:</strong> Configure UplinkFast on access-layer switches for rapid failover</li>
+<li><strong>3.2a:</strong> Tune STP convergence for mission-critical networks</li>
+<li><strong>3.2b:</strong> Measure and optimize STP topology performance</li>
+</ul>
+</div>
+
+<div class="section">
+<h3>Related Topics for Further Study</h3>
+<ul>
+<li>Root Guard and BPDU Guard implementation</li>
+<li>Loop Guard for preventing unidirectional link failures</li>
+<li>RSTP (Rapid Spanning Tree Protocol) for 802.1w compatibility</li>
+<li>MSTP (Multiple Spanning Tree Protocol) for scalability</li>
+<li>Portfast and Edge Port configuration</li>
+<li>STP interoperability with multiple VLAN topologies</li>
+</ul>
+</div>
+
+<!-- Lab Completion -->
+<h2>✨ Lab Completion Checklist</h2>
+
+<div class="section">
+<ul class="checklist">
+<li>Pre-lab setup completed with baseline documentation</li>
+<li>Port priority configured on all uplinks (64 primary, 192 backup)</li>
+<li>Port priority verified and port roles correctly assigned</li>
+<li>BackboneFast enabled on all four switches</li>
+<li>BackboneFast indirect failure detection verified</li>
+<li>UplinkFast enabled on access layer switches only</li>
+<li>UplinkFast topology verified and alternate ports identified</li>
+<li>Direct link failure scenario tested and timing documented</li>
+<li>Indirect failure scenario tested with BackboneFast</li>
+<li>Convergence time improvements measured and recorded</li>
+<li>Troubleshooting procedures completed successfully</li>
+<li>All configurations saved to NVRAM</li>
+<li>Performance baseline before/after comparison documented</li>
+<li>Lab documentation completed with observations</li>
+</ul>
+</div>
+
+<div class="success">
+💡 Congratulations! You have successfully completed LAB 5.2: STP Port Priority & Convergence Tuning. You now have a solid understanding of advanced STP features for enterprise network optimization aligned with Cisco CCNP 350-401 (ENCOR) and 300-410 (ENARSI) certification requirements.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p>CCNP Enterprise Certification Program</p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+<p style="font-weight: bold; color: #667eea; margin-top: 15px;">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">This content is password-protected and cannot be edited without authorization.</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Authorized Use Only | Strict Access Control Enabled</p>
+</footer>
+
+<!-- Enhanced Password Protection & Anti-Tampering Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+window.addEventListener('load', function() {
+checkSession();
+initializeProtection();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT', { timestamp: new Date().toISOString() });
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+editMode = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => {
+document.getElementById('passwordInput').focus();
+}, 100);
+}
+
+function initializeProtection() {
+// Protection initialization
+}
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+window.addEventListener('blur', function() {
+logSecurityEvent('WINDOW_BLUR');
+});
+
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType, details = {}) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+...details
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+return false;
+});
+
+document.addEventListener('keydown', function(e) {
+if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+e.preventDefault();
+return false;
+}
+});
+
+if (self !== top) {
+top.location = self.location;
+}
+
+</script>
+
+</body>
+</html>

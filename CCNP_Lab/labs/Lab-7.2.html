@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAB 7.2: EtherChannel Bundle Configuration & Load Balancing</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto;
+background: white;
+border-radius: 10px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+overflow: hidden;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+}
+
+header h1 {
+font-size: 2.2em;
+margin-bottom: 10px;
+font-weight: bold;
+}
+
+header .subtitle {
+font-size: 0.95em;
+opacity: 0.95;
+margin-bottom: 5px;
+}
+
+header .description {
+font-size: 0.85em;
+opacity: 0.9;
+margin-bottom: 10px;
+}
+
+.lab-meta {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 15px;
+padding: 25px;
+background: #f8f9fa;
+border-bottom: 2px solid #e9ecef;
+}
+
+.meta-item {
+text-align: center;
+}
+
+.meta-label {
+font-weight: 600;
+color: #667eea;
+font-size: 11px;
+text-transform: uppercase;
+margin-bottom: 5px;
+}
+
+.meta-value {
+font-size: 18px;
+color: #333;
+}
+
+.content {
+padding: 40px;
+}
+
+.section {
+margin-bottom: 35px;
+}
+
+.section-title {
+font-size: 18px;
+font-weight: 700;
+color: #2a5298;
+margin-bottom: 15px;
+padding-bottom: 10px;
+border-left: 4px solid #667eea;
+padding-left: 15px;
+}
+
+.subsection-title {
+font-size: 15px;
+font-weight: 600;
+color: #444;
+margin-top: 18px;
+margin-bottom: 10px;
+}
+
+.alert {
+padding: 15px;
+border-radius: 5px;
+margin-bottom: 20px;
+display: flex;
+align-items: flex-start;
+}
+
+.alert.danger {
+background: #f8d7da;
+border-left: 4px solid #f5c6cb;
+color: #721c24;
+}
+
+.alert.success {
+background: #d4edda;
+border-left: 4px solid #c3e6cb;
+color: #155724;
+}
+
+.alert.info {
+background: #d1ecf1;
+border-left: 4px solid #bee5eb;
+color: #0c5460;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+}
+
+table th {
+background: #2a5298;
+color: white;
+padding: 12px;
+text-align: left;
+font-weight: 600;
+}
+
+table td {
+padding: 12px;
+border-bottom: 1px solid #e9ecef;
+}
+
+table tr:hover {
+background: #f8f9fa;
+}
+
+.code-block {
+background: #2d2d2d;
+color: #f8f8f2;
+padding: 20px;
+border-radius: 5px;
+overflow-x: auto;
+margin: 20px 0;
+font-family: 'Courier New', monospace;
+font-size: 13px;
+border-left: 4px solid #667eea;
+line-height: 1.8;
+}
+
+.topology-image {
+text-align: center;
+margin: 30px 0;
+padding: 20px;
+background: #f8f9fa;
+border-radius: 5px;
+border: 2px solid #667eea;
+}
+
+.topology-image img {
+max-width: 100%;
+height: auto;
+border-radius: 5px;
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.topology-caption {
+font-size: 13px;
+color: #666;
+margin-top: 10px;
+font-weight: 600;
+}
+
+.checklist {
+background: #f8f9fa;
+padding: 20px;
+border-radius: 5px;
+margin: 20px 0;
+}
+
+.checklist-item {
+display: flex;
+align-items: center;
+padding: 10px;
+margin: 5px 0;
+}
+
+.checklist-item input {
+margin-right: 10px;
+width: 20px;
+height: 20px;
+}
+
+.equipment-list {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 15px;
+margin: 20px 0;
+}
+
+.equipment-item {
+background: #f8f9fa;
+padding: 15px;
+border-radius: 5px;
+display: flex;
+align-items: center;
+}
+
+.equipment-item:before {
+content: "✓";
+background: #667eea;
+color: white;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-right: 15px;
+font-weight: bold;
+}
+
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 30px 20px;
+text-align: center;
+border-top: 3px solid #667eea;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+ul {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+li {
+margin-bottom: 8px;
+}
+</style>
+</head>
+<body>
+<!-- PASSWORD PROTECTION MODAL -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container protected-element" id="protectedContent">
+
+<!-- HEADER -->
+<header>
+<h1>⚡ LAB 7.2: EtherChannel Bundle Configuration & Load Balancing</h1>
+<div class="subtitle">Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Networking</div>
+<div class="description">Link Aggregation Control Protocol (LACP) • Port Aggregation Protocol (PAgP) • Load Balancing Optimization</div>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- LAB METADATA -->
+<div class="lab-meta">
+<div class="meta-item">
+<div class="meta-label">Duration</div>
+<div class="meta-value">120-150 min</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Difficulty</div>
+<div class="meta-value">Advanced</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Lab Version</div>
+<div class="meta-value">1.0</div>
+</div>
+<div class="meta-item">
+<div class="meta-label">Certification</div>
+<div class="meta-value">CCNP 350-401</div>
+</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+<!-- SECTION 1: OVERVIEW -->
+<div class="section">
+<div class="section-title">📋 Lab Overview & Objectives</div>
+<p>This comprehensive lab provides hands-on training on EtherChannel bundle configuration, protocol negotiation, and load balancing optimization. Students will configure LACP and PAgP EtherChannels, implement load balancing algorithms, verify port-channel status, and troubleshoot configuration mismatches .</p>
+
+<div class="subsection-title">Learning Objectives:</div>
+<ul>
+<li>Configure static EtherChannel with mode on </li>
+<li>Implement LACP EtherChannel with active/passive modes </li>
+<li>Configure PAgP EtherChannel with auto/desirable modes </li>
+<li>Optimize load balancing using src-dst-ip hashing </li>
+<li>Implement LACP fast timers for rapid failure detection </li>
+<li>Verify port-channel status and troubleshoot common issues </li>
+</ul>
+
+<div class="alert info">
+<span>ℹ️</span>
+<strong>Key Concept:</strong> EtherChannel is a Cisco technology that bundles multiple physical Ethernet links into a single logical link, increasing bandwidth and providing redundancy through multiple physical paths 
+</div>
+</div>
+
+<!-- SECTION 2: ETHERCHANNEL FUNDAMENTALS -->
+<div class="section">
+<div class="section-title">🔍 Section 1: EtherChannel Fundamentals & Protocols</div>
+
+<div class="subsection-title">What is EtherChannel?</div>
+<p>EtherChannel is a Cisco technology that bundles multiple physical Ethernet links into a single logical link . It increases bandwidth by combining link capacity and provides redundancy through multiple physical paths . The combined links act as a single Layer 2 or Layer 3 interface, depending on configuration . Also known as Link Aggregation or Port Channel .</p>
+
+<div class="subsection-title">EtherChannel Protocols Comparison</div>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Standard</th>
+<th>Negotiation Type</th>
+<th>Platform Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LACP</strong></td>
+<td>IEEE 802.3ad </td>
+<td>Dynamic </td>
+<td>Multi-vendor support </td>
+</tr>
+<tr>
+<td><strong>PAgP</strong></td>
+<td>Cisco Proprietary </td>
+<td>Dynamic </td>
+<td>Cisco devices only </td>
+</tr>
+<tr>
+<td><strong>Static</strong></td>
+<td>Mode on </td>
+<td>No negotiation </td>
+<td>All Cisco switches </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">LACP Protocol Details</div>
+<p>LACP is a standard protocol defined in IEEE 802.3ad that allows for dynamic negotiation and automatic creation of EtherChannel bundles . Both ends of the link must support LACP for it to work .</p>
+
+<div class="subsection-title">PAgP Protocol Details</div>
+<p>PAgP is Cisco's proprietary protocol for EtherChannel that also supports dynamic negotiation and automatic bundle creation . PAgP is only supported on Cisco devices and must be used on both ends of the link . PAgP advertises messages with multicast MAC address 0100:0CCC:CCCC and protocol code 0x0104 .</p>
+</div>
+
+<!-- SECTION 3: ETHERCHANNEL MODES -->
+<div class="section">
+<div class="section-title">⚙️ Section 2: EtherChannel Modes & Configuration</div>
+
+<div class="subsection-title">LACP Port Modes</div>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behavior</th>
+<th>LACP Adjacency Requirements </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Active</strong></td>
+<td>Initiates EtherChannel formation and transmits LACP packets </td>
+<td>Active + Passive or Active + Active </td>
+</tr>
+<tr>
+<td><strong>Passive</strong></td>
+<td>Responds to LACP packets; does not initiate </td>
+<td>Passive + Active only (not Passive + Passive) </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">PAgP Port Modes</div>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behavior</th>
+<th>PAgP Adjacency Requirements </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Desirable</strong></td>
+<td>Initiates EtherChannel formation and transmits PAgP packets </td>
+<td>Desirable + Auto or Desirable + Desirable </td>
+</tr>
+<tr>
+<td><strong>Auto</strong></td>
+<td>Responds to PAgP packets; does not initiate </td>
+<td>Auto + Desirable only (not Auto + Auto) </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">Static EtherChannel Configuration</div>
+<p>A static EtherChannel is configured with the interface command <code>channel-group etherchannel-id mode on</code> . No protocol negotiation is required; both ends must match exactly .</p>
+
+<div class="subsection-title">Static EtherChannel Configuration Example</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+interface port-channel 1<br>
+switchport mode trunk<br>
+exit<br>
+interface range GigabitEthernet 1/0/1 - 1/0/2<br>
+switchport trunk encapsulation dot1q<br>
+switchport mode trunk<br>
+channel-group 1 mode on<br>
+end<br>
+write memory
+</div>
+
+<div class="subsection-title">LACP EtherChannel Configuration Example</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+interface port-channel 1<br>
+switchport mode trunk<br>
+exit<br>
+interface range GigabitEthernet 1/0/1 - 1/0/2<br>
+switchport trunk encapsulation dot1q<br>
+channel-group 1 mode active<br>
+end<br>
+write memory
+</div>
+
+<div class="subsection-title">PAgP EtherChannel Configuration Example</div>
+<div class="code-block">
+enable<br>
+configure terminal<br>
+interface port-channel 1<br>
+switchport mode trunk<br>
+exit<br>
+interface range GigabitEthernet 1/0/1 - 1/0/2<br>
+switchport trunk encapsulation dot1q<br>
+channel-group 1 mode desirable<br>
+end<br>
+write memory
+</div>
+
+<div class="alert danger">
+<span>⚠️</span>
+<strong>Important:</strong> Ensure all member interface ports are consistently configured (except for LACP port priority). Match settings for port type, duplex, mode, MTU, native VLAN, load interval, allowed VLANs, storm control, and speed 
+</div>
+</div>
+
+<!-- SECTION 4: LAB TOPOLOGY -->
+<div class="section">
+<div class="section-title">📐 Lab Network Topology</div>
+<div class="topology-image">
+<img src="https://f005.backblazeb2.com/file/CCNPLabPic/Etherchannel7-2.jpg" alt="EtherChannel Lab Topology" style="max-width: 100%; height: auto;">
+<div class="topology-caption">EtherChannel Lab Topology: Multi-Link Aggregation Configuration<br>Showing LACP/PAgP Bundle with Load Balancing</div>
+</div>
+</div>
+
+<!-- SECTION 5: LOAD BALANCING -->
+<div class="section">
+<div class="section-title">⚖️ Section 3: EtherChannel Load Balancing</div>
+
+<div class="subsection-title">Load Balancing Overview</div>
+<p>EtherChannel uses hashing algorithms to distribute traffic across links . The global command <code>port-channel load-balance hash</code> configures the load balancing method . Options include source-based, destination-based, and source & destination-based hashing .</p>
+
+<div class="subsection-title">Load Balancing Methods</div>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Method</th>
+<th>Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="4"><strong>Source-Based</strong></td>
+<td>src-ip</td>
+<td>Source IP address </td>
+</tr>
+<tr>
+<td>src-mac</td>
+<td>Source MAC address </td>
+</tr>
+<tr>
+<td>src-port</td>
+<td>Source TCP/UDP port </td>
+</tr>
+<tr>
+<td>src-mixed-ip-port</td>
+<td>Source IP and TCP/UDP port </td>
+</tr>
+<tr>
+<td rowspan="4"><strong>Destination-Based</strong></td>
+<td>dst-ip</td>
+<td>Destination IP address </td>
+</tr>
+<tr>
+<td>dst-mac</td>
+<td>Destination MAC address </td>
+</tr>
+<tr>
+<td>dst-port</td>
+<td>Destination TCP/UDP port </td>
+</tr>
+<tr>
+<td>dst-mixed-ip-port</td>
+<td>Destination IP and TCP/UDP port </td>
+</tr>
+<tr>
+<td rowspan="5"><strong>Source & Destination (Recommended)</strong></td>
+<td>src-dst-ip</td>
+<td>Source and destination IP addresses </td>
+</tr>
+<tr>
+<td>src-dst-mac</td>
+<td>Source and destination MAC addresses </td>
+</tr>
+<tr>
+<td>src-dst-mixed-ip-port</td>
+<td>Source/dest IP and TCP/UDP ports </td>
+</tr>
+<tr>
+<td>src-dst-port</td>
+<td>Source and destination TCP/UDP ports only </td>
+</tr>
+<tr>
+<td>src-dst-ip-only</td>
+<td>Source and destination IP only </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">Load Balancing Best Practice</div>
+<div class="alert success">
+<span>✓</span>
+<strong>Enterprise Recommendation:</strong> Use <code>src-dst-ip</code> or <code>src-dst-mixed-ip-port</code> for most enterprise deployments . These methods provide better load distribution across multiple flows  and balance bidirectional traffic more evenly 
+</div>
+
+<div class="subsection-title">Configure Load Balancing</div>
+<div class="code-block">
+configure terminal<br>
+port-channel load-balance src-dst-ip<br>
+end<br>
+show etherchannel load-balance
+</div>
+</div>
+
+<!-- SECTION 6: LACP ADVANCED FEATURES -->
+<div class="section">
+<div class="section-title">⚡ Section 4: LACP Advanced Features</div>
+
+<div class="subsection-title">LACP Fast Timers (Rapid Failure Detection)</div>
+<p>LACP Fast Timer uses 1-second intervals for LACP PDU exchange, providing rapid link failure detection in approximately 3 seconds . Default LACP Slow Timer uses 30-second intervals, requiring ~90 seconds for failure detection .</p>
+<div class="code-block">
+interface port-channel 1<br>
+lacp fast-switchover<br>
+end
+</div>
+
+<div class="subsection-title">Port-Channel Min-Links</div>
+<p>Minimum active interfaces requirement before port-channel becomes active . Ensures port-channel only activates when sufficient member links are available .</p>
+<div class="code-block">
+interface port-channel 1<br>
+port-channel min-links 2<br>
+end
+</div>
+
+<div class="subsection-title">LACP Max-Bundle</div>
+<p>Configures maximum active interfaces in port-channel . Excess interfaces become hot standby (H status) . Ensures active member count is power of 2 for load balancing .</p>
+<div class="code-block">
+interface port-channel 1<br>
+lacp max-bundle 4<br>
+end
+</div>
+
+<div class="subsection-title">LACP System Priority</div>
+<p>Identifies which switch is master for port-channel . Lower system priority preferred . Master switch chooses which member interfaces are active when exceeding max-bundle .</p>
+<div class="code-block">
+lacp system-priority 100<br>
+end
+</div>
+
+<div class="subsection-title">LACP Port Priority</div>
+<p>Master switch uses port priority to select which member interfaces remain active . Lower port priority preferred .</p>
+<div class="code-block">
+interface GigabitEthernet 1/0/1<br>
+lacp port-priority 10<br>
+end
+</div>
+</div>
+
+<!-- SECTION 7: VERIFICATION COMMANDS -->
+<div class="section">
+<div class="section-title">🔧 Section 5: Verification & Troubleshooting</div>
+
+<div class="subsection-title">Port-Channel Status Verification Commands</div>
+<div class="code-block">
+show etherchannel summary<br>
+show etherchannel load-balance<br>
+show etherchannel detail<br>
+show running-config interface port-channel 1<br>
+show interfaces port-channel 1
+</div>
+
+<div class="subsection-title">EtherChannel Logical Interface Status Fields </div>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U</strong></td>
+<td>EtherChannel interface working properly and forwarding traffic </td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>EtherChannel interface down and not forwarding traffic </td>
+</tr>
+<tr>
+<td><strong>M</strong></td>
+<td>At least one LACP adjacency established, but minimum active interfaces not met (port-channel min-links) </td>
+</tr>
+<tr>
+<td><strong>S</strong></td>
+<td>Port-channel configured for Layer 2 switching (access or trunk) </td>
+</tr>
+<tr>
+<td><strong>R</strong></td>
+<td>Port-channel configured for Layer 3 routing (routed interface) </td>
+</tr>
+<tr>
+<td><strong>H</strong></td>
+<td>Maximum active interfaces configured (lacp max-bundle). Interface is hot standby and does not forward traffic </td>
+</tr>
+<tr>
+<td><strong>I</strong></td>
+<td>Member interface has not detected LACP activity. Treated as individual interface, not part of EtherChannel </td>
+</tr>
+</tbody>
+</table>
+
+<div class="subsection-title">LACP Neighbor Verification</div>
+<div class="code-block">
+show lacp neighbor [detail]<br>
+show lacp counters<br>
+clear lacp counters
+</div>
+
+<div class="subsection-title">PAgP Neighbor Verification</div>
+<div class="code-block">
+show pagp neighbor<br>
+show pagp counters<br>
+clear pagp counters
+</div>
+
+<div class="alert danger">
+<span>⚠️</span>
+<strong>Critical Troubleshooting Step:</strong> Verify LACP or PAgP packets are being transmitted between devices . Check EtherChannel counters for the appropriate protocol 
+</div>
+</div>
+
+<!-- SECTION 8: EQUIPMENT -->
+<div class="section">
+<div class="section-title">🖥️ Equipment Required</div>
+<div class="equipment-list">
+<div class="equipment-item">3 Cisco Switches (Catalyst 2960, 3560 or higher)</div>
+<div class="equipment-item">6-8 Ethernet cables for EtherChannel members</div>
+<div class="equipment-item">Console cables for management access</div>
+<div class="equipment-item">Terminal emulation software (PuTTY, Tera Term)</div>
+</div>
+</div>
+
+<!-- SECTION 9: HANDS-ON EXERCISES -->
+<div class="section">
+<div class="section-title">📝 Hands-On Lab Exercises</div>
+
+<div class="subsection-title">Exercise 1: Static EtherChannel Configuration</div>
+<ol>
+<li>Configure port-channel 1 as trunk </li>
+<li>Assign GigabitEthernet 1/0/1 and 1/0/2 to channel-group 1 mode on </li>
+<li>Verify port-channel with <code>show etherchannel summary</code></li>
+<li>Confirm both member ports show U status</li>
+</ol>
+
+<div class="subsection-title">Exercise 2: LACP Configuration with Fast Timers</div>
+<ol>
+<li>Configure port-channel 2 for LACP with active mode </li>
+<li>Enable LACP fast timers for rapid convergence </li>
+<li>Set LACP min-links to 2 </li>
+<li>Verify with <code>show lacp neighbor detail</code></li>
+</ol>
+
+<div class="subsection-title">Exercise 3: PAgP Configuration</div>
+<ol>
+<li>Configure port-channel 3 for PAgP desirable mode </li>
+<li>Use non-silent keyword for strict packet requirement </li>
+<li>Verify adjacency with <code>show pagp neighbor</code></li>
+</ol>
+
+<div class="subsection-title">Exercise 4: Load Balancing Optimization</div>
+<ol>
+<li>Configure global load-balance method as src-dst-ip </li>
+<li>Verify with <code>show etherchannel load-balance</code></li>
+<li>Monitor traffic distribution across members</li>
+</ol>
+</div>
+
+<!-- SECTION 10: CHECKLIST -->
+<div class="section">
+<div class="section-title">✓ Lab Completion Checklist</div>
+<div class="checklist">
+<div class="checklist-item">
+<input type="checkbox">
+<span>Configured static, LACP, and PAgP EtherChannels </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Verified all member port interfaces are active and consistent </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Implemented LACP fast timers for rapid failure detection </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Configured src-dst-ip load balancing for enterprise deployment </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Set port-channel min-links and lacp max-bundle </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Verified LACP/PAgP packet transmission on both devices </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Confirmed port-channel logical interface status shows U (Up) </span>
+</div>
+<div class="checklist-item">
+<input type="checkbox">
+<span>Troubleshot and resolved all configuration mismatches</span>
+</div>
+</div>
+</div>
+
+<!-- SECTION 11: EXAM FOCUS -->
+<div class="section">
+<div class="section-title">🎯 CCNP 350-401 & 300-410 Exam Focus</div>
+<div class="alert info">
+<span>ℹ️</span>
+This lab covers the following exam objectives:
+</div>
+<ul>
+<li><strong>350-401 (ENCOR):</strong> Configure and troubleshoot EtherChannel (LACP, PAgP, static) </li>
+<li><strong>350-401:</strong> Configure load balancing in EtherChannel for enterprise deployments </li>
+<li><strong>350-401:</strong> Implement LACP fast timers and convergence optimization </li>
+<li><strong>300-410 (ENARSI):</strong> Troubleshoot EtherChannel configuration issues </li>
+</ul>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p>CCNP Enterprise Certification Program</p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Hands-On Laboratory Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Unauthorized access attempts are logged and monitored.</p>
+</footer>
+
+</div>
+
+<!-- SECURITY SCRIPT -->
+<script>
+const MASTER_PASSWORD = "CCNP@2026";
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+
+let isUnlocked = false;
+let sessionTimer = null;
+
+window.addEventListener('load', function() {
+checkSession();
+initializeProtection();
+setupSecurityMonitoring();
+});
+
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.removeItem(SESSION_KEY);
+sessionStorage.removeItem('session_time');
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+function initializeProtection() {
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', function(e) {
+if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73,67,74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+}
+});
+if (self !== top) top.location = self.location;
+}
+
+function setupSecurityMonitoring() {
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+function logSecurityEvent(eventType) {
+console.log('[SECURITY LOG]', { type: eventType, timestamp: new Date().toISOString() });
+}
+
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT', 'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cLAB 7.2: EtherChannel Configuration', 'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c⚠️ Content Protections: ACTIVE', 'color: #ff6b6b; font-size: 12px;');
+console.log('%cUnauthorized access attempts are logged and monitored.', 'color: #dc3545; font-size: 11px;');
+}, 500);
+});
+</script>
+
+</body>
+</html>

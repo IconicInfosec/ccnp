@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 2.1: Data Center Type Identification & Classification | CCNP 350-401 & 300-410</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+padding: 20px;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 40px 20px;
+text-align: center;
+max-width: 1200px;
+margin: 0 auto 20px auto;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+
+header p {
+font-size: 1.1em;
+opacity: 0.9;
+margin: 5px 0;
+}
+
+/* Main Content */
+.container {
+max-width: 1200px;
+margin: 0 auto 40px auto;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+padding: 40px;
+}
+
+.container h2 {
+color: #1e3c72;
+margin-top: 30px;
+margin-bottom: 15px;
+border-bottom: 3px solid #667eea;
+padding-bottom: 10px;
+}
+
+.container h3 {
+color: #2a5298;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+
+.container ul, .container ol {
+margin-left: 20px;
+margin-bottom: 15px;
+}
+
+.container li {
+margin-bottom: 8px;
+}
+
+/* Tables */
+table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+th {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: bold;
+}
+
+td {
+padding: 12px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+/* Tier Badges */
+.tier-badge {
+display: inline-block;
+padding: 8px 12px;
+border-radius: 5px;
+font-weight: bold;
+margin: 10px 0;
+}
+
+.tier-i { background: #e8f4f8; color: #0066cc; }
+.tier-ii { background: #e8f8e8; color: #00aa00; }
+.tier-iii { background: #fff8e8; color: #ff9900; }
+.tier-iv { background: #ffe8e8; color: #cc0000; }
+
+/* Exercise Boxes */
+.exercise-box {
+background: #f0f7ff;
+border-left: 4px solid #667eea;
+padding: 20px;
+margin: 20px 0;
+border-radius: 5px;
+}
+
+.exercise-box strong {
+color: #1e3c72;
+}
+
+/* Callout Styles */
+.callout {
+background: #fff9e6;
+border-left: 4px solid #ff9900;
+padding: 15px;
+margin: 15px 0;
+border-radius: 5px;
+}
+
+.callout-success {
+background: #e8f8e8;
+border-left-color: #00aa00;
+}
+
+.callout-warning {
+background: #ffe8e8;
+border-left-color: #cc0000;
+}
+
+/* Footer */
+footer {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: white;
+text-align: center;
+padding: 30px 20px;
+margin-top: 40px;
+border-top: 3px solid #667eea;
+max-width: 1200px;
+margin-left: auto;
+margin-right: auto;
+border-radius: 8px;
+}
+
+footer h3 {
+font-size: 1.3em;
+margin-bottom: 10px;
+color: #667eea;
+font-weight: bold;
+}
+
+footer p {
+margin: 5px 0;
+font-size: 0.95em;
+}
+
+footer .company-name {
+font-weight: bold;
+font-size: 1.1em;
+color: #667eea;
+margin-top: 15px;
+}
+
+footer .footer-divider {
+width: 60px;
+height: 2px;
+background: #667eea;
+margin: 15px auto;
+}
+
+/* Password Protection Modal */
+.password-modal {
+display: none;
+position: fixed;
+z-index: 10000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(5px);
+}
+
+.password-modal.show {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.modal-content {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+max-width: 400px;
+width: 90%;
+text-align: center;
+color: white;
+border: 3px solid #667eea;
+}
+
+.modal-content h2 {
+margin-bottom: 20px;
+font-size: 1.8em;
+color: #667eea;
+}
+
+.modal-content p {
+margin-bottom: 20px;
+font-size: 1em;
+}
+
+.modal-content input {
+width: 100%;
+padding: 12px;
+margin: 15px 0;
+border: 2px solid #667eea;
+border-radius: 5px;
+font-size: 1em;
+background: white;
+color: #333;
+}
+
+.modal-content input:focus {
+outline: none;
+border-color: #00ff00;
+box-shadow: 0 0 10px #667eea;
+}
+
+.modal-content button {
+padding: 12px 30px;
+margin: 10px 5px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.modal-content button:hover {
+background: #764ba2;
+transform: scale(1.05);
+}
+
+.modal-content button.cancel {
+background: #dc3545;
+}
+
+.modal-content button.cancel:hover {
+background: #c82333;
+}
+
+.error-message {
+color: #ff6b6b;
+font-weight: bold;
+margin-top: 10px;
+display: none;
+}
+
+.protected-element {
+position: relative;
+}
+
+.protection-indicator {
+position: absolute;
+top: 5px;
+right: 5px;
+background: #667eea;
+color: white;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.8em;
+opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+header h1 { font-size: 1.8em; }
+.container { padding: 20px; }
+table { font-size: 0.9em; }
+th, td { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Password Protection Modal -->
+<div id="passwordModal" class="password-modal">
+<div class="modal-content">
+<h2>🔐 Access Restricted</h2>
+<p>This training content is password protected</p>
+<p>Enter your master password to access</p>
+<input type="password" id="passwordInput" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+<button onclick="verifyPassword()">🔓 Unlock</button>
+<button class="cancel" onclick="lockPage()">🔒 Lock</button>
+<div class="error-message" id="errorMsg">❌ Incorrect Password - Access Denied!</div>
+</div>
+</div>
+
+<!-- Header -->
+<header class="protected-element" id="protectedHeader">
+<h1>📊 Lab 2.1: Data Center Type Identification & Classification</h1>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Data Center Architecture</p>
+<p style="font-size: 0.9em; opacity: 0.85;">Professional Hands-On Laboratory Training | Password Protected</p>
+<div class="protection-indicator">🔒 Protected</div>
+</header>
+
+<!-- Main Content -->
+<div class="container protected-element" id="protectedBody">
+
+<!-- Lab Objectives -->
+<h2>📋 Lab Objectives</h2>
+<ul>
+<li>Understand the 10 primary data center types and their characteristics</li>
+<li>Identify appropriate data center types for different organizational scenarios</li>
+<li>Analyze data center tier classifications (Tier I-IV)</li>
+<li>Compare uptime guarantees, redundancy, and maintenance capabilities</li>
+<li>Create a data center selection matrix for business decision-making</li>
+<li>Document compliance and security requirements for each type</li>
+</ul>
+
+<!-- Scenario Overview -->
+<h2>🎯 Scenario Overview</h2>
+<p>Your organization is expanding its IT infrastructure and needs to decide on the appropriate data center deployment strategy. Different business units have varying requirements:</p>
+<ul>
+<li><strong>Finance Department:</strong> Requires 99.98% uptime with full redundancy</li>
+<li><strong>HR Department:</strong> Needs basic storage with minimal redundancy</li>
+<li><strong>E-Commerce Division:</strong> Requires global distribution with edge computing</li>
+<li><strong>Research Lab:</strong> Needs high-performance computing infrastructure</li>
+<li><strong>Remote Offices:</strong> Require portable, quickly deployable solutions</li>
+</ul>
+<div class="callout callout-success">
+<strong>💡 Learning Outcome:</strong> By completing this lab, you will evaluate organizational requirements and match them with appropriate data center types, ensuring optimal cost-benefit and service level alignment.
+</div>
+
+<!-- Data Center Types -->
+<h2>🏢 The 10 Primary Data Center Types</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Data Center Type</th>
+<th>Description</th>
+<th>Key Characteristics</th>
+<th>Primary Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Enterprise Data Center</strong></td>
+<td>Owned and operated by a single organization for internal use</td>
+<td>
+• Full control over infrastructure<br>
+• Customizable to business needs<br>
+• On-premises deployment<br>
+• High security and compliance control
+</td>
+<td>Large enterprises with specific security, performance, or regulatory requirements</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Colocation Data Center</strong></td>
+<td>Shared facility where multiple organizations rent space and infrastructure</td>
+<td>
+• Shared resources and cooling<br>
+• Lower costs than enterprise DC<br>
+• Scalable options available<br>
+• Reduced setup time
+</td>
+<td>Mid-size businesses wanting to reduce data center costs while maintaining control</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Cloud Data Center</strong></td>
+<td>Managed by cloud service providers (AWS, Azure, Google Cloud) with scalable on-demand services</td>
+<td>
+• Flexible and scalable<br>
+• Pay-as-you-go pricing<br>
+• Built on virtualization<br>
+• Geographically distributed for redundancy
+</td>
+<td>Organizations needing cloud services for applications, storage, and infrastructure without hardware investment</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Edge Data Center</strong></td>
+<td>Smaller facilities located close to end users or data sources to reduce latency</td>
+<td>
+• Supports real-time applications<br>
+• Reduces latency significantly<br>
+• Commonly used for IoT and mobile<br>
+• Near real-time processing
+</td>
+<td>Smart cities, autonomous vehicles, augmented reality, immediate data processing applications</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Hyperscale Data Center</strong></td>
+<td>Built by large companies to support massive computing infrastructures and cloud services</td>
+<td>
+• Extremely large facilities<br>
+• Thousands of servers<br>
+• High automation and efficiency<br>
+• Modular design approach
+</td>
+<td>Major cloud providers and large enterprises for cloud computing, big data, high-performance computing</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Modular Data Center</strong></td>
+<td>Uses pre-fabricated modules assembled at deployment location for flexible, scalable construction</td>
+<td>
+• Rapid deployment capability<br>
+• Easy expansion via modules<br>
+• Controlled environment<br>
+• Lower setup costs
+</td>
+<td>Companies needing quick capacity expansion, temporary deployments, or remote locations</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Managed Data Center</strong></td>
+<td>Third-party provider manages some or all infrastructure and services on behalf of customer</td>
+<td>
+• Outsourced IT operations<br>
+• Monitoring and maintenance included<br>
+• Higher service levels<br>
+• Expert support provided
+</td>
+<td>Organizations needing expert IT management without full internal operations team</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Containerized Data Center</strong></td>
+<td>Built inside shipping containers or portable modular units for extreme portability</td>
+<td>
+• Highly portable<br>
+• Fast to deploy<br>
+• Suitable for remote areas<br>
+• Rapid setup capability
+</td>
+<td>Disaster recovery, military operations, remote sites, emergency deployments</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Government Data Center</strong></td>
+<td>Operated by government agencies to support public services, data storage, and national IT systems</td>
+<td>
+• High security and compliance<br>
+• Strict access control<br>
+• Regulatory requirements<br>
+• Data sovereignty requirements
+</td>
+<td>Public services, defense, ministries, citizen service platforms</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Mobile Data Center</strong></td>
+<td>Portable data center unit that can be transported and deployed where needed</td>
+<td>
+• Highly portable<br>
+• Rapid setup<br>
+• Useful when fixed infrastructure unavailable<br>
+• Temporary deployment capability
+</td>
+<td>Disaster recovery, military operations, event support, temporary business continuity</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-success">
+<strong>✓ Key Takeaway:</strong> Each data center type serves specific organizational needs. The choice depends on factors like budget, security requirements, scalability needs, latency sensitivity, and operational complexity.
+</div>
+
+<!-- Data Center Tier Classification -->
+<h2>📈 Data Center Tier Classification</h2>
+<p>Data center tiers define the level of infrastructure redundancy, fault tolerance, and uptime guarantees. These classifications help organizations select appropriate facilities based on business-critical requirements.</p>
+
+<table>
+<thead>
+<tr>
+<th>Tier Level</th>
+<th>Description</th>
+<th>Redundancy</th>
+<th>Fault Tolerance</th>
+<th>Uptime Guarantee</th>
+<th>Annual Downtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="tier-badge tier-i">Tier I</span></td>
+<td>Basic data center infrastructure with no redundancy</td>
+<td>None</td>
+<td>No</td>
+<td><strong>99.67%</strong></td>
+<td>28.8 hours</td>
+</tr>
+<tr>
+<td><span class="tier-badge tier-ii">Tier II</span></td>
+<td>Redundant capacity components for power and cooling</td>
+<td>Partial</td>
+<td>Limited</td>
+<td><strong>99.74%</strong></td>
+<td>22 hours</td>
+</tr>
+<tr>
+<td><span class="tier-badge tier-iii">Tier III</span></td>
+<td>Concurrently maintainable with full redundancy for critical systems</td>
+<td>Full</td>
+<td>Partial</td>
+<td><strong>99.98%</strong></td>
+<td>1.6 hours</td>
+</tr>
+<tr>
+<td><span class="tier-badge tier-iv">Tier IV</span></td>
+<td>Fault-tolerant with fully redundant and independent systems</td>
+<td>Fully Redundant</td>
+<td>Yes</td>
+<td><strong>100.00%</strong></td>
+<td>26.3 minutes</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Tier Details -->
+<h3>🔵 Tier I - Basic Infrastructure</h3>
+<div class="callout">
+<strong>Uptime:</strong> 99.67% | <strong>Annual Downtime:</strong> 28.8 hours<br>
+<strong>Features:</strong> Single path for power and cooling, No redundant components, Scheduled maintenance causes downtime, Lowest cost option
+</div>
+
+<h3>🟢 Tier II - Redundant Capacity</h3>
+<div class="callout">
+<strong>Uptime:</strong> 99.74% | <strong>Annual Downtime:</strong> 22 hours<br>
+<strong>Features:</strong> Redundant power and cooling, N+1 redundancy for some systems, Scheduled maintenance still required, Improved availability
+</div>
+
+<h3>🟡 Tier III - Concurrently Maintainable</h3>
+<div class="callout">
+<strong>Uptime:</strong> 99.98% | <strong>Annual Downtime:</strong> 1.6 hours<br>
+<strong>Features:</strong> Full redundancy for critical systems, Concurrent maintainability, Maintenance without downtime, Enterprise-grade availability
+</div>
+
+<h3>🔴 Tier IV - Fault-Tolerant</h3>
+<div class="callout callout-warning">
+<strong>Uptime:</strong> 100.00% | <strong>Annual Downtime:</strong> 26.3 minutes<br>
+<strong>Features:</strong> Fully redundant systems, Independent infrastructure paths, Zero planned downtime, Mission-critical applications
+</div>
+
+<div class="callout callout-warning">
+<strong>💡 Important Note:</strong> Higher tier levels provide better uptime guarantees but come with significantly higher operational and capital costs. Organizations should balance their uptime requirements with budget constraints.
+</div>
+
+<!-- Hands-On Exercises -->
+<h2>🎓 Hands-On Exercises</h2>
+
+<div class="exercise-box">
+<h3>Exercise 1: Data Center Type Selection Matrix</h3>
+<strong>Scenario Analysis</strong><br>
+Read and analyze the following organizational scenarios:
+<ul>
+<li><strong>Scenario A - FinTech Startup:</strong> Rapidly growing fintech company needing millisecond transaction processing, 99.99% uptime, strict compliance, moderate budget</li>
+<li><strong>Scenario B - NGO with Limited Budget:</strong> Nonprofit needing donor data storage, 95% uptime, minimal IT staff, very limited budget</li>
+<li><strong>Scenario C - Global E-Commerce:</strong> Global operations in 50 countries, low-latency worldwide access, high availability, rapid scaling during peaks</li>
+<li><strong>Scenario D - Government Agency:</strong> National health records, 100% availability, highest security, data sovereignty within borders, government compliance</li>
+<li><strong>Scenario E - Disaster Recovery Center:</strong> Backup DC, rapid deployment, independent operation, cost-effective</li>
+</ul>
+</div>
+
+<div class="exercise-box">
+<h3>Exercise 2: Build Data Center Selection Matrix</h3>
+<strong>For each scenario, create a matrix with:</strong>
+<ul>
+<li>Recommended DC Type (which of 10 types)</li>
+<li>Tier Level (Tier I, II, III, or IV)</li>
+<li>Justification (why this choice)</li>
+<li>Cost Estimation (Low/Medium/High/Very High)</li>
+<li>Setup Time (Weeks/Months/Years)</li>
+<li>Scalability (ability to expand)</li>
+<li>Security Level (compliance and security rating)</li>
+</ul>
+<p style="margin-top: 10px;"><strong>⚠️ Document your analysis:</strong> Create a detailed analysis document for each scenario showing your decision-making process, including alternative options considered and why they were rejected.</p>
+</div>
+
+<div class="exercise-box">
+<h3>Exercise 3: Tier Requirement Analysis</h3>
+<strong>Calculate Uptime and Downtime Requirements</strong>
+<p>For each tier level, calculate:</p>
+<ul>
+<li>Maximum acceptable downtime per year (hours)</li>
+<li>Maximum acceptable downtime per month (minutes)</li>
+<li>Impact on business operations for each scenario</li>
+<li>Cost-benefit analysis for each tier</li>
+</ul>
+<p><strong>💡 Example Calculation (Tier III - 99.98% uptime):</strong></p>
+<ul>
+<li>Annual downtime = 365 days × 24 hours × (1 - 0.9998) = 1.75 hours ≈ 1.6 hours</li>
+<li>Monthly downtime = 30 days × 24 hours × (1 - 0.9998) ≈ 4.3 minutes</li>
+<li>This means 4.3 minutes of maximum downtime per month is acceptable</li>
+</ul>
+</div>
+
+<div class="exercise-box">
+<h3>Exercise 4: Compliance and Security Mapping</h3>
+<strong>Map Compliance Requirements to DC Types</strong>
+<p>For each scenario, document:</p>
+<ul>
+<li>Required compliance standards (HIPAA, PCI-DSS, GDPR, SOC 2, etc.)</li>
+<li>Security requirements and controls needed</li>
+<li>Data sovereignty/residency requirements</li>
+<li>Which DC type best meets these requirements</li>
+<li>Additional security controls required</li>
+</ul>
+</div>
+
+<!-- Lab Deliverables -->
+<h2>📦 Lab Deliverables & Verification</h2>
+
+<h3>Required Deliverables</h3>
+<ul>
+<li><strong>Deliverable 1 - Data Center Type Identification Document:</strong> Comprehensive analysis of all 10 DC types, characteristics, advantages, disadvantages, real-world examples, comparison matrix, use case scenarios</li>
+<li><strong>Deliverable 2 - Data Center Selection Matrix:</strong> Completed selection matrix for 5 organizational scenarios with DC type, justification, tier level, cost/ROI analysis, implementation timeline</li>
+<li><strong>Deliverable 3 - Tier Classification Analysis:</strong> Detailed tier-level comparison document, Tier I-IV characteristics, uptime/downtime calculations, cost-benefit analysis, tier selection criteria</li>
+<li><strong>Deliverable 4 - Compliance and Security Mapping Document:</strong> Security/compliance requirements analysis, regulations to DC types mapping, security controls, data sovereignty, risk assessment</li>
+<li><strong>Deliverable 5 - Executive Summary and Recommendations:</strong> High-level executive summary, recommended DC strategy, financial impact/ROI projections, implementation roadmap, risk mitigation plan</li>
+</ul>
+
+<h3>✅ Lab Completion Checklist</h3>
+<ul>
+<li>☐ Identified all 10 data center types correctly</li>
+<li>☐ Understood characteristics and use cases for each type</li>
+<li>☐ Analyzed all 5 organizational scenarios thoroughly</li>
+<li>☐ Created comprehensive selection matrix with justifications</li>
+<li>☐ Understood tier classification differences</li>
+<li>☐ Calculated uptime and downtime for each tier</li>
+<li>☐ Mapped compliance requirements to DC types</li>
+<li>☐ Completed cost-benefit analysis</li>
+<li>☐ Created executive summary and recommendations</li>
+<li>☐ Documented all findings in professional format</li>
+</ul>
+
+<div class="callout callout-success">
+<strong>✓ Lab Completion Indicator:</strong> You have successfully completed Lab 2.1 when you can explain the differences between all 10 data center types, recommend appropriate types for any given scenario, understand tier classifications, and make data-driven decisions based on organizational requirements and budget constraints.
+</div>
+
+</div>
+
+<!-- Footer -->
+<footer class="protected-element" id="protectedFooter">
+<h3>🔐 Iconic InfoSec Training</h3>
+<p>Professional Cybersecurity & Networking Education</p>
+<div class="footer-divider"></div>
+<p><strong>CCNP Enterprise Certification Program</strong></p>
+<p>Cisco CCNP 350-401 (ENCOR) & 300-410 (ENARSI) Enterprise Data Center Architecture Training</p>
+<p class="company-name">By ZayarMaungMaung</p>
+<div class="footer-divider"></div>
+<p style="margin-top: 15px; opacity: 0.9; font-size: 0.9em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+<p style="opacity: 0.8; font-size: 0.85em;">Password-Protected Content | Authorized Use Only | Strict Access Control Enabled</p>
+<div class="protection-indicator">🔒 Protected</div>
+</footer>
+
+<!-- Enhanced Security Script -->
+<script>
+// ==================== SECURITY CONFIGURATION ====================
+const MASTER_PASSWORD = "CCNP@2026";
+const PROTECTED_CONTENT = true;
+const SESSION_KEY = "auth_session_token";
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+let isUnlocked = false;
+let sessionTimer = null;
+let editMode = false;
+
+// Initialize security on page load
+window.addEventListener('load', function() {
+checkSession();
+setupSecurityMonitoring();
+});
+
+// ==================== SESSION MANAGEMENT ====================
+function checkSession() {
+const sessionToken = sessionStorage.getItem(SESSION_KEY);
+const sessionTime = sessionStorage.getItem('session_time');
+const currentTime = Date.now();
+
+if (sessionToken === MASTER_PASSWORD && sessionTime) {
+if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+isUnlocked = true;
+unlockContent();
+resetSessionTimer();
+} else {
+sessionStorage.clear();
+showPasswordModal();
+}
+} else {
+showPasswordModal();
+}
+}
+
+function resetSessionTimer() {
+clearTimeout(sessionTimer);
+sessionTimer = setTimeout(function() {
+lockPage();
+alert("⏱️ Session expired - Please re-enter password");
+}, SESSION_TIMEOUT);
+}
+
+// ==================== PASSWORD VERIFICATION ====================
+function verifyPassword() {
+const inputPassword = document.getElementById('passwordInput').value;
+const errorMsg = document.getElementById('errorMsg');
+
+if (inputPassword === MASTER_PASSWORD) {
+isUnlocked = true;
+sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+sessionStorage.setItem('session_time', Date.now().toString());
+errorMsg.style.display = 'none';
+unlockContent();
+resetSessionTimer();
+logSecurityEvent('SUCCESSFUL_LOGIN');
+} else {
+errorMsg.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+logSecurityEvent('FAILED_LOGIN_ATTEMPT');
+}
+}
+
+// ==================== CONTENT LOCKING/UNLOCKING ====================
+function unlockContent() {
+document.getElementById('passwordModal').classList.remove('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '1';
+element.style.pointerEvents = 'auto';
+element.style.userSelect = 'auto';
+});
+}
+
+function lockPage() {
+isUnlocked = false;
+sessionStorage.clear();
+document.getElementById('passwordInput').value = '';
+document.getElementById('errorMsg').style.display = 'none';
+showPasswordModal();
+logSecurityEvent('PAGE_LOCKED');
+}
+
+function showPasswordModal() {
+const modal = document.getElementById('passwordModal');
+modal.classList.add('show');
+document.querySelectorAll('.protected-element').forEach(element => {
+element.style.opacity = '0.5';
+element.style.pointerEvents = 'none';
+});
+setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+// ==================== ANTI-TAMPERING MEASURES ====================
+// Disable dangerous keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+if (!isUnlocked) return;
+
+const shortcuts = {
+123: 'F12',
+85: 'Ctrl+U'
+};
+
+if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 85)) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable right-click
+document.addEventListener('contextmenu', function(e) {
+if (!isUnlocked) {
+e.preventDefault();
+return false;
+}
+});
+
+// Disable printing without auth
+window.addEventListener('beforeprint', function() {
+if (!isUnlocked) {
+alert('🔒 Printing requires authentication');
+}
+});
+
+// ==================== SECURITY MONITORING ====================
+function setupSecurityMonitoring() {
+// DevTools detection
+let devTools = { open: false };
+setInterval(function() {
+if (window.outerHeight - window.innerHeight > 150) {
+if (!devTools.open && isUnlocked) {
+devTools.open = true;
+logSecurityEvent('DEVTOOLS_DETECTED');
+}
+} else {
+devTools.open = false;
+}
+}, 500);
+
+// Monitor window focus
+window.addEventListener('blur', () => logSecurityEvent('WINDOW_BLUR'));
+window.addEventListener('focus', function() {
+logSecurityEvent('WINDOW_FOCUS');
+if (!isUnlocked) showPasswordModal();
+});
+}
+
+// ==================== SECURITY LOGGING ====================
+function logSecurityEvent(eventType) {
+const event = {
+type: eventType,
+timestamp: new Date().toISOString(),
+isAuthenticated: isUnlocked
+};
+console.log('[SECURITY LOG]', event);
+}
+
+// ==================== CONSOLE SECURITY ====================
+window.addEventListener('load', function() {
+setTimeout(function() {
+console.clear();
+console.log('%c🔐 ICONIC INFOSEC TRAINING - PROTECTED CONTENT',
+'color: #667eea; font-size: 18px; font-weight: bold;');
+console.log('%cThis document is password protected',
+'color: #1e3c72; font-size: 14px; font-weight: bold;');
+console.log('%c✓ Content Protections: ACTIVE',
+'color: #28a745; font-size: 12px;');
+}, 500);
+});
+
+// Prevent iframe embedding
+if (self !== top) {
+top.location = self.location;
+}
+</script>
+
+</body>
+</html>

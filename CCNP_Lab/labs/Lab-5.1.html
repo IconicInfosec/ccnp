@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB 5.1: STP Root Bridge Optimization - CCNP 350-401 & 300-410</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+        
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        .password-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            border: 3px solid white;
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #fff;
+        }
+        
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid white;
+            border-radius: 5px;
+            font-size: 1em;
+            background: white;
+            color: #333;
+        }
+        
+        .modal-content button {
+            padding: 12px 30px;
+            margin: 10px 5px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .modal-content button:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
+        
+        .error-message {
+            color: #ffcccc;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .protected-content {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .content {
+            padding: 40px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+        
+        section {
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        .command-block {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 5px solid #667eea;
+            font-size: 0.9em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .objective-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .objective-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .objective-box li {
+            padding: 8px 0;
+            padding-left: 25px;
+        }
+        
+        .objective-box li:before {
+            content: "✓ ";
+            font-weight: bold;
+            color: #fff;
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .note-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #155724;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 5px solid #667eea;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .topology-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .br-spacer {
+            display: block;
+            height: 10px;
+        }
+        
+        footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 2px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="passwordModal" class="password-modal">
+        <div class="modal-content">
+            <h2>🔐 Access Required</h2>
+            <p>This lab content is password protected</p>
+            <p>Enter password to access</p>
+            <input type="password" id="passwordInput" placeholder="Enter Password" onkeypress="if(event.key==='Enter') verifyPassword()">
+            <button onclick="verifyPassword()">🔓 Unlock</button>
+            <div class="error-message" id="errorMsg">❌ Incorrect Password</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="protected-content">
+            <h1>🔐 LAB 5.1: STP Root Bridge Optimization</h1>
+            <p>CCNP 350-401 (ENCOR) & 300-410 (ENARSI)</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Enterprise Network Foundation - Hands-On Laboratory</p>
+        </header>
+
+        <div class="content protected-content" id="mainContent">
+            <!-- SECTION 1: OVERVIEW -->
+            <section>
+                <h2>📚 Lab Overview & Objectives</h2>
+                <p><strong>Duration:</strong> 75-90 minutes | <strong>Difficulty:</strong> Intermediate-Advanced</p>
+                <div class="br-spacer"></div>
+                <div class="objective-box">
+                    <h3 style="color: white; margin-top: 0;">🎯 Learning Objectives</h3>
+                    <ul>
+                        <li>Configure bridge priority for deterministic root bridge placement</li>
+                        <li>Set primary and secondary root bridges with appropriate priority values</li>
+                        <li>Modify STP path costs across different link speeds (100 Mbps, 1 Gbps)</li>
+                        <li>Influence root port and blocked port selection using path cost adjustments</li>
+                        <li>Verify topology changes and convergence using Cisco IOS commands</li>
+                        <li>Optimize traffic flow in multi-tier datacenter environments</li>
+                        <li>Implement failover mechanisms and network resilience strategies</li>
+                    </ul>
+                </div>
+                <div class="br-spacer"></div>
+                <p><strong>Scenario:</strong> ABC Company operates a multi-tier datacenter network with STP using default settings, resulting in suboptimal traffic paths. Your task is to optimize the spanning tree topology by strategically placing the root bridge and tuning path costs for deterministic traffic flow.</p>
+            </section>
+
+            <!-- SECTION 2: TOPOLOGY -->
+            <section>
+                <h2>🏗️ Network Topology</h2>
+                <img src="https://f005.backblazeb2.com/file/CCNPLabPic/Lab5.1.jpg" alt="LAB 5.1 Network Topology" class="topology-image">
+                <div class="br-spacer"></div>
+                <h3>Bridge Priority Hierarchy</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Switch</th>
+                            <th>Role</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Core-SW-01</td>
+                            <td>Primary Root</td>
+                            <td>4096</td>
+                        </tr>
+                        <tr>
+                            <td>Core-SW-02</td>
+                            <td>Secondary Root</td>
+                            <td>8192</td>
+                        </tr>
+                        <tr>
+                            <td>Dist-SW-01</td>
+                            <td>Distribution Primary</td>
+                            <td>16384</td>
+                        </tr>
+                        <tr>
+                            <td>Dist-SW-02</td>
+                            <td>Distribution Secondary</td>
+                            <td>20480</td>
+                        </tr>
+                        <tr>
+                            <td>Access-SW-01/02/03</td>
+                            <td>Access Layer</td>
+                            <td>32768</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 3: CONFIGURATION -->
+            <section>
+                <h2>⚙️ Configuration Guide</h2>
+                <div class="br-spacer"></div>
+                <div class="step">
+                    <h3><span class="step-number">1</span>Configure Primary Root Bridge (Core-SW-01)</h3>
+                    <div class="command-block">ssh admin@core-sw-01
+enable
+configure terminal
+spanning-tree vlan 1 priority 4096
+spanning-tree vlan 1 root primary
+exit
+copy running-config startup-config</div>
+                </div>
+                <div class="br-spacer"></div>
+                <div class="step">
+                    <h3><span class="step-number">2</span>Configure Secondary Root Bridge (Core-SW-02)</h3>
+                    <div class="command-block">ssh admin@core-sw-02
+enable
+configure terminal
+spanning-tree vlan 1 priority 8192
+spanning-tree vlan 1 root secondary
+exit
+copy running-config startup-config</div>
+                </div>
+                <div class="br-spacer"></div>
+                <div class="step">
+                    <h3><span class="step-number">3</span>Configure Distribution Layer (Dist-SW-01)</h3>
+                    <div class="command-block">configure terminal
+spanning-tree vlan 1 priority 16384
+interface gigabitethernet 0/1
+  spanning-tree cost 4
+  exit
+interface gigabitethernet 0/2
+  spanning-tree cost 5
+  exit
+exit
+copy running-config startup-config</div>
+                </div>
+                <div class="br-spacer"></div>
+                <div class="step">
+                    <h3><span class="step-number">4</span>Configure Distribution Layer (Dist-SW-02)</h3>
+                    <div class="command-block">configure terminal
+spanning-tree vlan 1 priority 20480
+interface gigabitethernet 0/1
+  spanning-tree cost 5
+  exit
+interface gigabitethernet 0/2
+  spanning-tree cost 4
+  exit
+exit
+copy running-config startup-config</div>
+                </div>
+                <div class="br-spacer"></div>
+                <div class="step">
+                    <h3><span class="step-number">5</span>Configure Access Layer (All Access Switches)</h3>
+                    <div class="command-block">configure terminal
+spanning-tree vlan 1 priority 32768
+interface gigabitethernet 0/1
+  spanning-tree portfast
+  spanning-tree bpduguard enable
+  exit
+exit
+copy running-config startup-config</div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: VERIFICATION -->
+            <section>
+                <h2>✅ Verification Procedures</h2>
+                <div class="br-spacer"></div>
+                <h3>Verify Root Bridge Election</h3>
+                <div class="command-block">Core-SW-01# show spanning-tree vlan 1
+
+VLAN0001
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    4096
+             Address     0001.9600.1111
+             This bridge is the root</div>
+                <div class="success-box">✓ Expected: "This bridge is the root" with priority 4096</div>
+                <div class="br-spacer"></div>
+                <h3>Verify Port Roles & Costs</h3>
+                <div class="command-block">Dist-SW-01# show spanning-tree interface brief
+
+Interface       Role Sts Cost      Prio.Nbr
+Gi0/1           ROOT FWD 4         128.1
+Gi0/2           DESG FWD 5         128.2</div>
+                <div class="success-box">✓ Expected: Gi0/1 = ROOT FWD, Gi0/2 = DESIGNATED FWD</div>
+                <div class="br-spacer"></div>
+                <h3>Monitor Topology Stability</h3>
+                <div class="command-block">Core-SW-01# show spanning-tree summary
+
+Switch is in rapid-pvst+ mode
+Root bridge for: VLAN0001
+Port count: 2
+Blocked ports: 5</div>
+                <div class="success-box">✓ Expected: Stable topology with minimal topology changes</div>
+            </section>
+
+            <!-- SECTION 5: FAILOVER TESTING -->
+            <section>
+                <h2>🧪 Failover Testing</h2>
+                <div class="br-spacer"></div>
+                <div class="note-box">⚠️ WARNING: Test only in LAB environments. Do NOT perform in production.</div>
+                <div class="br-spacer"></div>
+                <h3>Test 1: Root Port Failover</h3>
+                <div class="command-block">Dist-SW-01# configure terminal
+Dist-SW-01(config)# interface gigabitethernet 0/1
+Dist-SW-01(config-if)# shutdown
+Dist-SW-01(config-if)# exit
+Dist-SW-01# show spanning-tree interface brief</div>
+                <p><strong>Expected:</strong> Gi0/2 becomes new ROOT port within 45 seconds</p>
+                <div class="br-spacer"></div>
+                <h3>Test 2: Path Cost Influence</h3>
+                <div class="command-block">Dist-SW-01# configure terminal
+Dist-SW-01(config)# interface gi 0/1
+Dist-SW-01(config-if)# spanning-tree cost 100
+Dist-SW-01# show spanning-tree interface gi 0/1-2</div>
+                <p><strong>Expected:</strong> Root port switches to Gi0/2 due to lower cost</p>
+            </section>
+
+            <!-- SECTION 6: TROUBLESHOOTING -->
+            <section>
+                <h2>🔧 Troubleshooting Guide</h2>
+                <div class="br-spacer"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Cause</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Wrong switch is root</td>
+                            <td>Priority not set correctly</td>
+                            <td>Verify: show spanning-tree vlan 1<br>Reapply: spanning-tree vlan 1 root primary</td>
+                        </tr>
+                        <tr>
+                            <td>Ports blocked unexpectedly</td>
+                            <td>Path costs misconfigured</td>
+                            <td>Wait 60 seconds for convergence<br>Check: show spanning-tree interface detail</td>
+                        </tr>
+                        <tr>
+                            <td>Secondary root won't failover</td>
+                            <td>Secondary priority too high</td>
+                            <td>Verify: show spanning-tree vlan 1<br>Lower: spanning-tree vlan 1 priority</td>
+                        </tr>
+                        <tr>
+                            <td>Topology changes constantly</td>
+                            <td>Unstable links</td>
+                            <td>Check: show interfaces status<br>Verify cable connections</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 7: SUCCESS CHECKLIST -->
+            <section>
+                <h2>✨ Lab Completion Checklist</h2>
+                <div class="br-spacer"></div>
+                <div class="note-box">
+                    ☐ Core-SW-01 confirmed as Primary Root (Priority 4096)
+                    <br>☐ Core-SW-02 confirmed as Secondary Root (Priority 8192)
+                    <br>☐ Distribution layer priorities configured (16384, 20480)
+                    <br>☐ Access layer priorities remain at default (32768)
+                    <br>☐ Path costs verified across all links
+                    <br>☐ Root ports placed on expected interfaces
+                    <br>☐ All designated and alternate ports correctly identified
+                    <br>☐ Topology is stable (no repeated TCN messages)
+                    <br>☐ Failover testing completed successfully
+                    <br>☐ Secondary root bridge promotion verified
+                    <br>☐ Configuration saved on all switches
+                    <br>☐ Lab documentation completed
+                    <br><br>
+                    <strong>🎉 Congratulations! Lab 5.1 Complete!</strong>
+                </div>
+            </section>
+        </div>
+
+        <footer class="protected-content">
+            <p><strong>🔐 Iconic InfoSec Training</strong></p>
+            <p>Professional Cybersecurity & Networking Education</p>
+            <p>Cisco CCNP Enterprise Certification Program</p>
+            <p style="margin-top: 20px; font-size: 0.85em;">© 2025 Iconic InfoSec Training | All Rights Reserved</p>
+            <p style="margin-top: 10px; font-size: 0.80em;">LAB 5.1: STP Root Bridge Optimization & Path Cost Tuning</p>
+        </footer>
+    </div>
+
+    <script>
+        const MASTER_PASSWORD = "CCNP@2026";
+        const SESSION_KEY = "lab_session_token";
+        const SESSION_TIMEOUT = 60 * 60 * 1000;
+        
+        let isUnlocked = false;
+        
+        window.addEventListener('load', function() {
+            checkSession();
+        });
+        
+        function checkSession() {
+            const sessionToken = sessionStorage.getItem(SESSION_KEY);
+            const sessionTime = sessionStorage.getItem('session_time');
+            const currentTime = Date.now();
+            
+            if (sessionToken === MASTER_PASSWORD) {
+                if (currentTime - parseInt(sessionTime) < SESSION_TIMEOUT) {
+                    isUnlocked = true;
+                    unlockContent();
+                } else {
+                    sessionStorage.clear();
+                    showPasswordModal();
+                }
+            } else {
+                showPasswordModal();
+            }
+        }
+        
+        function verifyPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (inputPassword === MASTER_PASSWORD) {
+                isUnlocked = true;
+                sessionStorage.setItem(SESSION_KEY, MASTER_PASSWORD);
+                sessionStorage.setItem('session_time', Date.now().toString());
+                errorMsg.style.display = 'none';
+                unlockContent();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+        
+        function unlockContent() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.querySelectorAll('.protected-content').forEach(element => {
+                element.classList.remove('protected-content');
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            });
+        }
+        
+        function showPasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            modal.classList.add('show');
+            document.getElementById('passwordInput').focus();
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
